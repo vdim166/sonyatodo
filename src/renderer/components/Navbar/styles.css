@@ -1,0 +1,24 @@
+.nav_main {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav_main_option {
+  color: rgb(98, 98, 199);
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.nav_main_option:hover {
+  cursor: pointer;
+  color: blue;
+}
+
+.nav_main_option:active,
+.nav_main_option.selected {
+  color: rgb(42, 42, 163);
+}

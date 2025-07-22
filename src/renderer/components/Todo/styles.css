@@ -1,0 +1,76 @@
+.todo {
+  width: 500px;
+  background-color: rgb(104, 104, 226);
+
+  height: 50px;
+  border-radius: 5px;
+  display: flex;
+  padding-inline: 5px;
+}
+
+.todo .todo_name {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  width: 20%;
+}
+
+.todo .todo_name p {
+  color: white;
+}
+
+.todo .todo_desc {
+  width: 80%;
+  display: flex;
+  align-items: center;
+}
+
+.todo .todo_desc p {
+  color: white;
+}
+
+.todo .todo_arrow_down {
+  margin-left: auto;
+}
+
+.todo:hover {
+  cursor: pointer;
+  background-color: rgb(64, 64, 167);
+}
+
+.todo:active {
+  background-color: rgb(43, 43, 105);
+}
+
+.todo_open {
+  height: 200px;
+  padding-top: 5px;
+
+  width: 500px;
+  background-color: rgb(104, 104, 226);
+
+  border-radius: 5px;
+  display: flex;
+  padding-inline: 5px;
+}
+
+.todo_open .todo_name {
+  width: 20%;
+}
+
+.todo_open .todo_desc {
+  display: flex;
+  width: 80%;
+}
+
+.todo_open .todo_arrow_down {
+  margin-left: auto;
+}
+
+.todo_open .todo_arrow_down:hover {
+  cursor: pointer;
+}
+
+.todo_temp {
+  opacity: 50%;
+}
