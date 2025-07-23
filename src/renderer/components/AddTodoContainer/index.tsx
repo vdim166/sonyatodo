@@ -3,21 +3,49 @@ import { Button } from '../shared/Button';
 import { Input } from '../shared/Input';
 import { TodoProps } from '../Todo';
 import './styles.css';
+import { ipcSignals } from '../../classes/ipcSignals';
+import { useAppContext } from '../../hooks/useAppContext';
+
+// TODO:error handler
 
 type AddTodoContainerProps = {
   changeTempTodo: (props: TodoProps | null) => void;
+  closeModal: () => void;
 };
 
-export const AddTodoContainer = ({ changeTempTodo }: AddTodoContainerProps) => {
+export const AddTodoContainer = ({
+  changeTempTodo,
+  closeModal,
+}: AddTodoContainerProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleCreate = () => {};
+  const { setTodos } = useAppContext();
+
+  const handleCreate = async () => {
+    try {
+      if (name === '') return;
+
+      const data = await ipcSignals.saveData({
+        name,
+        desc: description,
+      });
+
+      if (data) {
+        setTodos(data);
+      }
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      closeModal();
+    }
+  };
 
   useEffect(() => {
     if (name !== '' || description !== '') {
       changeTempTodo({
         name,
+        desc: description,
       });
     } else {
       changeTempTodo(null);

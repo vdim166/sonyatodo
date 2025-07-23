@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../../components/shared/Button';
 import { Navbar } from '../../components/Navbar';
 import './styles.css';
 import { AddTodoContainer } from '../../components/AddTodoContainer';
 import { Todo, TodoProps } from '../../components/Todo';
+import { ipcSignals } from '../../classes/ipcSignals';
+import { useAppContext } from '../../hooks/useAppContext';
 
 export const Main = () => {
   const [showTodoBtn, setShowTodoBtn] = useState<boolean>(false);
-
   const [tempTodo, setTempTodo] = useState<TodoProps | null>(null);
+
+  const { todos } = useAppContext();
 
   const showAddTodo = () => {
     setShowTodoBtn((prev) => !prev);
-
     setTempTodo(null);
   };
 
@@ -25,14 +27,20 @@ export const Main = () => {
         </Button>
 
         {showTodoBtn && (
-          <AddTodoContainer changeTempTodo={(todo) => setTempTodo(todo)} />
+          <AddTodoContainer
+            changeTempTodo={(todo) => setTempTodo(todo)}
+            closeModal={() => {
+              setTempTodo(null);
+            }}
+          />
         )}
 
         <div className="todos">
-          {tempTodo !== null && <Todo isTemp name={tempTodo.name} />}
-          <Todo name="" />
-          <Todo name="" />
-          <Todo name="" />
+          {tempTodo !== null && <Todo isTemp {...tempTodo} />}
+          {todos.map((todo) => {
+            // TODO: todo.id
+            return <Todo {...todo} key={todo.name} />;
+          })}
         </div>
       </div>
     </div>

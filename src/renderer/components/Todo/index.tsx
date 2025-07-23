@@ -5,9 +5,10 @@ import './styles.css';
 export type TodoProps = {
   isTemp?: boolean;
   name: string;
+  desc: string;
 };
 
-export const Todo = ({ isTemp = false }: TodoProps) => {
+export const Todo = ({ name, desc, isTemp = false }: TodoProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => {
@@ -26,11 +27,11 @@ export const Todo = ({ isTemp = false }: TodoProps) => {
       onClick={handleOpen}
     >
       <div className="todo_name">
-        <p>Name....</p>
+        <p>{name}</p>
       </div>
 
       <div className="todo_desc">
-        <p>Desc....</p>
+        <p>{desc}</p>
 
         <div className="todo_arrow_down" onClick={handleClose}>
           <ArrowDown />

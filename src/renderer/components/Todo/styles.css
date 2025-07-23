@@ -2,7 +2,6 @@
   width: 500px;
   background-color: rgb(104, 104, 226);
 
-  height: 50px;
   border-radius: 5px;
   display: flex;
   padding-inline: 5px;
@@ -13,6 +12,8 @@
   display: flex;
   align-items: center;
   width: 20%;
+
+  height: 50px;
 }
 
 .todo .todo_name p {
@@ -43,8 +44,8 @@
 }
 
 .todo_open {
-  height: 200px;
-  padding-top: 5px;
+  /* height: 200px; */
+  padding-top: 10px;
 
   width: 500px;
   background-color: rgb(104, 104, 226);
@@ -56,11 +57,14 @@
 
 .todo_open .todo_name {
   width: 20%;
+  color: white;
 }
 
 .todo_open .todo_desc {
   display: flex;
   width: 80%;
+  color: white;
+  height: 100px;
 }
 
 .todo_open .todo_arrow_down {

@@ -14,6 +14,49 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import fs from 'fs';
+import { IPC_SIGNALS } from './consts';
+
+const userDataPath = app.getPath('userData');
+const filePath = path.join(userDataPath, 'data.json');
+
+// TODO: maybe use async functions later
+
+function saveDataToFile(data: string) {
+  try {
+    const prevData = loadDataFromFile();
+
+    fs.writeFileSync(filePath, JSON.stringify([data, ...prevData]), 'utf-8');
+    console.log('Данные успешно сохранены!');
+
+    const newData = loadDataFromFile();
+
+    return newData;
+  } catch (err) {
+    console.error('Ошибка при сохранении файла:', err);
+  }
+}
+
+function loadDataFromFile() {
+  try {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(data);
+    }
+    return []; // или вернуть данные по умолчанию
+  } catch (err) {
+    console.error('Ошибка при чтении файла:', err);
+    return [];
+  }
+}
+
+ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data) => {
+  return saveDataToFile(data);
+});
+
+ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
+  return loadDataFromFile();
+});
 
 class AppUpdater {
   constructor() {

@@ -3,14 +3,17 @@ import icon from '../../assets/icon.svg';
 import './App.css';
 import { Main } from './pages/Main';
 import { Alarm } from './pages/Alarm';
+import { AppContextProvider } from './contexts/AppContextProvider';
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/alarm" element={<Alarm />} />
-      </Routes>
-    </Router>
+    <AppContextProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/alarm" element={<Alarm />} />
+        </Routes>
+      </Router>
+    </AppContextProvider>
   );
 }
