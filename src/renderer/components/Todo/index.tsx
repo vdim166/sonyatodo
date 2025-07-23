@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowDown } from '../../icons/ArrowDown';
 import './styles.css';
+import { ActionMenu } from './ActionMenu';
 
 export type TodoProps = {
   isTemp?: boolean;
@@ -32,11 +33,15 @@ export const Todo = ({ name, desc, isTemp = false }: TodoProps) => {
 
       <div className="todo_desc">
         <p>{desc}</p>
+      </div>
 
+      {isOpen && <ActionMenu />}
+
+      {!isTemp && (
         <div className="todo_arrow_down" onClick={handleClose}>
           <ArrowDown />
         </div>
-      </div>
+      )}
     </div>
   );
 };

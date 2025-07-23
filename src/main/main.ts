@@ -16,15 +16,22 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import fs from 'fs';
 import { IPC_SIGNALS } from './consts';
+import { generateRandomId } from './utils/generateRandomId';
+import { saveTodoType } from '../renderer/classes/ipcSignals';
 
 const userDataPath = app.getPath('userData');
 const filePath = path.join(userDataPath, 'data.json');
 
+console.log('userDataPath', userDataPath);
+
 // TODO: maybe use async functions later
 
-function saveDataToFile(data: string) {
+function saveDataToFile(data: saveTodoType) {
   try {
     const prevData = loadDataFromFile();
+    const id = generateRandomId();
+
+    data.id = id;
 
     fs.writeFileSync(filePath, JSON.stringify([data, ...prevData]), 'utf-8');
     console.log('Данные успешно сохранены!');

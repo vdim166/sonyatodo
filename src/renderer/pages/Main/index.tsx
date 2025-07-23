@@ -37,10 +37,15 @@ export const Main = () => {
 
         <div className="todos">
           {tempTodo !== null && <Todo isTemp {...tempTodo} />}
-          {todos.map((todo) => {
-            // TODO: todo.id
-            return <Todo {...todo} key={todo.name} />;
-          })}
+          {todos.length > 0
+            ? todos.map((todo) => {
+                return <Todo {...todo} key={todo.id} />;
+              })
+            : !tempTodo && (
+                <div className="no_todo_yet">
+                  <p>У вас пока что нет дел</p>
+                </div>
+              )}
         </div>
       </div>
     </div>

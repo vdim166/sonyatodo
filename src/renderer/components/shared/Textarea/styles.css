@@ -1,0 +1,30 @@
+.active_textarea {
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  resize: none;
+  border-radius: 4px;
+
+  height: 100px;
+  border: none;
+}
+
+.active_textarea::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.active_textarea::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.active_textarea::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.active_textarea::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}

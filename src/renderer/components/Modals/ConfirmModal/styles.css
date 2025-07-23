@@ -1,0 +1,13 @@
+.confirm_modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 25px;
+}
+
+.confirm_buttons {
+  display: flex;
+  gap: 25px;
+}

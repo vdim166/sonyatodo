@@ -1,0 +1,18 @@
+.todo_action_menu {
+  position: absolute;
+
+  bottom: 5px;
+  right: 5px;
+}
+
+.todo_action_menu_cross:hover {
+  cursor: pointer;
+}
+
+.todo_action_menu_cross:hover path {
+  fill: rgb(122, 128, 223);
+}
+
+.todo_action_menu_cross:active path {
+  fill: rgb(79, 86, 179);
+}

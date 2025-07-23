@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-import { TodoProps } from '../components/Todo';
 import { saveTodoType } from '../classes/ipcSignals';
 
 export type AppContextType = {

@@ -5,10 +5,11 @@
   border-radius: 5px;
   display: flex;
   padding-inline: 5px;
+  gap: 10px;
+  padding-block: 5px;
 }
 
 .todo .todo_name {
-  height: 100%;
   display: flex;
   align-items: center;
   width: 20%;
@@ -24,6 +25,28 @@
   width: 80%;
   display: flex;
   align-items: center;
+
+  overflow: auto hidden;
+  max-width: 75%;
+}
+
+.todo .todo_desc::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.todo .todo_desc::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.todo .todo_desc::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.todo .todo_desc::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
 }
 
 .todo .todo_desc p {
@@ -44,7 +67,6 @@
 }
 
 .todo_open {
-  /* height: 200px; */
   padding-top: 10px;
 
   width: 500px;
@@ -53,6 +75,7 @@
   border-radius: 5px;
   display: flex;
   padding-inline: 5px;
+  position: relative;
 }
 
 .todo_open .todo_name {
@@ -65,6 +88,28 @@
   width: 80%;
   color: white;
   height: 100px;
+
+  overflow: auto hidden;
+  max-width: 75%;
+}
+
+.todo_open .todo_desc::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.todo_open .todo_desc::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.todo_open .todo_desc::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.todo_open .todo_desc::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
 }
 
 .todo_open .todo_arrow_down {
@@ -77,4 +122,28 @@
 
 .todo_temp {
   opacity: 50%;
+  padding-block: 5px;
+}
+
+.todo_temp .todo_name {
+  overflow: auto hidden;
+}
+
+.todo_temp .todo_name::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.todo_temp .todo_name::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.todo_temp .todo_name::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.todo_temp .todo_name::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
 }

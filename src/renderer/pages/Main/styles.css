@@ -40,3 +40,12 @@
 .todos::-webkit-scrollbar-thumb:hover {
   background: rgb(88, 88, 228); /* Hover effect */
 }
+
+.no_todo_yet {
+  display: flex;
+  justify-content: center;
+}
+
+.no_todo_yet p {
+  font-size: 20px;
+}

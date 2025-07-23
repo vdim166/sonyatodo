@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import './styles.css';
-import { useEffect, useState } from 'react';
 
 type Tab = {
   name: string;

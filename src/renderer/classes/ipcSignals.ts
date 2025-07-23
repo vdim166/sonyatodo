@@ -1,6 +1,7 @@
 export type saveTodoType = {
   name: string;
   desc: string;
+  id: string;
 };
 
 class IpcSignals {

@@ -3,8 +3,9 @@ import { Button } from '../shared/Button';
 import { Input } from '../shared/Input';
 import { TodoProps } from '../Todo';
 import './styles.css';
-import { ipcSignals } from '../../classes/ipcSignals';
+import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { useAppContext } from '../../hooks/useAppContext';
+import { Textarea } from '../shared/Textarea';
 
 // TODO:error handler
 
@@ -29,7 +30,7 @@ export const AddTodoContainer = ({
       const data = await ipcSignals.saveData({
         name,
         desc: description,
-      });
+      } as saveTodoType);
 
       if (data) {
         setTodos(data);
@@ -37,6 +38,8 @@ export const AddTodoContainer = ({
     } catch (error) {
       console.log('error', error);
     } finally {
+      setName('');
+      setDescription('');
       closeModal();
     }
   };
@@ -62,7 +65,7 @@ export const AddTodoContainer = ({
         </div>
         <div className="add_todo_container_inputs_option">
           <p>Description:</p>
-          <Input
+          <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
