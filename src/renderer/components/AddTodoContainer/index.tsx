@@ -49,7 +49,7 @@ export const AddTodoContainer = ({
       changeTempTodo({
         name,
         desc: description,
-      });
+      } as TodoProps);
     } else {
       changeTempTodo(null);
     }

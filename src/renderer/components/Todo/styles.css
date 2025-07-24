@@ -147,3 +147,7 @@
 .todo_temp .todo_name::-webkit-scrollbar-thumb:hover {
   background: rgb(88, 88, 228); /* Hover effect */
 }
+
+.todo_hover_open .todo_name {
+  height: 70px;
+}

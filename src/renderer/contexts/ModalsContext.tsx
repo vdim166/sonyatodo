@@ -1,10 +1,13 @@
 import { createContext } from 'react';
+import { confirmModalType } from '../components/Modals/types/confirmModalType';
 
 export const MODALS = { CONFIRM: 'CONFIRM' } as const;
 
+type OpenModalPropsType = confirmModalType;
+
 export type OpenModalType = {
   type: keyof typeof MODALS;
-  props: any;
+  props: OpenModalPropsType;
 };
 
 export type ModalsContextType = {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowDown } from '../../icons/ArrowDown';
 import './styles.css';
 import { ActionMenu } from './ActionMenu';
@@ -7,10 +7,13 @@ export type TodoProps = {
   isTemp?: boolean;
   name: string;
   desc: string;
+  id: string;
 };
 
-export const Todo = ({ name, desc, isTemp = false }: TodoProps) => {
+export const Todo = ({ name, desc, isTemp = false, id }: TodoProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const [hover, setHover] = useState(false);
 
   const handleOpen = () => {
     if (!isOpen) setIsOpen(true);
@@ -24,8 +27,10 @@ export const Todo = ({ name, desc, isTemp = false }: TodoProps) => {
 
   return (
     <div
-      className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''}`}
+      className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''} ${!isOpen && hover ? 'todo_hover_open' : ''}`}
       onClick={handleOpen}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
       <div className="todo_name">
         <p>{name}</p>
@@ -35,7 +40,7 @@ export const Todo = ({ name, desc, isTemp = false }: TodoProps) => {
         <p>{desc}</p>
       </div>
 
-      {isOpen && <ActionMenu />}
+      {isOpen && <ActionMenu id={id} />}
 
       {!isTemp && (
         <div className="todo_arrow_down" onClick={handleClose}>

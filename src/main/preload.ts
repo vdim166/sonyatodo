@@ -30,6 +30,9 @@ const electronHandler = {
     loadData() {
       return ipcRenderer.invoke(IPC_SIGNALS.LOAD_DATA_BASE);
     },
+    deleteData(id: string) {
+      return ipcRenderer.invoke(IPC_SIGNALS.DELETE_DATA, id);
+    },
   },
 };
 

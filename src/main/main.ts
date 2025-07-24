@@ -48,12 +48,26 @@ function loadDataFromFile() {
   try {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(data);
+      return JSON.parse(data) as saveTodoType[];
     }
     return []; // или вернуть данные по умолчанию
   } catch (err) {
     console.error('Ошибка при чтении файла:', err);
     return [];
+  }
+}
+
+function deleteDataFromFile(id: string) {
+  try {
+    const data = loadDataFromFile();
+    const newData = data.filter((item) => item.id !== id);
+
+    fs.writeFileSync(filePath, JSON.stringify(newData), 'utf-8');
+    console.log('Данные успешно удалены!');
+
+    return newData;
+  } catch (error) {
+    console.log('error', error);
   }
 }
 
@@ -63,6 +77,10 @@ ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data) => {
 
 ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
   return loadDataFromFile();
+});
+
+ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (event, id) => {
+  return deleteDataFromFile(id);
 });
 
 class AppUpdater {

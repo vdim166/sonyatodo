@@ -3,6 +3,9 @@
 
   bottom: 5px;
   right: 5px;
+
+  display: flex;
+  gap: 5px;
 }
 
 .todo_action_menu_cross:hover {
@@ -15,4 +18,13 @@
 
 .todo_action_menu_cross:active path {
   fill: rgb(79, 86, 179);
+}
+
+.todo_success:hover path {
+  fill: rgb(38, 218, 38);
+  cursor: pointer;
+}
+
+.todo_success:active path {
+  fill: rgb(55, 155, 55);
 }

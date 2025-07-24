@@ -1,4 +1,5 @@
 export const IPC_SIGNALS = {
   LOAD_DATA_BASE: 'LOAD_DATA_BASE',
   SAVE_DATA_BASE: 'SAVE_DATA_BASE',
+  DELETE_DATA: 'DELETE_DATA',
 } as const;

@@ -15,6 +15,16 @@ class IpcSignals {
     const data: saveTodoType[] = await window.electron.ipcRenderer.loadData();
     return data;
   };
+
+  deleteData = async (id: string) => {
+    try {
+      const result: saveTodoType[] =
+        await window.electron.ipcRenderer.deleteData(id);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
 
 export const ipcSignals = new IpcSignals();

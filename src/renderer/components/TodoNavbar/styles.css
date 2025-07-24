@@ -1,0 +1,26 @@
+.todo_navbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+
+  gap: 5px;
+}
+
+.todo_navbar p {
+  font-size: 20px;
+}
+
+.todo_navbar_option:hover {
+  cursor: pointer;
+  color: rgb(50, 50, 163);
+}
+
+.todo_navbar_option:active {
+  color: rgb(28, 28, 107);
+}
+
+.todo_navbar_option.selected p {
+  text-decoration: underline;
+}
