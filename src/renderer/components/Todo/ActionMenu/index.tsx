@@ -27,7 +27,17 @@ export const ActionMenu = ({ id }: ActionMenuProps) => {
     }
   };
 
-  const handleDoneJob = async () => {};
+  const handleDoneJob = async () => {
+    try {
+      const data = await ipcSignals.doneJob(id);
+
+      if (data) {
+        setTodos(data);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   return (
     <div className="todo_action_menu">

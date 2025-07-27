@@ -1,9 +1,12 @@
 // preload.ts
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { IPC_SIGNALS } from './consts';
+import { saveTodoType } from '../renderer/classes/ipcSignals';
+import { DatabaseType } from './classes/Database';
 
 // Типы для каналов IPC
-export type Channels = 'ipc-example' | 'save-json' | 'load-json';
+
+export type Channels = keyof typeof IPC_SIGNALS;
 
 const electronHandler = {
   ipcRenderer: {
@@ -24,14 +27,17 @@ const electronHandler = {
     },
 
     // Новые методы для работы с JSON
-    saveData(data: unknown) {
+    saveData(data: saveTodoType): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.SAVE_DATA_BASE, data);
     },
-    loadData() {
+    loadData(): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.LOAD_DATA_BASE);
     },
-    deleteData(id: string) {
+    deleteData(id: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.DELETE_DATA, id);
+    },
+    doneJob(id: string): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.DONE_JOB, id);
     },
   },
 };

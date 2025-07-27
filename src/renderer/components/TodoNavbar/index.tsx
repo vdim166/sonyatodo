@@ -21,6 +21,7 @@ export const TodoNavbar = ({
                 TODO_NAVBAR_PAGES[key as keyof typeof TODO_NAVBAR_PAGES],
               );
             }}
+            key={key}
           >
             <p>{key}</p>
           </div>

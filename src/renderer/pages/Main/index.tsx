@@ -27,6 +27,22 @@ export const Main = () => {
     setTempTodo(null);
   };
 
+  console.log('todos', todos);
+
+  const currentTodos = todos.filter((todo) => {
+    console.log('currentPage', currentPage, todo);
+
+    if (currentPage === TODO_NAVBAR_PAGES.TODO) {
+      return !todo.done;
+    } else if (currentPage === TODO_NAVBAR_PAGES.DONE) {
+      if (todo.done) return true;
+    } else {
+      return false;
+    }
+  });
+
+  console.log('currentTodos', currentTodos);
+
   return (
     <div className="main_page">
       <Navbar />
@@ -49,11 +65,11 @@ export const Main = () => {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />
-          {currentPage === TODO_NAVBAR_PAGES.TODO ? (
+          {currentPage === TODO_NAVBAR_PAGES.TODO && (
             <div className="todos">
               {tempTodo !== null && <Todo isTemp {...tempTodo} />}
-              {todos.length > 0
-                ? todos.map((todo) => {
+              {currentTodos.length > 0
+                ? currentTodos.map((todo) => {
                     return <Todo {...todo} key={todo.id} />;
                   })
                 : !tempTodo && (
@@ -62,8 +78,20 @@ export const Main = () => {
                     </div>
                   )}
             </div>
-          ) : (
-            <div></div>
+          )}
+
+          {currentPage === TODO_NAVBAR_PAGES.DONE && (
+            <div>
+              {currentTodos.length > 0
+                ? currentTodos.map((todo) => {
+                    return <Todo {...todo} key={todo.id} />;
+                  })
+                : !tempTodo && (
+                    <div className="no_todo_yet">
+                      <p>У вас пока что нет дел</p>
+                    </div>
+                  )}
+            </div>
           )}
         </div>
       </div>

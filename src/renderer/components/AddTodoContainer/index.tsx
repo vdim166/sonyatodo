@@ -30,6 +30,7 @@ export const AddTodoContainer = ({
       const data = await ipcSignals.saveData({
         name,
         desc: description,
+        done: false,
       } as saveTodoType);
 
       if (data) {

@@ -14,74 +14,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import fs from 'fs';
 import { IPC_SIGNALS } from './consts';
-import { generateRandomId } from './utils/generateRandomId';
-import { saveTodoType } from '../renderer/classes/ipcSignals';
-
-const userDataPath = app.getPath('userData');
-const filePath = path.join(userDataPath, 'data.json');
-
-console.log('userDataPath', userDataPath);
-
-// TODO: maybe use async functions later
-
-function saveDataToFile(data: saveTodoType) {
-  try {
-    const prevData = loadDataFromFile();
-    const id = generateRandomId();
-
-    data.id = id;
-
-    fs.writeFileSync(filePath, JSON.stringify([data, ...prevData]), 'utf-8');
-    console.log('Данные успешно сохранены!');
-
-    const newData = loadDataFromFile();
-
-    return newData;
-  } catch (err) {
-    console.error('Ошибка при сохранении файла:', err);
-  }
-}
-
-function loadDataFromFile() {
-  try {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(data) as saveTodoType[];
-    }
-    return []; // или вернуть данные по умолчанию
-  } catch (err) {
-    console.error('Ошибка при чтении файла:', err);
-    return [];
-  }
-}
-
-function deleteDataFromFile(id: string) {
-  try {
-    const data = loadDataFromFile();
-    const newData = data.filter((item) => item.id !== id);
-
-    fs.writeFileSync(filePath, JSON.stringify(newData), 'utf-8');
-    console.log('Данные успешно удалены!');
-
-    return newData;
-  } catch (error) {
-    console.log('error', error);
-  }
-}
-
-ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data) => {
-  return saveDataToFile(data);
-});
-
-ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
-  return loadDataFromFile();
-});
-
-ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (event, id) => {
-  return deleteDataFromFile(id);
-});
+import { database } from './classes/Database';
 
 class AppUpdater {
   constructor() {
@@ -93,10 +27,20 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data) => {
+  return database.saveDataToFile(data);
+});
+
+ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
+  return database.loadDataFromFile();
+});
+
+ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (event, id) => {
+  return database.deleteDataFromFile(id);
+});
+
+ipcMain.handle(IPC_SIGNALS.DONE_JOB, (event, id) => {
+  return database.doneJob(id);
 });
 
 if (process.env.NODE_ENV === 'production') {

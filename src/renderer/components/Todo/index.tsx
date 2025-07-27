@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from '../../icons/ArrowDown';
 import './styles.css';
 import { ActionMenu } from './ActionMenu';
@@ -25,6 +25,19 @@ export const Todo = ({ name, desc, isTemp = false, id }: TodoProps) => {
     }
   };
 
+  const calcName = useMemo(() => {
+    if (isOpen) {
+      return name;
+    }
+
+    if (hover) {
+      return name.substring(0, 40);
+    }
+
+    if (!isOpen) return name.substring(0, 30);
+    return name;
+  }, [isOpen, hover, name]);
+
   return (
     <div
       className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''} ${!isOpen && hover ? 'todo_hover_open' : ''}`}
@@ -33,7 +46,7 @@ export const Todo = ({ name, desc, isTemp = false, id }: TodoProps) => {
       onMouseLeave={() => setHover(false)}
     >
       <div className="todo_name">
-        <p>{name}</p>
+        <p>{calcName}</p>
       </div>
 
       <div className="todo_desc">
