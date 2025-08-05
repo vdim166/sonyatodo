@@ -1,0 +1,44 @@
+.burger-menu {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 30px;
+}
+
+.burger-menu-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.burger-menu-container:hover {
+  cursor: pointer;
+}
+
+.burger-menu-container:hover .burger-menu-line {
+  background-color: rgb(87, 87, 221);
+}
+
+.burger-menu-container:active .burger-menu-line {
+  background-color: rgb(55, 55, 161);
+}
+.burger-menu-line {
+  background-color: black;
+  height: 4px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.burger-menu-modal {
+  position: absolute;
+  top: 15px;
+  left: 35px;
+
+  background-color: white;
+  border: 1.5px solid black;
+
+  width: 200px;
+  height: 500px;
+
+  border-radius: 5px;
+}

@@ -19,12 +19,3 @@
 .todo_action_menu_cross:active path {
   fill: rgb(79, 86, 179);
 }
-
-.todo_success:hover path {
-  fill: rgb(38, 218, 38);
-  cursor: pointer;
-}
-
-.todo_success:active path {
-  fill: rgb(55, 155, 55);
-}

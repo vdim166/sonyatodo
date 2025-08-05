@@ -12,7 +12,6 @@ export type TodoProps = {
 
 export const Todo = ({ name, desc, isTemp = false, id }: TodoProps) => {
   const [isOpen, setIsOpen] = useState(false);
-
   const [hover, setHover] = useState(false);
 
   const handleOpen = () => {

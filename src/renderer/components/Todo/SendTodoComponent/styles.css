@@ -1,0 +1,68 @@
+.todo_success:hover path {
+  fill: rgb(38, 218, 38);
+  cursor: pointer;
+}
+
+.todo_success:active path {
+  fill: rgb(55, 155, 55);
+}
+
+.todo_success_modal_container {
+  position: relative;
+}
+
+.todo_success_modal {
+  position: absolute;
+  top: auto;
+  bottom: 25px;
+  right: 15px;
+
+  background-color: white;
+
+  padding: 5px;
+  border: 2px solid black;
+  border-radius: 5px;
+
+  max-height: 50px;
+  overflow: auto auto;
+
+  max-width: 75px;
+  min-width: 75px;
+}
+
+.todo_success_modal::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.todo_success_modal::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.todo_success_modal::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.todo_success_modal::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
+
+.todo_success_modal_option {
+  padding-block: 2px;
+  padding-inline: 3px;
+  border-radius: 5px;
+}
+
+.todo_success_modal_option:hover {
+  cursor: pointer;
+  background: rgb(107, 107, 236);
+}
+
+.todo_success_modal_option:active {
+  background: rgb(45, 45, 138);
+
+  color: white;
+}

@@ -36,8 +36,8 @@ const electronHandler = {
     deleteData(id: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.DELETE_DATA, id);
     },
-    doneJob(id: string): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.DONE_JOB, id);
+    moveTo(id: string, newTab: string): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.MOVE_TO, id, newTab);
     },
   },
 };

@@ -27,20 +27,20 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data) => {
-  return database.saveDataToFile(data);
+ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data, projectName) => {
+  return database.saveDataToFile(data, projectName);
 });
 
 ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
   return database.loadDataFromFile();
 });
 
-ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (event, id) => {
-  return database.deleteDataFromFile(id);
+ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (event, id, projectName) => {
+  return database.deleteDataFromFile(id, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.DONE_JOB, (event, id) => {
-  return database.doneJob(id);
+ipcMain.handle(IPC_SIGNALS.MOVE_TO, (event, id, newTab, projectName) => {
+  return database.moveTo(id, newTab, projectName);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -138,7 +138,8 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    await database.checkForDataFile();
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

@@ -4,7 +4,9 @@ export type saveTodoType = {
   name: string;
   desc: string;
   id: string;
-  done: boolean;
+
+  tabs: string[];
+  currentTab: string;
 };
 
 class IpcSignals {
@@ -16,7 +18,6 @@ class IpcSignals {
   loadData = async (projectName = 'main') => {
     const data = await window.electron.ipcRenderer.loadData();
 
-    if (!data[projectName]) return [];
     return data[projectName];
   };
 
@@ -25,8 +26,8 @@ class IpcSignals {
     return result[projectName];
   };
 
-  doneJob = async (id: string, projectName = 'main') => {
-    const result = await window.electron.ipcRenderer.doneJob(id);
+  moveTo = async (id: string, newTab: string, projectName = 'main') => {
+    const result = await window.electron.ipcRenderer.moveTo(id, newTab);
     return result[projectName];
   };
 }

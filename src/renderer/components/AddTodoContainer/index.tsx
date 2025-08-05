@@ -21,7 +21,7 @@ export const AddTodoContainer = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { setTodos } = useAppContext();
+  const { setTodos, currentPage } = useAppContext();
 
   const handleCreate = async () => {
     try {
@@ -30,11 +30,11 @@ export const AddTodoContainer = ({
       const data = await ipcSignals.saveData({
         name,
         desc: description,
-        done: false,
+        currentTab: currentPage,
       } as saveTodoType);
 
       if (data) {
-        setTodos(data);
+        setTodos(data.todos);
       }
     } catch (error) {
       console.log('error', error);
@@ -62,7 +62,15 @@ export const AddTodoContainer = ({
         <h1>Добавьте дело</h1>
         <div className="add_todo_container_inputs_option">
           <p>Name:</p>
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.code === 'Enter') {
+                handleCreate();
+              }
+            }}
+          />
         </div>
         <div className="add_todo_container_inputs_option">
           <p>Description:</p>

@@ -7,7 +7,7 @@ import { generateRandomId } from '../utils/generateRandomId';
 // TODO: maybe use async functions later
 
 export type DatabaseType = {
-  [key: string]: saveTodoType[];
+  [key: string]: { todos: saveTodoType[]; tabs: string[] };
 };
 
 class Database {
@@ -35,21 +35,10 @@ class Database {
       data.id = id;
 
       if (!prevData[projectName]) {
-        fs.writeFileSync(
-          this.filePath,
-          JSON.stringify({ [projectName]: [data], ...prevData }),
-          'utf-8',
-        );
+        prevData[projectName] = { todos: [data], tabs: ['TODO', 'DONE'] };
+        fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
       } else {
-        const newProject = [data, ...prevData[projectName]];
-
-        console.log('data', data);
-
-        console.log('newProject', newProject);
-
-        prevData[projectName] = newProject;
-
-        console.log('prevData', prevData);
+        prevData[projectName].todos.unshift(data);
 
         fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
       }
@@ -67,9 +56,9 @@ class Database {
   deleteDataFromFile = (id: string, projectName = 'main') => {
     try {
       const data = this.loadDataFromFile();
-      const newData = data[projectName].filter((item) => item.id !== id);
+      const newData = data[projectName].todos.filter((item) => item.id !== id);
 
-      data[projectName] = newData;
+      data[projectName].todos = newData;
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 
       return data;
@@ -80,22 +69,16 @@ class Database {
     }
   };
 
-  doneJob = (id: string, projectName = 'main') => {
+  moveTo = (id: string, tab: string, projectName = 'main') => {
     try {
       const data = this.loadDataFromFile();
 
-      const newProject = data[projectName].map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            done: true,
-          };
-        }
+      const index = data[projectName].todos.findIndex((item) => item.id === id);
 
-        return item;
-      });
+      if (index !== -1) {
+        data[projectName].todos[index].currentTab = tab;
+      }
 
-      data[projectName] = newProject;
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 
       return this.loadDataFromFile();
@@ -103,6 +86,41 @@ class Database {
       console.log('error', error);
 
       return {};
+    }
+  };
+
+  checkForDataFile = () => {
+    try {
+      if (!fs.existsSync(this.filePath)) {
+        fs.writeFileSync(this.filePath, JSON.stringify({ main: {} }), 'utf-8');
+      } else {
+        const data = fs.readFileSync(this.filePath, 'utf-8');
+
+        if (data.trim() === '') {
+          fs.writeFileSync(
+            this.filePath,
+            JSON.stringify({ main: { todos: [], tabs: ['TODO', 'DONE'] } }),
+            'utf-8',
+          );
+
+          return;
+        }
+
+        const parsedData = JSON.parse(data);
+
+        if (!parsedData['main']) {
+          fs.writeFileSync(
+            this.filePath,
+            JSON.stringify({
+              main: { todos: [], tabs: ['TODO', 'DONE'] },
+              ...parsedData,
+            }),
+            'utf-8',
+          );
+        }
+      }
+    } catch (err) {
+      console.error('Ошибка при проверке файла:', err);
     }
   };
 }
