@@ -29,6 +29,16 @@
   border-radius: 10px;
 }
 
+@keyframes burger-menu-modal-animation {
+  from {
+    height: 0px;
+  }
+
+  to {
+    height: 60px;
+  }
+}
+
 .burger-menu-modal {
   position: absolute;
   top: 15px;
@@ -38,7 +48,38 @@
   border: 1.5px solid black;
 
   width: 200px;
-  height: 500px;
+  height: 60px;
 
   border-radius: 5px;
+
+  animation: 0.5s ease-out burger-menu-modal-animation;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.burger-menu-modal-option {
+  width: 80%;
+  background-color: rgb(110, 110, 212);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.burger-menu-modal-option:hover {
+  cursor: pointer;
+
+  background-color: rgb(85, 85, 151);
+}
+
+.burger-menu-modal-option:active {
+  cursor: pointer;
+
+  background-color: rgb(58, 58, 110);
 }

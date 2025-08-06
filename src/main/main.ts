@@ -43,6 +43,10 @@ ipcMain.handle(IPC_SIGNALS.MOVE_TO, (event, id, newTab, projectName) => {
   return database.moveTo(id, newTab, projectName);
 });
 
+ipcMain.handle(IPC_SIGNALS.ADD_TAB, (event, name, projectName) => {
+  return database.addTab(name, projectName);
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

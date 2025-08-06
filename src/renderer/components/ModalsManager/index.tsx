@@ -1,6 +1,7 @@
 import { MODALS } from '../../contexts/ModalsContext';
 import { useModalsContext } from '../../hooks/useModalsContext';
 import { ConfirmModal } from '../Modals/ConfirmModal';
+import { TabsContructor } from '../Modals/TabsContructor';
 import { confirmModalType } from '../Modals/types/confirmModalType';
 import { UniversalWrapper } from '../Modals/UniversalWrapper';
 
@@ -13,6 +14,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <ConfirmModal {...(modalState.props as confirmModalType)} />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.TABS_CONSTRUCTOR) {
+    return (
+      <UniversalWrapper>
+        <TabsContructor />
       </UniversalWrapper>
     );
   }

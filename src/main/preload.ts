@@ -27,17 +27,25 @@ const electronHandler = {
     },
 
     // Новые методы для работы с JSON
-    saveData(data: saveTodoType): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.SAVE_DATA_BASE, data);
+    saveData(data: saveTodoType, projectName: string): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.SAVE_DATA_BASE, data, projectName);
     },
     loadData(): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.LOAD_DATA_BASE);
     },
-    deleteData(id: string): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.DELETE_DATA, id);
+    deleteData(id: string, projectName: string): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.DELETE_DATA, id, projectName);
     },
-    moveTo(id: string, newTab: string): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.MOVE_TO, id, newTab);
+    moveTo(
+      id: string,
+      newTab: string,
+      projectName: string,
+    ): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.MOVE_TO, id, newTab, projectName);
+    },
+
+    addTab(name: string, projectName: string): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.ADD_TAB, name, projectName);
     },
   },
 };

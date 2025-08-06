@@ -1,0 +1,147 @@
+.tabs_contructor_main {
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+.tabs_container {
+  display: flex;
+
+  height: 75px;
+
+  position: relative;
+  justify-content: center;
+}
+
+.tabs_container_tabs {
+  display: flex;
+  gap: 5px;
+  /* justify-content: center; */
+
+  overflow: auto hidden;
+
+  max-width: 500px;
+
+  padding-inline: 15px;
+}
+
+.tabs_container_tabs::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 4px;
+}
+
+.tabs_container_tabs::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.tabs_container_tabs::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.tabs_container_tabs::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
+
+.tabs_container_option {
+  padding: 5px;
+  background-color: rgb(98, 98, 199);
+  color: white;
+  border-radius: 5px;
+  height: 24px;
+
+  margin-top: 38px;
+}
+
+@keyframes tabs_container_option_move {
+  from {
+    transform: rotate(0deg);
+    font-size: 18px;
+  }
+  to {
+    transform: rotate(5deg);
+    font-size: 19px;
+  }
+}
+
+.tabs_container_option:hover {
+  cursor: pointer;
+  background-color: rgb(71, 71, 163);
+  animation: 0.1s linear tabs_container_option_move;
+  transform: rotate(5deg);
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.tabs_container_option p {
+  font-size: 17px;
+}
+
+.tabs_title {
+  font-size: 25px;
+  text-align: center;
+}
+
+.tabs_contructor_buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.new_tab {
+  position: absolute;
+
+  top: 0;
+  left: 15px;
+
+  padding: 5px;
+  background-color: rgb(98, 98, 199);
+  color: white;
+  border-radius: 5px;
+  height: 24px;
+  transform: rotate(5deg);
+}
+
+.tabs_contructor_input_container {
+  margin-top: 10px;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  align-items: center;
+}
+
+.tabs_container_option_invisible {
+  padding: 5px;
+  background-color: rgb(98, 98, 199);
+  color: white;
+  border-radius: 5px;
+  height: 24px;
+
+  margin-top: auto;
+
+  opacity: 0;
+}
+
+@keyframes saving_animation {
+  0% {
+    top: 0px;
+    transform: rotate(5deg);
+  }
+  100% {
+    top: 38px;
+    transform: rotate(0deg);
+  }
+}
+
+.new_tab.saving_animation {
+  animation: 1s ease-in-out saving_animation;
+}
+
+.new_tab.temp_class {
+  top: 38px;
+  transform: rotate(0deg);
+}

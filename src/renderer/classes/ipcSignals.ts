@@ -11,7 +11,10 @@ export type saveTodoType = {
 
 class IpcSignals {
   saveData = async (data: saveTodoType, projectName = 'main') => {
-    const result = await window.electron.ipcRenderer.saveData(data);
+    const result = await window.electron.ipcRenderer.saveData(
+      data,
+      projectName,
+    );
     return result[projectName];
   };
 
@@ -22,12 +25,28 @@ class IpcSignals {
   };
 
   deleteData = async (id: string, projectName = 'main') => {
-    const result = await window.electron.ipcRenderer.deleteData(id);
+    const result = await window.electron.ipcRenderer.deleteData(
+      id,
+      projectName,
+    );
     return result[projectName];
   };
 
   moveTo = async (id: string, newTab: string, projectName = 'main') => {
-    const result = await window.electron.ipcRenderer.moveTo(id, newTab);
+    const result = await window.electron.ipcRenderer.moveTo(
+      id,
+      newTab,
+      projectName,
+    );
+    return result[projectName];
+  };
+
+  addTab = async (tabName: string, projectName = 'main') => {
+    const result = await window.electron.ipcRenderer.addTab(
+      tabName,
+      projectName,
+    );
+
     return result[projectName];
   };
 }

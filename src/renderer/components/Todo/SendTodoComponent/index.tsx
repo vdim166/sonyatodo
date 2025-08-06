@@ -12,7 +12,7 @@ export const SendTodoComponent = ({
 }: SendTodoComponentType) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { tabs, currentPage } = useAppContext();
+  const { tabs, currentTab } = useAppContext();
 
   const onClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     setIsOpen((prev) => !prev);
@@ -25,7 +25,7 @@ export const SendTodoComponent = ({
       {isOpen && (
         <div className="todo_success_modal">
           {tabs
-            .filter((tab) => tab !== currentPage)
+            .filter((tab) => tab !== currentTab)
             .map((tab) => {
               return (
                 <div

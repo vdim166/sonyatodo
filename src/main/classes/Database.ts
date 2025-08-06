@@ -123,6 +123,21 @@ class Database {
       console.error('Ошибка при проверке файла:', err);
     }
   };
+
+  addTab = (name: string, projectName = 'main') => {
+    try {
+      const data = this.loadDataFromFile();
+
+      data[projectName].tabs.unshift(name);
+
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+
+      return this.loadDataFromFile();
+    } catch (error) {
+      console.log('error', error);
+      return {};
+    }
+  };
 }
 
 export const database = new Database();

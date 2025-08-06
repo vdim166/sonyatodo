@@ -12,7 +12,7 @@ export const Main = () => {
   const [showTodoBtn, setShowTodoBtn] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<TodoProps | null>(null);
 
-  const { todos, currentPage } = useAppContext();
+  const { todos, currentTab } = useAppContext();
 
   const showAddTodo = () => {
     setShowTodoBtn((prev) => !prev);
@@ -24,7 +24,7 @@ export const Main = () => {
   }
 
   const currentTodos = todos.filter((todo) => {
-    return currentPage === todo.currentTab;
+    return currentTab === todo.currentTab;
   });
 
   return (

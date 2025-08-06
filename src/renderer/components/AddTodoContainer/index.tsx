@@ -21,7 +21,7 @@ export const AddTodoContainer = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { setTodos, currentPage } = useAppContext();
+  const { setTodos, currentTab } = useAppContext();
 
   const handleCreate = async () => {
     try {
@@ -30,7 +30,7 @@ export const AddTodoContainer = ({
       const data = await ipcSignals.saveData({
         name,
         desc: description,
-        currentTab: currentPage,
+        currentTab,
       } as saveTodoType);
 
       if (data) {
@@ -63,6 +63,7 @@ export const AddTodoContainer = ({
         <div className="add_todo_container_inputs_option">
           <p>Name:</p>
           <Input
+            autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {

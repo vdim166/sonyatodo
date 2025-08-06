@@ -2,7 +2,7 @@ import { useAppContext } from '../../hooks/useAppContext';
 import './styles.css';
 
 export const TodoNavbar = () => {
-  const { currentPage, tabs, setCurrentPage } = useAppContext();
+  const { currentTab, tabs, setCurrentTab } = useAppContext();
 
   if (!tabs) {
     return <div>Loading...</div>;
@@ -12,9 +12,9 @@ export const TodoNavbar = () => {
       {tabs.map((key) => {
         return (
           <div
-            className={`todo_navbar_option ${currentPage === key ? 'selected' : ''}`}
+            className={`todo_navbar_option ${currentTab === key ? 'selected' : ''}`}
             onClick={() => {
-              setCurrentPage(key);
+              setCurrentTab(key);
             }}
             key={key}
           >

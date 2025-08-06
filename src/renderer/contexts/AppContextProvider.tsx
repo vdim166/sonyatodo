@@ -9,7 +9,11 @@ type AppContextProviderProps = {
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [todos, setTodos] = useState<saveTodoType[] | null>(null);
   const [tabs, setTabs] = useState<string[] | null>(null);
-  const [currentPage, setCurrentPage] = useState<string | null>(null);
+  const [currentTab, setCurrentTab] = useState<string | null>(null);
+
+  const [currentProjectName, setCurrentProjectName] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -23,8 +27,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
           setTabs(data.tabs);
 
           if (data.tabs.length > 0) {
-            setCurrentPage(data.tabs[0]);
+            setCurrentTab(data.tabs[0]);
           }
+
+          setCurrentProjectName('main');
         }
       } catch (error) {
         console.log('error', error);
@@ -39,8 +45,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTodos,
     tabs,
     setTabs,
-    currentPage,
-    setCurrentPage,
+    currentTab,
+    setCurrentTab,
+    currentProjectName,
+    setCurrentProjectName,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

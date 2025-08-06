@@ -6,8 +6,10 @@ export type AppContextType = {
   setTodos: React.Dispatch<React.SetStateAction<saveTodoType[] | null>>;
   tabs: string[] | null;
   setTabs: React.Dispatch<React.SetStateAction<string[] | null>>;
-  currentPage: string | null;
-  setCurrentPage: React.Dispatch<React.SetStateAction<string | null>>;
+  currentTab: string | null;
+  setCurrentTab: React.Dispatch<React.SetStateAction<string | null>>;
+  currentProjectName: string | null;
+  setCurrentProjectName: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const init = {
@@ -15,8 +17,10 @@ const init = {
   setTodos: () => {},
   tabs: null,
   setTabs: () => {},
-  currentPage: null,
-  setCurrentPage: () => {},
+  currentTab: null,
+  setCurrentTab: () => {},
+  currentProjectName: null,
+  setCurrentProjectName: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(init);
