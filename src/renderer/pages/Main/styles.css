@@ -14,7 +14,7 @@
 
   overflow: auto;
 
-  max-height: calc(100vh - 44px - 17px - 20px - 40px);
+  max-height: calc(100vh - 44px - 17px - 20px);
 }
 
 .things_to_do::-webkit-scrollbar {

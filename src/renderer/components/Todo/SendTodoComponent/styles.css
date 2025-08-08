@@ -24,9 +24,9 @@
   border-radius: 5px;
 
   max-height: 50px;
-  overflow: auto auto;
+  overflow: hidden auto;
 
-  max-width: 75px;
+  max-width: 155px;
   min-width: 75px;
 }
 

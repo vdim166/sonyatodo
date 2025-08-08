@@ -47,6 +47,21 @@ const electronHandler = {
     addTab(name: string, projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.ADD_TAB, name, projectName);
     },
+
+    deleteTabs(tabs: string[], projectName: string): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.DELETE_TABS, tabs, projectName);
+    },
+
+    changeTabsOrder(
+      tabs: string[],
+      projectName: string,
+    ): Promise<DatabaseType> {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.CHANGE_TABS_ORDER,
+        tabs,
+        projectName,
+      );
+    },
   },
 };
 

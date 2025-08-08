@@ -138,6 +138,37 @@ class Database {
       return {};
     }
   };
+
+  deleteTabs = (tabs: string[], projectName = 'main') => {
+    try {
+      const data = this.loadDataFromFile();
+
+      const newData = data[projectName].tabs.filter(
+        (todoName) => !tabs.includes(todoName),
+      );
+
+      data[projectName].tabs = newData;
+
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+      return this.loadDataFromFile();
+    } catch (error) {
+      console.log('error', error);
+      return {};
+    }
+  };
+
+  changeTabsOrder = (tabs: string[], projectName = 'main') => {
+    try {
+      const data = this.loadDataFromFile();
+      data[projectName].tabs = tabs;
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+
+      return this.loadDataFromFile();
+    } catch (error) {
+      console.log('error', error);
+      return {};
+    }
+  };
 }
 
 export const database = new Database();

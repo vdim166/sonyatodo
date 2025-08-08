@@ -53,9 +53,12 @@
   border-radius: 5px;
   height: 24px;
 
-  margin-top: 38px;
+  margin-top: 36px;
 }
 
+.tabs_container_option.selected {
+  background-color: rgb(38, 38, 133);
+}
 @keyframes tabs_container_option_move {
   from {
     transform: rotate(0deg);
@@ -144,4 +147,10 @@
 .new_tab.temp_class {
   top: 38px;
   transform: rotate(0deg);
+}
+
+.tabs_contructor_delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }

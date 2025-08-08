@@ -47,6 +47,14 @@ ipcMain.handle(IPC_SIGNALS.ADD_TAB, (event, name, projectName) => {
   return database.addTab(name, projectName);
 });
 
+ipcMain.handle(IPC_SIGNALS.DELETE_TABS, (event, tabs, projectName) => {
+  return database.deleteTabs(tabs, projectName);
+});
+
+ipcMain.handle(IPC_SIGNALS.CHANGE_TABS_ORDER, (event, tabs, projectName) => {
+  return database.changeTabsOrder(tabs, projectName);
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

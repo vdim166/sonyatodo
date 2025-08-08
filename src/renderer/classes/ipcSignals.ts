@@ -49,6 +49,24 @@ class IpcSignals {
 
     return result[projectName];
   };
+
+  deleteTabs = async (tabs: string[], projectName = 'main') => {
+    const result = await window.electron.ipcRenderer.deleteTabs(
+      tabs,
+      projectName,
+    );
+
+    return result[projectName].tabs;
+  };
+
+  changeTabsOrder = async (tabs: string[], projectName = 'main') => {
+    const result = await window.electron.ipcRenderer.changeTabsOrder(
+      tabs,
+      projectName,
+    );
+
+    return result[projectName].tabs;
+  };
 }
 
 export const ipcSignals = new IpcSignals();

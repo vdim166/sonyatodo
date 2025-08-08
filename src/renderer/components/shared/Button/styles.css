@@ -15,3 +15,8 @@
   cursor: pointer;
   background-color: rgb(82, 82, 197);
 }
+
+.active_btn:disabled {
+  background-color: rgb(112, 112, 117);
+  cursor: auto;
+}
