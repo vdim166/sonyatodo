@@ -6,6 +6,7 @@ import './styles.css';
 import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { useAppContext } from '../../hooks/useAppContext';
 import { Textarea } from '../shared/Textarea';
+import { CancelButton } from '../shared/CancelButton';
 
 // TODO:error handler
 
@@ -45,6 +46,11 @@ export const AddTodoContainer = ({
     }
   };
 
+  const clearHandle = () => {
+    setName('');
+    setDescription('');
+  };
+
   useEffect(() => {
     if (name !== '' || description !== '') {
       changeTempTodo({
@@ -81,7 +87,15 @@ export const AddTodoContainer = ({
           />
         </div>
 
-        <Button onClick={handleCreate}>Создать</Button>
+        <Button onClick={handleCreate} disabled={name.length === 0}>
+          Создать
+        </Button>
+        <CancelButton
+          onClick={clearHandle}
+          disabled={name.length === 0 && description.length === 0}
+        >
+          Очистить
+        </CancelButton>
       </div>
     </div>
   );

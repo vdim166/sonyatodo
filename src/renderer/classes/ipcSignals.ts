@@ -67,6 +67,15 @@ class IpcSignals {
 
     return result[projectName].tabs;
   };
+
+  changeTab = async (tab: saveTodoType, projectName = 'main') => {
+    const result = await window.electron.ipcRenderer.changeTab(
+      tab,
+      projectName,
+    );
+
+    return result[projectName].todos;
+  };
 }
 
 export const ipcSignals = new IpcSignals();

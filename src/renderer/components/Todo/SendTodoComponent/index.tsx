@@ -31,6 +31,7 @@ export const SendTodoComponent = ({
                 <div
                   className="todo_success_modal_option"
                   onClick={handleSendTodo(tab)}
+                  key={tab}
                 >
                   {tab}
                 </div>

@@ -62,6 +62,13 @@ const electronHandler = {
         projectName,
       );
     },
+
+    changeTab(
+      todo: { name: string; desc: string },
+      projectName: string,
+    ): Promise<DatabaseType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.CHANGE_TAB, todo, projectName);
+    },
   },
 };
 

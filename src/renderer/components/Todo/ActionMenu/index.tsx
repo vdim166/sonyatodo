@@ -3,15 +3,16 @@ import { MODALS } from '../../../contexts/ModalsContext';
 import { useAppContext } from '../../../hooks/useAppContext';
 import { useModalsContext } from '../../../hooks/useModalsContext';
 import { Cross } from '../../../icons/Cross';
-import { SuccessSvg } from '../../../icons/SuccessSvg';
+import { Pencil } from '../../../icons/Pencil';
 import { SendTodoComponent } from '../SendTodoComponent';
 import './styles.css';
 
 type ActionMenuProps = {
   id: string;
+  openEditModal: () => void;
 };
 
-export const ActionMenu = ({ id }: ActionMenuProps) => {
+export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
   const { openModal, closeModal } = useModalsContext();
   const { setTodos } = useAppContext();
 
@@ -42,6 +43,9 @@ export const ActionMenu = ({ id }: ActionMenuProps) => {
 
   return (
     <div className="todo_action_menu">
+      <div className="todo_action_edit" onClick={openEditModal}>
+        <Pencil />
+      </div>
       <SendTodoComponent handleSendTodo={handleSendTodo} />
       <div
         className="todo_action_menu_cross"

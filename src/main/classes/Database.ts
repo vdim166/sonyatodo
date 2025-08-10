@@ -169,6 +169,33 @@ class Database {
       return {};
     }
   };
+
+  changeTab = (tab: saveTodoType, projectName = 'main') => {
+    try {
+      const data = this.loadDataFromFile();
+
+      const findIndex = data[projectName].todos.findIndex(
+        (todo) => todo.id === tab.id,
+      );
+
+      if (findIndex !== -1) {
+        if (data[projectName].todos[findIndex].name !== tab.name) {
+          data[projectName].todos[findIndex].name = tab.name;
+        }
+
+        if (data[projectName].todos[findIndex].desc !== tab.desc) {
+          data[projectName].todos[findIndex].desc = tab.desc;
+        }
+
+        fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+      }
+
+      return this.loadDataFromFile();
+    } catch (error) {
+      console.log('error', error);
+      return {};
+    }
+  };
 }
 
 export const database = new Database();

@@ -55,6 +55,10 @@ ipcMain.handle(IPC_SIGNALS.CHANGE_TABS_ORDER, (event, tabs, projectName) => {
   return database.changeTabsOrder(tabs, projectName);
 });
 
+ipcMain.handle(IPC_SIGNALS.CHANGE_TAB, (event, todo, projectName) => {
+  return database.changeTab(todo, projectName);
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

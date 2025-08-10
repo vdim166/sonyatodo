@@ -7,14 +7,20 @@ import { Todo, TodoProps } from '../../components/Todo';
 import { useAppContext } from '../../hooks/useAppContext';
 import { TodoNavbar } from '../../components/TodoNavbar';
 import { BurgerMenu } from '../../components/BurgerMenu';
+import { editModalState, EditTodoModal } from '../../components/EditTodoModal';
 
 export const Main = () => {
   const [showTodoBtn, setShowTodoBtn] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<TodoProps | null>(null);
 
+  const [showEditModal, setShowEditModal] = useState<editModalState | null>(
+    null,
+  );
+
   const { todos, currentTab } = useAppContext();
 
   const showAddTodo = () => {
+    setShowEditModal(null);
     setShowTodoBtn((prev) => !prev);
     setTempTodo(null);
   };
@@ -45,13 +51,33 @@ export const Main = () => {
           />
         )}
 
+        {showEditModal && (
+          <EditTodoModal
+            state={showEditModal}
+            setShowEditModal={setShowEditModal}
+          />
+        )}
+
         <div>
           <TodoNavbar />
           <div className="todos">
             {tempTodo !== null && <Todo isTemp {...tempTodo} />}
             {currentTodos.length > 0
               ? currentTodos.map((todo) => {
-                  return <Todo {...todo} key={todo.id} />;
+                  return (
+                    <Todo
+                      {...todo}
+                      openEditModal={() => {
+                        setShowTodoBtn(false);
+                        setShowEditModal({
+                          current: structuredClone(todo),
+                          forRecover: structuredClone(todo),
+                        });
+                      }}
+                      editState={showEditModal}
+                      key={todo.id}
+                    />
+                  );
                 })
               : !tempTodo && (
                   <div className="no_todo_yet">

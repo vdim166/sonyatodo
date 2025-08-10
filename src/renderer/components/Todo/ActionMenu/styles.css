@@ -19,3 +19,15 @@
 .todo_action_menu_cross:active path {
   fill: rgb(79, 86, 179);
 }
+
+.todo_action_edit {
+  cursor: pointer;
+}
+
+.todo_action_edit:hover path {
+  fill: rgb(67, 67, 196);
+}
+
+.todo_action_edit:active path {
+  fill: rgb(39, 39, 126);
+}

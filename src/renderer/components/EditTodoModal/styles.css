@@ -1,0 +1,4 @@
+.edit_todo_modal {
+  display: flex;
+  flex-direction: column;
+}
