@@ -1,0 +1,64 @@
+.project_holder {
+  position: absolute;
+  top: 30px;
+  left: 5px;
+}
+
+.project_holder_title {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.project_holder_container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 5px;
+
+  max-height: 200px;
+  overflow: hidden auto;
+}
+
+.project_holder_container::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 4px;
+}
+
+.project_holder_container::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.project_holder_container::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.project_holder_container::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
+
+.project_holder_container_option {
+  font-size: 18px;
+
+  background-color: rgb(99, 99, 226);
+  color: white;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.project_holder_container_option:hover {
+  cursor: pointer;
+  background-color: rgb(106, 106, 202);
+}
+
+.project_holder_container_option:active {
+  cursor: pointer;
+  background-color: rgb(63, 63, 146);
+}
+
+.project_holder_container_option.selected {
+  background-color: rgb(63, 63, 146);
+}

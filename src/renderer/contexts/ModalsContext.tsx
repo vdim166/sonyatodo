@@ -4,6 +4,7 @@ import { confirmModalType } from '../components/Modals/types/confirmModalType';
 export const MODALS = {
   CONFIRM: 'CONFIRM',
   TABS_CONSTRUCTOR: 'TABS_CONSTRUCTOR',
+  PROJECT_CONSTRUCTOR: 'PROJECT_CONSTRUCTOR',
 } as const;
 
 type OpenModalPropsType = confirmModalType;

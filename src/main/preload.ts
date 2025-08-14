@@ -43,15 +43,12 @@ const electronHandler = {
     ): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.MOVE_TO, id, newTab, projectName);
     },
-
     addTab(name: string, projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.ADD_TAB, name, projectName);
     },
-
     deleteTabs(tabs: string[], projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.DELETE_TABS, tabs, projectName);
     },
-
     changeTabsOrder(
       tabs: string[],
       projectName: string,
@@ -62,12 +59,23 @@ const electronHandler = {
         projectName,
       );
     },
-
     changeTab(
       todo: { name: string; desc: string },
       projectName: string,
     ): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.CHANGE_TAB, todo, projectName);
+    },
+
+    fetchProjects(): Promise<string[]> {
+      return ipcRenderer.invoke(IPC_SIGNALS.FETCH_PROJECTS);
+    },
+
+    addProject(name: string): Promise<string[]> {
+      return ipcRenderer.invoke(IPC_SIGNALS.ADD_PROJECT, name);
+    },
+
+    deleteProject(name: string): Promise<string[]> {
+      return ipcRenderer.invoke(IPC_SIGNALS.DELETE_PROJECT, name);
     },
   },
 };

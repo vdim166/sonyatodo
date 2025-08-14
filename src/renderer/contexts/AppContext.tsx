@@ -10,6 +10,8 @@ export type AppContextType = {
   setCurrentTab: React.Dispatch<React.SetStateAction<string | null>>;
   currentProjectName: string | null;
   setCurrentProjectName: React.Dispatch<React.SetStateAction<string | null>>;
+  projects: string[] | null;
+  setProjects: React.Dispatch<React.SetStateAction<string[] | null>>;
 };
 
 const init = {
@@ -21,6 +23,8 @@ const init = {
   setCurrentTab: () => {},
   currentProjectName: null,
   setCurrentProjectName: () => {},
+  projects: null,
+  setProjects: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(init);

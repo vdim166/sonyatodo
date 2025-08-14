@@ -8,6 +8,7 @@ import { useAppContext } from '../../hooks/useAppContext';
 import { TodoNavbar } from '../../components/TodoNavbar';
 import { BurgerMenu } from '../../components/BurgerMenu';
 import { editModalState, EditTodoModal } from '../../components/EditTodoModal';
+import { ProjectsHolder } from '../../components/ProjectsHolder';
 
 export const Main = () => {
   const [showTodoBtn, setShowTodoBtn] = useState<boolean>(false);
@@ -36,6 +37,7 @@ export const Main = () => {
   return (
     <div className="main_page">
       <BurgerMenu />
+      <ProjectsHolder />
       <Navbar />
       <div className="things_to_do">
         <Button onClick={showAddTodo}>

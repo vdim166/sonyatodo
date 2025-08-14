@@ -12,6 +12,10 @@ export const BurgerMenu = () => {
     openModal({ type: MODALS.TABS_CONSTRUCTOR, props: null });
   };
 
+  const projectConstructorHandle = () => {
+    openModal({ type: MODALS.PROJECT_CONSTRUCTOR, props: null });
+  };
+
   return (
     <div className="burger-menu">
       <div
@@ -30,6 +34,12 @@ export const BurgerMenu = () => {
             onClick={tabsContructorHandle}
           >
             Tabs constructor
+          </button>
+          <button
+            className="burger-menu-modal-option"
+            onClick={projectConstructorHandle}
+          >
+            Project constructor
           </button>
         </div>
       )}

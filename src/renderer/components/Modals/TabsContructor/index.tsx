@@ -6,7 +6,7 @@ import './styles.css';
 import { Input } from '../../shared/Input';
 import { ipcSignals } from '../../../classes/ipcSignals';
 
-export const TabsContructor = () => {
+export const TabsConstructor = () => {
   const { tabs, setTabs, currentProjectName } = useAppContext();
 
   const { closeModal } = useModalsContext();

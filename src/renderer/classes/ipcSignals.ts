@@ -76,6 +76,21 @@ class IpcSignals {
 
     return result[projectName].todos;
   };
+
+  fetchProjects = async () => {
+    const data = await window.electron.ipcRenderer.fetchProjects();
+    return data;
+  };
+
+  addProject = async (name: string) => {
+    const result = await window.electron.ipcRenderer.addProject(name);
+    return result;
+  };
+
+  deleteProject = async (name: string) => {
+    const result = await window.electron.ipcRenderer.deleteProject(name);
+    return result;
+  };
 }
 
 export const ipcSignals = new IpcSignals();

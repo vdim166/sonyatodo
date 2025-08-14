@@ -19,6 +19,29 @@
 
 .todo .todo_name p {
   color: white;
+
+  max-height: 50px;
+  overflow: hidden auto;
+}
+
+.todo .todo_name p::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.todo .todo_name p::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.todo .todo_name p::-webkit-scrollbar-thumb {
+  background: rgb(83, 83, 218); /* Thumb color */
+  border-radius: 5px;
+}
+
+.todo .todo_name p::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
 }
 
 .todo .todo_desc {

@@ -59,6 +59,18 @@ ipcMain.handle(IPC_SIGNALS.CHANGE_TAB, (event, todo, projectName) => {
   return database.changeTab(todo, projectName);
 });
 
+ipcMain.handle(IPC_SIGNALS.FETCH_PROJECTS, (_event) => {
+  return database.fetchProjects();
+});
+
+ipcMain.handle(IPC_SIGNALS.ADD_PROJECT, (event, name) => {
+  return database.addProject(name);
+});
+
+ipcMain.handle(IPC_SIGNALS.DELETE_PROJECT, (event, name) => {
+  return database.deleteProject(name);
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

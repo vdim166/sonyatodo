@@ -1,0 +1,44 @@
+.project_constructor_container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  margin-bottom: 15px;
+}
+
+.project_constructor_container_option {
+  font-size: 18px;
+
+  background-color: rgb(99, 99, 226);
+  color: white;
+  border-radius: 4px;
+  text-align: center;
+
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.project_constructor_container_option_cross {
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.project_constructor_container_option_cross:hover path {
+  stroke: red;
+}
+
+.project_constructor_container_option_cross:active path {
+  stroke: rgb(161, 51, 51);
+}
+
+.project_constructor_adding {
+  display: flex;
+  flex-direction: column;
+  max-width: 200px;
+  gap: 15px;
+  margin-bottom: 20px;
+}

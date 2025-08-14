@@ -196,6 +196,48 @@ class Database {
       return {};
     }
   };
+
+  fetchProjects = () => {
+    try {
+      const data = this.loadDataFromFile();
+      return Object.keys(data);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  addProject = (name: string) => {
+    try {
+      const data = this.loadDataFromFile();
+
+      data[name] = { todos: [], tabs: ['TODO', 'DONE'] };
+
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+
+      return Object.keys(this.loadDataFromFile());
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+  deleteProject = (name: string) => {
+    try {
+      const data = this.loadDataFromFile();
+      const newData: DatabaseType = {};
+      const keys = Object.keys(data);
+
+      for (let i = 0; i < keys.length; ++i) {
+        if (name !== keys[i]) {
+          newData[keys[i]] = data[keys[i]];
+        }
+      }
+
+      fs.writeFileSync(this.filePath, JSON.stringify(newData), 'utf-8');
+      return Object.keys(this.loadDataFromFile());
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 }
 
 export const database = new Database();
