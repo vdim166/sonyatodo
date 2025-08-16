@@ -14,11 +14,12 @@ type ActionMenuProps = {
 
 export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
   const { openModal, closeModal } = useModalsContext();
-  const { setTodos } = useAppContext();
+  const { setTodos, currentProjectName } = useAppContext();
 
   const handleDelete = async () => {
     try {
-      const data = await ipcSignals.deleteData(id);
+      if (!currentProjectName) return;
+      const data = await ipcSignals.deleteData(id, currentProjectName);
       if (data) {
         setTodos(data.todos);
       }
@@ -31,7 +32,8 @@ export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
 
   const handleSendTodo = (tab: string) => async () => {
     try {
-      const data = await ipcSignals.moveTo(id, tab);
+      if (!currentProjectName) return;
+      const data = await ipcSignals.moveTo(id, tab, currentProjectName);
 
       if (data) {
         setTodos(data.todos);

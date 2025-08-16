@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useAppContext } from '../../../hooks/useAppContext';
 import { useModalsContext } from '../../../hooks/useModalsContext';
 import { Button } from '../../shared/Button';
@@ -18,9 +18,7 @@ export const TabsConstructor = () => {
   const [tempClass, setTempClass] = useState(false);
 
   const [selectedTodos, setSelectedTodos] = useState<string[]>([]);
-
   const [isDragging, setIsDragging] = useState<string | null>(null);
-
   const [isOrderChanged, setIsOrderChanged] = useState(false);
 
   useLayoutEffect(() => {
@@ -86,6 +84,19 @@ export const TabsConstructor = () => {
       console.log('error', error);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        saveHandle();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [value, isOrderChanged]);
 
   return (
     <div className="tabs_contructor_main">

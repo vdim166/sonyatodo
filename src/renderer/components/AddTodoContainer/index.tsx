@@ -22,17 +22,21 @@ export const AddTodoContainer = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { setTodos, currentTab } = useAppContext();
+  const { setTodos, currentTab, currentProjectName } = useAppContext();
 
   const handleCreate = async () => {
     try {
+      if (!currentProjectName) return;
       if (name === '') return;
 
-      const data = await ipcSignals.saveData({
-        name,
-        desc: description,
-        currentTab,
-      } as saveTodoType);
+      const data = await ipcSignals.saveData(
+        {
+          name,
+          desc: description,
+          currentTab,
+        } as saveTodoType,
+        currentProjectName,
+      );
 
       if (data) {
         setTodos(data.todos);
@@ -84,6 +88,11 @@ export const AddTodoContainer = ({
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.code === 'Enter') {
+                handleCreate();
+              }
+            }}
           />
         </div>
 

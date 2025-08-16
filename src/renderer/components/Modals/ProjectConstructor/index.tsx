@@ -14,8 +14,6 @@ export const ProjectConstructor = () => {
 
   const { closeModal } = useModalsContext();
 
-  if (!projects) return;
-
   const handleAddingProject = async () => {
     try {
       const data = await ipcSignals.addProject(value);
@@ -26,6 +24,21 @@ export const ProjectConstructor = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        handleAddingProject();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [value]);
+
+  if (!projects) return;
 
   const handleDeleteProject = (name: string) => async () => {
     try {

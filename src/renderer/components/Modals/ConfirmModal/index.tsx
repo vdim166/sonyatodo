@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useModalsContext } from '../../../hooks/useModalsContext';
 import { Button } from '../../shared/Button';
 import { confirmModalType } from '../types/confirmModalType';
@@ -9,6 +10,19 @@ export const ConfirmModal = ({
   action,
 }: confirmModalType) => {
   const { closeModal } = useModalsContext();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        action();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="confirm_modal">

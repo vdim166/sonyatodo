@@ -56,8 +56,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('currentProjectName', currentProjectName);
-
     const loadTodos = async () => {
       try {
         setTodos(null);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../shared/Button';
 import { Input } from '../shared/Input';
 import { Textarea } from '../shared/Textarea';
@@ -51,6 +51,19 @@ export const EditTodoModal = ({
   const isChangeDisabled =
     state.current.name === state.forRecover.name &&
     state.current.desc === state.forRecover.desc;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        handleChange();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [state]);
 
   return (
     <div className="edit_todo_modal">
