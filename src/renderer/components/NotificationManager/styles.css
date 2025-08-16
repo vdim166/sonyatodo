@@ -1,0 +1,11 @@
+.notification_manager {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0px;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

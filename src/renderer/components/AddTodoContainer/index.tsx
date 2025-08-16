@@ -7,6 +7,7 @@ import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { useAppContext } from '../../hooks/useAppContext';
 import { Textarea } from '../shared/Textarea';
 import { CancelButton } from '../shared/CancelButton';
+import { useNotificationManager } from '../../hooks/useNotificationManager';
 
 // TODO:error handler
 
@@ -24,6 +25,8 @@ export const AddTodoContainer = ({
 
   const { setTodos, currentTab, currentProjectName } = useAppContext();
 
+  const { addNotification } = useNotificationManager();
+
   const handleCreate = async () => {
     try {
       if (!currentProjectName) return;
@@ -40,6 +43,8 @@ export const AddTodoContainer = ({
 
       if (data) {
         setTodos(data.todos);
+
+        addNotification('Задача добавлена');
       }
     } catch (error) {
       console.log('error', error);

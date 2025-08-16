@@ -6,10 +6,10 @@ import './styles.css';
 import { Input } from '../../shared/Input';
 import { ipcSignals } from '../../../classes/ipcSignals';
 import { TabType } from '../../../contexts/AppContext';
+import { useNotificationManager } from '../../../hooks/useNotificationManager';
 
 export const TabsConstructor = () => {
   const { tabs, setTabs, currentProjectName } = useAppContext();
-
   const { closeModal } = useModalsContext();
 
   const [value, setValue] = useState<string>('');

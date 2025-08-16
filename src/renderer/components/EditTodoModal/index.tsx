@@ -6,6 +6,7 @@ import './styles.css';
 import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { CancelButton } from '../shared/CancelButton';
 import { useAppContext } from '../../hooks/useAppContext';
+import { useNotificationManager } from '../../hooks/useNotificationManager';
 
 export type editModalState = {
   current: saveTodoType;
@@ -22,6 +23,8 @@ export const EditTodoModal = ({
   setShowEditModal,
 }: EditTodoModalProps) => {
   const { setTodos, currentProjectName } = useAppContext();
+
+  const { addNotification } = useNotificationManager();
 
   const backHandle = () => {
     setShowEditModal((prev) => {
@@ -43,6 +46,7 @@ export const EditTodoModal = ({
       setTodos(response);
 
       setShowEditModal(null);
+      addNotification('Задача изменена');
     } catch (error) {
       console.log('error', error);
     }
@@ -83,11 +87,6 @@ export const EditTodoModal = ({
                 return newState;
               })
             }
-            onKeyDown={(e) => {
-              if (e.code === 'Enter') {
-                handleChange();
-              }
-            }}
           />
         </div>
         <div className="add_todo_container_inputs_option">
@@ -111,6 +110,9 @@ export const EditTodoModal = ({
         </Button>
         <CancelButton onClick={backHandle} disabled={isChangeDisabled}>
           Вернуть обратно
+        </CancelButton>
+        <CancelButton onClick={() => setShowEditModal(null)}>
+          Закрыть
         </CancelButton>
       </div>
     </div>
