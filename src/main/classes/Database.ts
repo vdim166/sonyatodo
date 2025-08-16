@@ -3,11 +3,12 @@ import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { generateRandomId } from '../utils/generateRandomId';
+import { TabType } from '../../renderer/contexts/AppContext';
 
 // TODO: maybe use async functions later
 
 export type DatabaseType = {
-  [key: string]: { todos: saveTodoType[]; tabs: string[] };
+  [key: string]: { todos: saveTodoType[]; tabs: TabType[] };
 };
 
 class Database {
@@ -35,7 +36,10 @@ class Database {
       data.id = id;
 
       if (!prevData[projectName]) {
-        prevData[projectName] = { todos: [data], tabs: ['TODO', 'DONE'] };
+        prevData[projectName] = {
+          todos: [data],
+          tabs: [{ name: 'TODO' }, { name: 'DONE' }],
+        };
         fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
       } else {
         prevData[projectName].todos.unshift(data);
@@ -128,7 +132,7 @@ class Database {
     try {
       const data = this.loadDataFromFile();
 
-      data[projectName].tabs.unshift(name);
+      data[projectName].tabs.unshift({ name });
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 
@@ -139,13 +143,15 @@ class Database {
     }
   };
 
-  deleteTabs = (tabs: string[], projectName = 'main') => {
+  deleteTabs = (tabs: TabType[], projectName = 'main') => {
     try {
       const data = this.loadDataFromFile();
 
-      const newData = data[projectName].tabs.filter(
-        (todoName) => !tabs.includes(todoName),
-      );
+      const newData = data[projectName].tabs.filter((tab) => {
+        const found = tabs.find((t) => t.name === tab.name);
+
+        return !found;
+      });
 
       data[projectName].tabs = newData;
 
@@ -157,7 +163,7 @@ class Database {
     }
   };
 
-  changeTabsOrder = (tabs: string[], projectName = 'main') => {
+  changeTabsOrder = (tabs: TabType[], projectName = 'main') => {
     try {
       const data = this.loadDataFromFile();
       data[projectName].tabs = tabs;
@@ -210,7 +216,7 @@ class Database {
     try {
       const data = this.loadDataFromFile();
 
-      data[name] = { todos: [], tabs: ['TODO', 'DONE'] };
+      data[name] = { todos: [], tabs: [{ name: 'TODO' }, { name: 'DONE' }] };
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 

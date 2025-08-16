@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ipcSignals, saveTodoType } from '../classes/ipcSignals';
-import { AppContext, AppContextType } from './AppContext';
+import { AppContext, AppContextType, TabType } from './AppContext';
 
 type AppContextProviderProps = {
   children: React.ReactNode;
@@ -8,37 +8,16 @@ type AppContextProviderProps = {
 
 export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [todos, setTodos] = useState<saveTodoType[] | null>(null);
-  const [tabs, setTabs] = useState<string[] | null>(null);
+  const [tabs, setTabs] = useState<TabType[] | null>(null);
   const [currentTab, setCurrentTab] = useState<string | null>(null);
 
   const [currentProjectName, setCurrentProjectName] = useState<string | null>(
-    null,
+    'main',
   );
 
   const [projects, setProjects] = useState<string[] | null>(null);
 
   useEffect(() => {
-    const loadTodos = async () => {
-      try {
-        console.log('loading todos...');
-
-        const data = await ipcSignals.loadData();
-
-        if (data) {
-          setTodos(data.todos);
-          setTabs(data.tabs);
-
-          if (data.tabs.length > 0) {
-            setCurrentTab(data.tabs[0]);
-          }
-
-          setCurrentProjectName('main');
-        }
-      } catch (error) {
-        console.log('error', error);
-      }
-    };
-
     const fetchProjects = async () => {
       try {
         const data = await ipcSignals.fetchProjects();
@@ -51,7 +30,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
       }
     };
 
-    loadTodos();
     fetchProjects();
   }, []);
 
@@ -60,7 +38,6 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
       try {
         setTodos(null);
         setTabs(null);
-        console.log('loading todos...');
         if (!currentProjectName) return;
 
         const data = await ipcSignals.loadData(currentProjectName);
@@ -70,7 +47,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
           setTabs(data.tabs);
 
           if (data.tabs.length > 0) {
-            setCurrentTab(data.tabs[0]);
+            setCurrentTab(data.tabs[0].name);
           }
         }
       } catch (error) {

@@ -1,11 +1,15 @@
 import { createContext } from 'react';
 import { saveTodoType } from '../classes/ipcSignals';
 
+export type TabType = {
+  name: string;
+};
+
 export type AppContextType = {
   todos: saveTodoType[] | null;
   setTodos: React.Dispatch<React.SetStateAction<saveTodoType[] | null>>;
-  tabs: string[] | null;
-  setTabs: React.Dispatch<React.SetStateAction<string[] | null>>;
+  tabs: TabType[] | null;
+  setTabs: React.Dispatch<React.SetStateAction<TabType[] | null>>;
   currentTab: string | null;
   setCurrentTab: React.Dispatch<React.SetStateAction<string | null>>;
   currentProjectName: string | null;

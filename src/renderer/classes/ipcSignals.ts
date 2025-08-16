@@ -1,11 +1,11 @@
-import { DatabaseType } from '../../main/classes/Database';
+import { TabType } from '../contexts/AppContext';
 
 export type saveTodoType = {
   name: string;
   desc: string;
   id: string;
 
-  tabs: string[];
+  tabs: { name: string; id: string }[];
   currentTab: string;
 };
 
@@ -50,7 +50,7 @@ class IpcSignals {
     return result[projectName];
   };
 
-  deleteTabs = async (tabs: string[], projectName = 'main') => {
+  deleteTabs = async (tabs: TabType[], projectName = 'main') => {
     const result = await window.electron.ipcRenderer.deleteTabs(
       tabs,
       projectName,
@@ -59,7 +59,7 @@ class IpcSignals {
     return result[projectName].tabs;
   };
 
-  changeTabsOrder = async (tabs: string[], projectName = 'main') => {
+  changeTabsOrder = async (tabs: TabType[], projectName = 'main') => {
     const result = await window.electron.ipcRenderer.changeTabsOrder(
       tabs,
       projectName,

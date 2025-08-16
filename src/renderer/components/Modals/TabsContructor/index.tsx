@@ -5,6 +5,7 @@ import { Button } from '../../shared/Button';
 import './styles.css';
 import { Input } from '../../shared/Input';
 import { ipcSignals } from '../../../classes/ipcSignals';
+import { TabType } from '../../../contexts/AppContext';
 
 export const TabsConstructor = () => {
   const { tabs, setTabs, currentProjectName } = useAppContext();
@@ -17,20 +18,17 @@ export const TabsConstructor = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [tempClass, setTempClass] = useState(false);
 
-  const [selectedTodos, setSelectedTodos] = useState<string[]>([]);
-  const [isDragging, setIsDragging] = useState<string | null>(null);
+  const [selectedTodos, setSelectedTodos] = useState<TabType[]>([]);
+  const [isDragging, setIsDragging] = useState<TabType | null>(null);
   const [isOrderChanged, setIsOrderChanged] = useState(false);
 
   useLayoutEffect(() => {
     if (isSaving === false && value !== '') {
       const handle = async () => {
         if (!currentProjectName) return;
-        await ipcSignals.addTab(value, currentProjectName);
+        const tabs = await ipcSignals.addTab(value, currentProjectName);
 
-        setTabs((prev) => {
-          if (!prev) return null;
-          return [value, ...prev];
-        });
+        setTabs(tabs.tabs);
 
         setTempClass(false);
         setisAdding(false);
@@ -154,7 +152,7 @@ export const TabsConstructor = () => {
                   }
                 }}
                 className={`tabs_container_option ${isIncludes ? 'selected' : ''}`}
-                key={tab}
+                key={tab.name}
                 onClick={() => {
                   if (isIncludes) {
                     setSelectedTodos((prev) => {
@@ -169,7 +167,7 @@ export const TabsConstructor = () => {
                   }
                 }}
               >
-                <p>{tab}</p>
+                <p>{tab.name}</p>
               </div>
             );
           })}

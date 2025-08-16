@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { IPC_SIGNALS } from './consts';
 import { saveTodoType } from '../renderer/classes/ipcSignals';
 import { DatabaseType } from './classes/Database';
+import { TabType } from '../renderer/contexts/AppContext';
 
 // Типы для каналов IPC
 
@@ -46,11 +47,11 @@ const electronHandler = {
     addTab(name: string, projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.ADD_TAB, name, projectName);
     },
-    deleteTabs(tabs: string[], projectName: string): Promise<DatabaseType> {
+    deleteTabs(tabs: TabType[], projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.DELETE_TABS, tabs, projectName);
     },
     changeTabsOrder(
-      tabs: string[],
+      tabs: TabType[],
       projectName: string,
     ): Promise<DatabaseType> {
       return ipcRenderer.invoke(

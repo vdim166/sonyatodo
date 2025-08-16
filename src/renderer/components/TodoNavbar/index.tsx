@@ -12,13 +12,13 @@ export const TodoNavbar = () => {
       {tabs.map((key) => {
         return (
           <div
-            className={`todo_navbar_option ${currentTab === key ? 'selected' : ''}`}
+            className={`todo_navbar_option ${currentTab === key.name ? 'selected' : ''}`}
             onClick={() => {
-              setCurrentTab(key);
+              setCurrentTab(key.name);
             }}
-            key={key}
+            key={key.name}
           >
-            <p>{key}</p>
+            <p>{key.name}</p>
           </div>
         );
       })}

@@ -25,15 +25,15 @@ export const SendTodoComponent = ({
       {isOpen && (
         <div className="todo_success_modal">
           {tabs
-            .filter((tab) => tab !== currentTab)
+            .filter((tab) => tab.name !== currentTab)
             .map((tab) => {
               return (
                 <div
                   className="todo_success_modal_option"
-                  onClick={handleSendTodo(tab)}
-                  key={tab}
+                  onClick={handleSendTodo(tab.name)}
+                  key={tab.name}
                 >
-                  {tab}
+                  {tab.name}
                 </div>
               );
             })}
