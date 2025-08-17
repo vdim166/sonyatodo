@@ -54,6 +54,66 @@ export const Todo = ({
     return name;
   }, [isOpen, hover, name, editState]);
 
+  const findLink = (value: string) => {
+    const first = value.indexOf('<a>');
+
+    if (first === -1) null;
+
+    const second = value.indexOf('</a>');
+    if (second === -1) null;
+    if (first < second) {
+      const word = value.substring(first + 3, second);
+
+      const textBefore = value.substring(0, first);
+
+      const newValue = value.replace(`<a>${word}</a>`, '');
+
+      return {
+        word,
+        value: newValue,
+        first,
+        second,
+        textBefore,
+      };
+    } else {
+      return null;
+    }
+  };
+
+  const parseDesc = (desc: string) => {
+    const components = [];
+
+    let currentValue = desc;
+
+    while (true) {
+      const result = findLink(currentValue);
+
+      if (!result) {
+        if (currentValue) {
+          components.push(currentValue);
+        }
+
+        break;
+      }
+
+      components.push(result.textBefore);
+      components.push(
+        <span
+          className="todo_link"
+          onClick={() => {
+            window.open(result.word, '_blank');
+          }}
+        >
+          {result.word}
+        </span>,
+      );
+
+      currentValue = result.value;
+    }
+
+    return components;
+  };
+
   return (
     <div
       className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''} ${!isOpen && hover ? 'todo_hover_open' : ''}`}
@@ -66,11 +126,11 @@ export const Todo = ({
       </div>
 
       <div className="todo_desc">
-        <p>
-          {editState && editState.forRecover.id === id
-            ? editState.current.desc
-            : desc}
-        </p>
+        {editState && editState.forRecover.id === id ? (
+          <p>editState.current.desc</p>
+        ) : (
+          <p>{parseDesc(desc)}</p>
+        )}
       </div>
 
       {!isTemp && isOpen && (

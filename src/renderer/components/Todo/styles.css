@@ -174,3 +174,18 @@
 .todo_hover_open .todo_name {
   height: 70px;
 }
+
+.todo_link {
+  color: rgb(53, 219, 231);
+  height: 16px;
+  margin-inline: 4px;
+}
+
+.todo_link:hover {
+  cursor: pointer;
+  color: rgb(53, 200, 211);
+}
+
+.todo_link:active {
+  color: rgb(41, 157, 165);
+}

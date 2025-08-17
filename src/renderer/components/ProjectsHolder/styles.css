@@ -47,6 +47,33 @@
   color: white;
   border-radius: 4px;
   text-align: center;
+
+  overflow: auto hidden;
+  max-width: 150px;
+}
+
+.project_holder_container_option::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 6px;
+}
+
+.project_holder_container_option:-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.project_holder_container_option::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.project_holder_container_option::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
+
+.project_holder_container_option p {
+  white-space: nowrap;
 }
 
 .project_holder_container_option:hover {

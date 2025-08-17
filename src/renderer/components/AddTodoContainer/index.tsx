@@ -8,8 +8,7 @@ import { useAppContext } from '../../hooks/useAppContext';
 import { Textarea } from '../shared/Textarea';
 import { CancelButton } from '../shared/CancelButton';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
-
-// TODO:error handler
+import { TextareaWithTools } from '../shared/TextareaWithTools';
 
 type AddTodoContainerProps = {
   changeTempTodo: (props: TodoProps | null) => void;
@@ -71,6 +70,19 @@ export const AddTodoContainer = ({
     }
   }, [name, description]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        handleCreate();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [name, description]);
+
   return (
     <div className="add_todo_container">
       <div className="add_todo_container_inputs">
@@ -81,23 +93,14 @@ export const AddTodoContainer = ({
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.code === 'Enter') {
-                handleCreate();
-              }
-            }}
           />
         </div>
         <div className="add_todo_container_inputs_option">
           <p>Description:</p>
-          <Textarea
+          <TextareaWithTools
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.code === 'Enter') {
-                handleCreate();
-              }
-            }}
+            setValue={setDescription}
           />
         </div>
 

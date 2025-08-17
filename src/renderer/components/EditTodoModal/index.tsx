@@ -7,6 +7,7 @@ import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { CancelButton } from '../shared/CancelButton';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
+import { TextareaWithTools } from '../shared/TextareaWithTools';
 
 export type editModalState = {
   current: saveTodoType;
@@ -91,7 +92,7 @@ export const EditTodoModal = ({
         </div>
         <div className="add_todo_container_inputs_option">
           <p>Description:</p>
-          <Textarea
+          <TextareaWithTools
             value={state.current.desc}
             onChange={(e) =>
               setShowEditModal((prev) => {
@@ -102,6 +103,15 @@ export const EditTodoModal = ({
                 return newState;
               })
             }
+            setValue={(value) => {
+              setShowEditModal((prev) => {
+                if (!prev) return null;
+                const newState = { ...prev };
+                newState.current.desc = value;
+
+                return newState;
+              });
+            }}
           />
         </div>
 

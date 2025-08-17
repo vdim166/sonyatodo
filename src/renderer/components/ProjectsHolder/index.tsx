@@ -22,7 +22,7 @@ export const ProjectsHolder = () => {
               className={`project_holder_container_option ${currentProjectName === project ? 'selected' : ''}`}
               key={project}
             >
-              {project}
+              <p>{project}</p>
             </div>
           );
         })}

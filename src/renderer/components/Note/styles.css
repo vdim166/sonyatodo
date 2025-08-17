@@ -16,3 +16,7 @@
   animation: slideFromRight 0.3s ease-in-out;
   margin-right: 10px;
 }
+
+.notification.error {
+  background-color: rgb(179, 77, 77);
+}

@@ -1,0 +1,23 @@
+.textarea_container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.textarea_tools {
+  display: flex;
+
+  gap: 5px;
+}
+
+.textarea_tool_link:hover {
+  cursor: pointer;
+}
+
+.textarea_tool_link:hover path {
+  fill: rgb(57, 57, 197);
+}
+
+.textarea_tool_link:active path {
+  fill: rgb(39, 39, 133);
+}
