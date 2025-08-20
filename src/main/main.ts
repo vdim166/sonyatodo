@@ -169,6 +169,8 @@ app
   .then(async () => {
     await database.checkForDataFile();
     createWindow();
+
+    createWidgetWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
@@ -176,3 +178,94 @@ app
     });
   })
   .catch(console.log);
+
+let widgetWindow: BrowserWindow | null = null;
+
+let dragStartPosition: {
+  mouseX: number;
+  mouseY: number;
+  winX: number;
+  winY: number;
+} | null = null;
+
+function createWidgetWindow() {
+  if (widgetWindow) {
+    widgetWindow.focus();
+    return;
+  }
+
+  widgetWindow = new BrowserWindow({
+    width: 300,
+    height: 200,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: false,
+    resizable: false,
+    skipTaskbar: true,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: true,
+    fullscreenable: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      // enableRemoteModule: false,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  widgetWindow.loadFile(
+    path.join(__dirname, '..', '..', 'html', 'widget.html'),
+  );
+
+  widgetWindow.once('ready-to-show', () => {
+    if (widgetWindow) widgetWindow.show();
+  });
+
+  widgetWindow.on('closed', () => {
+    widgetWindow = null;
+    dragStartPosition = null;
+  });
+}
+
+// Функция позиционирования у края экрана
+
+// Обработчик начала перетаскивания
+ipcMain.on('drag-start', (event, mousePosition) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    const [winX, winY] = win.getPosition();
+    dragStartPosition = {
+      mouseX: mousePosition.x,
+      mouseY: mousePosition.y,
+      winX: winX,
+      winY: winY,
+    };
+  }
+});
+
+// Обработчик перетаскивания - используем относительное смещение
+ipcMain.on('window-drag', (event, mousePosition) => {
+  if (!dragStartPosition) return;
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    // Вычисляем смещение мыши от начальной точки
+    const deltaX = mousePosition.x - dragStartPosition.mouseX;
+    const deltaY = mousePosition.y - dragStartPosition.mouseY;
+
+    // Новая позиция = начальная позиция окна + смещение мыши
+    const newX = dragStartPosition.winX + deltaX;
+    const newY = dragStartPosition.winY + deltaY;
+
+    // Устанавливаем новую позицию
+    win.setPosition(newX, newY);
+  }
+});
+
+// Обработчик окончания перетаскивания
+ipcMain.on('drag-end', () => {
+  dragStartPosition = null;
+});

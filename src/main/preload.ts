@@ -78,6 +78,30 @@ const electronHandler = {
     deleteProject(name: string): Promise<string[]> {
       return ipcRenderer.invoke(IPC_SIGNALS.DELETE_PROJECT, name);
     },
+
+    startDrag: (mouseX: number, mouseY: number) => {
+      ipcRenderer.send('drag-start', { x: mouseX, y: mouseY });
+    },
+
+    dragWindow: (mouseX: number, mouseY: number) => {
+      ipcRenderer.send('window-drag', { x: mouseX, y: mouseY });
+    },
+
+    endDrag: () => {
+      ipcRenderer.send('drag-end');
+    },
+
+    setIgnoreMouseEvents: (ignore: boolean, options: any) => {
+      ipcRenderer.send('set-ignore-mouse-events', ignore, options);
+    },
+
+    closeWidget: () => {
+      ipcRenderer.send('close-widget');
+    },
+
+    minimizeWidget: () => {
+      ipcRenderer.send('minimize-widget');
+    },
   },
 };
 
