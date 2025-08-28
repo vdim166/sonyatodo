@@ -173,8 +173,8 @@
       });
 
       // Конец перетаскивания
-      document.addEventListener('mouseup', () => {
-        this.endDrag();
+      document.addEventListener('mouseup', (e) => {
+        this.endDrag(e);
       });
 
       // Для touch устройств
@@ -189,8 +189,8 @@
         }
       });
 
-      document.addEventListener('touchend', () => {
-        this.endDrag();
+      document.addEventListener('touchend', (e) => {
+        this.endDrag(e);
       });
 
       // Предотвращаем выделение текста при перетаскивании
@@ -234,13 +234,13 @@
       event.preventDefault();
     }
 
-    endDrag() {
+    endDrag(event) {
       if (this.isDragging) {
         this.isDragging = false;
 
         // Уведомляем главный процесс об окончании перетаскивания
         if (window.electron.ipcRenderer) {
-          window.electron.ipcRenderer.endDrag();
+          window.electron.ipcRenderer.endDrag(event.screenX, event.screenY);
         }
 
         document.body.classList.remove('dragging');

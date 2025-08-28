@@ -16,6 +16,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import { IPC_SIGNALS } from './consts';
 import { database } from './classes/Database';
+import fs from 'fs';
 
 class AppUpdater {
   constructor() {
@@ -221,7 +222,26 @@ function createWidgetWindow() {
   );
 
   widgetWindow.once('ready-to-show', () => {
-    if (widgetWindow) widgetWindow.show();
+    if (widgetWindow) {
+      const userDataPath = app.getPath('userData');
+      const filePath = path.join(userDataPath, 'widget-settings.json');
+
+      filePath;
+
+      const status = fs.existsSync(filePath);
+
+      if (status) {
+        const oldSettings = fs.readFileSync(filePath, 'utf-8');
+
+        const data = JSON.parse(oldSettings);
+
+        if (data.position) {
+          widgetWindow.setPosition(data.position.x, data.position.y);
+        }
+      }
+
+      widgetWindow.show();
+    }
   });
 
   widgetWindow.on('closed', () => {
@@ -266,6 +286,51 @@ ipcMain.on('window-drag', (event, mousePosition) => {
 });
 
 // Обработчик окончания перетаскивания
-ipcMain.on('drag-end', () => {
+ipcMain.on('drag-end', (event, mousePosition) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    if (dragStartPosition) {
+      const deltaX = mousePosition.x - dragStartPosition.mouseX;
+      const deltaY = mousePosition.y - dragStartPosition.mouseY;
+
+      const newX = dragStartPosition.winX + deltaX;
+      const newY = dragStartPosition.winY + deltaY;
+
+      // win.setPosition(newX, newY);
+
+      const userDataPath = app.getPath('userData');
+      const filePath = path.join(userDataPath, 'widget-settings.json');
+
+      const status = fs.existsSync(filePath);
+
+      if (status) {
+        const oldSettings = fs.readFileSync(filePath, 'utf-8');
+
+        const parsed = JSON.parse(oldSettings);
+
+        (parsed.position.x = newX),
+          (parsed.position.y = newY),
+          fs.writeFile(filePath, JSON.stringify(parsed), (error) => {
+            if (error) {
+              console.log('error', error);
+            }
+          });
+      } else {
+        const newData = {
+          position: {
+            x: newX,
+            y: newY,
+          },
+        };
+
+        fs.writeFile(filePath, JSON.stringify(newData), (error) => {
+          if (error) {
+            console.log('error', error);
+          }
+        });
+      }
+    }
+  }
+
   dragStartPosition = null;
 });

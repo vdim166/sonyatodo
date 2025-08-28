@@ -87,8 +87,8 @@ const electronHandler = {
       ipcRenderer.send('window-drag', { x: mouseX, y: mouseY });
     },
 
-    endDrag: () => {
-      ipcRenderer.send('drag-end');
+    endDrag: (mouseX: number, mouseY: number) => {
+      ipcRenderer.send('drag-end', { x: mouseX, y: mouseY });
     },
 
     setIgnoreMouseEvents: (ignore: boolean, options: any) => {
