@@ -40,7 +40,7 @@ export const Main = () => {
       <ProjectsHolder />
       <Navbar />
       <div className="things_to_do">
-        <Button onClick={showAddTodo}>
+        <Button onClick={showAddTodo} className="add_button">
           {!showTodoBtn ? 'Добавить дело' : 'Скрыть дело'}
         </Button>
 
@@ -49,6 +49,7 @@ export const Main = () => {
             changeTempTodo={(todo) => setTempTodo(todo)}
             closeModal={() => {
               setTempTodo(null);
+              setShowTodoBtn(false);
             }}
           />
         )}
@@ -60,7 +61,14 @@ export const Main = () => {
           />
         )}
 
-        <div>
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translate(-50%)',
+            top: '140px',
+          }}
+        >
           <TodoNavbar />
           <div className="todos">
             {tempTodo !== null && <Todo isTemp {...tempTodo} />}

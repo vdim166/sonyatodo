@@ -5,7 +5,6 @@ import { TodoProps } from '../Todo';
 import './styles.css';
 import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { useAppContext } from '../../hooks/useAppContext';
-import { Textarea } from '../shared/Textarea';
 import { CancelButton } from '../shared/CancelButton';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
 import { TextareaWithTools } from '../shared/TextareaWithTools';
@@ -50,7 +49,6 @@ export const AddTodoContainer = ({
     } finally {
       setName('');
       setDescription('');
-      closeModal();
     }
   };
 
@@ -74,6 +72,9 @@ export const AddTodoContainer = ({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Enter') {
         handleCreate();
+      } else if (event.key === 'Escape') {
+        console.log('event.key', event.key);
+        closeModal();
       }
     };
 

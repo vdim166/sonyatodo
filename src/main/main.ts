@@ -17,6 +17,7 @@ import { resolveHtmlPath } from './util';
 import { IPC_SIGNALS } from './consts';
 import { database } from './classes/Database';
 import fs from 'fs';
+import { WidgetSettingsType } from './preload';
 
 class AppUpdater {
   constructor() {
@@ -28,7 +29,7 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (event, data, projectName) => {
+ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (_event, data, projectName) => {
   return database.saveDataToFile(data, projectName);
 });
 
@@ -36,27 +37,27 @@ ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
   return database.loadDataFromFile();
 });
 
-ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (event, id, projectName) => {
+ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (_event, id, projectName) => {
   return database.deleteDataFromFile(id, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.MOVE_TO, (event, id, newTab, projectName) => {
+ipcMain.handle(IPC_SIGNALS.MOVE_TO, (_event, id, newTab, projectName) => {
   return database.moveTo(id, newTab, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.ADD_TAB, (event, name, projectName) => {
+ipcMain.handle(IPC_SIGNALS.ADD_TAB, (_event, name, projectName) => {
   return database.addTab(name, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.DELETE_TABS, (event, tabs, projectName) => {
+ipcMain.handle(IPC_SIGNALS.DELETE_TABS, (_event, tabs, projectName) => {
   return database.deleteTabs(tabs, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.CHANGE_TABS_ORDER, (event, tabs, projectName) => {
+ipcMain.handle(IPC_SIGNALS.CHANGE_TABS_ORDER, (_event, tabs, projectName) => {
   return database.changeTabsOrder(tabs, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.CHANGE_TAB, (event, todo, projectName) => {
+ipcMain.handle(IPC_SIGNALS.CHANGE_TAB, (_event, todo, projectName) => {
   return database.changeTab(todo, projectName);
 });
 
@@ -64,12 +65,63 @@ ipcMain.handle(IPC_SIGNALS.FETCH_PROJECTS, (_event) => {
   return database.fetchProjects();
 });
 
-ipcMain.handle(IPC_SIGNALS.ADD_PROJECT, (event, name) => {
+ipcMain.handle(IPC_SIGNALS.ADD_PROJECT, (_event, name) => {
   return database.addProject(name);
 });
 
-ipcMain.handle(IPC_SIGNALS.DELETE_PROJECT, (event, name) => {
+ipcMain.handle(IPC_SIGNALS.DELETE_PROJECT, (_event, name) => {
   return database.deleteProject(name);
+});
+
+ipcMain.handle(IPC_SIGNALS.GET_WIDGET_SETTINGS, (_event) => {
+  const userDataPath = app.getPath('userData');
+  const filePath = path.join(userDataPath, 'widget-settings.json');
+
+  const status = fs.existsSync(filePath);
+
+  if (status) {
+    try {
+      const oldSettings = fs.readFileSync(filePath, 'utf-8');
+      const data = JSON.parse(oldSettings);
+      return data;
+    } catch (error) {
+      console.error('Error reading widget settings:', error);
+    }
+  } else {
+    const newSettings = {
+      position: null,
+      autoStart: false,
+    };
+
+    return newSettings;
+  }
+});
+
+ipcMain.on(IPC_SIGNALS.SET_WIDGET_AUTO_START, (_event, autoStart) => {
+  console.log('autoStart', autoStart);
+
+  const userDataPath = app.getPath('userData');
+  const filePath = path.join(userDataPath, 'widget-settings.json');
+  try {
+    const status = fs.existsSync(filePath);
+
+    if (status) {
+      const oldSettings = fs.readFileSync(filePath, 'utf-8');
+
+      const parsed: WidgetSettingsType = JSON.parse(oldSettings);
+
+      parsed.autoStart = autoStart;
+      fs.writeFileSync(filePath, JSON.stringify(parsed), 'utf-8');
+    } else {
+      fs.writeFileSync(
+        filePath,
+        JSON.stringify({ position: null, autoStart }),
+        'utf-8',
+      );
+    }
+  } catch (error) {
+    console.error('Error saving widget settings:', error);
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -190,6 +242,19 @@ let dragStartPosition: {
 } | null = null;
 
 function createWidgetWindow() {
+  const userDataPath = app.getPath('userData');
+  const filePath = path.join(userDataPath, 'widget-settings.json');
+
+  const status = fs.existsSync(filePath);
+
+  if (!status) return;
+
+  const oldSettings = fs.readFileSync(filePath, 'utf-8');
+
+  const widgetSettings = JSON.parse(oldSettings);
+
+  if (!widgetSettings.autoStart) return;
+
   if (widgetWindow) {
     widgetWindow.focus();
     return;
@@ -223,21 +288,11 @@ function createWidgetWindow() {
 
   widgetWindow.once('ready-to-show', () => {
     if (widgetWindow) {
-      const userDataPath = app.getPath('userData');
-      const filePath = path.join(userDataPath, 'widget-settings.json');
-
-      filePath;
-
-      const status = fs.existsSync(filePath);
-
-      if (status) {
-        const oldSettings = fs.readFileSync(filePath, 'utf-8');
-
-        const data = JSON.parse(oldSettings);
-
-        if (data.position) {
-          widgetWindow.setPosition(data.position.x, data.position.y);
-        }
+      if (widgetSettings.position) {
+        widgetWindow.setPosition(
+          widgetSettings.position.x,
+          widgetSettings.position.y,
+        );
       }
 
       widgetWindow.show();

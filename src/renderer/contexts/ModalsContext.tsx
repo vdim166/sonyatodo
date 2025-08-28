@@ -5,6 +5,7 @@ export const MODALS = {
   CONFIRM: 'CONFIRM',
   TABS_CONSTRUCTOR: 'TABS_CONSTRUCTOR',
   PROJECT_CONSTRUCTOR: 'PROJECT_CONSTRUCTOR',
+  WIDGET_SETTINGS: 'WIDGET_SETTINGS',
 } as const;
 
 type OpenModalPropsType = confirmModalType;

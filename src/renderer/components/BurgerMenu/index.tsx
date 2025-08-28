@@ -16,6 +16,10 @@ export const BurgerMenu = () => {
     openModal({ type: MODALS.PROJECT_CONSTRUCTOR, props: null });
   };
 
+  const widgetSettingsHandle = () => {
+    openModal({ type: MODALS.WIDGET_SETTINGS, props: null });
+  };
+
   return (
     <div className="burger-menu">
       <div
@@ -40,6 +44,12 @@ export const BurgerMenu = () => {
             onClick={projectConstructorHandle}
           >
             Project constructor
+          </button>
+          <button
+            className="burger-menu-modal-option"
+            onClick={widgetSettingsHandle}
+          >
+            Widget settings
           </button>
         </div>
       )}

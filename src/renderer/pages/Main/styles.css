@@ -9,7 +9,7 @@
   padding-bottom: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   gap: 25px;
 
   overflow: auto;
@@ -45,6 +45,8 @@
   overflow: auto;
   max-height: calc(100vh - 70px - 25px - 29px - 20px - 20px - 17px);
   padding-bottom: 20px;
+
+  width: 520px;
 }
 
 .todos::-webkit-scrollbar {
@@ -72,4 +74,11 @@
 
 .no_todo_yet p {
   font-size: 20px;
+}
+
+.add_button {
+  width: 150px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
 }

@@ -91,6 +91,15 @@ class IpcSignals {
     const result = await window.electron.ipcRenderer.deleteProject(name);
     return result;
   };
+
+  getWidgetSettings = async () => {
+    const data = await window.electron.ipcRenderer.getWidgetSettings();
+    return data;
+  };
+
+  setAutoStartWidget = async (state: boolean) => {
+    await window.electron.ipcRenderer.setAutoStartWidget(state);
+  };
 }
 
 export const ipcSignals = new IpcSignals();

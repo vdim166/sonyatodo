@@ -9,6 +9,14 @@ import { TabType } from '../renderer/contexts/AppContext';
 
 export type Channels = keyof typeof IPC_SIGNALS;
 
+export type WidgetSettingsType = {
+  position: {
+    x: number;
+    y: number;
+  } | null;
+  autoStart: boolean;
+};
+
 const electronHandler = {
   ipcRenderer: {
     sendMessage(channel: Channels, ...args: unknown[]) {
@@ -77,6 +85,14 @@ const electronHandler = {
 
     deleteProject(name: string): Promise<string[]> {
       return ipcRenderer.invoke(IPC_SIGNALS.DELETE_PROJECT, name);
+    },
+
+    getWidgetSettings(): Promise<WidgetSettingsType> {
+      return ipcRenderer.invoke(IPC_SIGNALS.GET_WIDGET_SETTINGS);
+    },
+
+    setAutoStartWidget(state: boolean) {
+      ipcRenderer.send(IPC_SIGNALS.SET_WIDGET_AUTO_START, state);
     },
 
     startDrag: (mouseX: number, mouseY: number) => {

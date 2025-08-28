@@ -127,7 +127,7 @@ export const Todo = ({
 
       <div className="todo_desc">
         {editState && editState.forRecover.id === id ? (
-          <p>editState.current.desc</p>
+          <p>{editState.current.desc}</p>
         ) : (
           <p>{parseDesc(desc)}</p>
         )}

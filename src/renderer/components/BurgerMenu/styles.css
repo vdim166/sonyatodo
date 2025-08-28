@@ -41,14 +41,14 @@
 
 .burger-menu-modal {
   position: absolute;
-  top: 15px;
-  left: 35px;
+  top: 20px;
+  left: 0px;
 
   background-color: white;
   border: 1.5px solid black;
 
   width: 200px;
-  height: 60px;
+  padding-block: 10px;
 
   border-radius: 5px;
 

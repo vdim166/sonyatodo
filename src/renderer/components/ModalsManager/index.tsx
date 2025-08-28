@@ -5,6 +5,7 @@ import { ProjectConstructor } from '../Modals/ProjectConstructor';
 import { TabsConstructor } from '../Modals/TabsContructor';
 import { confirmModalType } from '../Modals/types/confirmModalType';
 import { UniversalWrapper } from '../Modals/UniversalWrapper';
+import { WidgetSettingsModal } from '../Modals/WidgetSettingsModal';
 
 export const ModalsManager = () => {
   const { modalState } = useModalsContext();
@@ -27,6 +28,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <ProjectConstructor />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.WIDGET_SETTINGS) {
+    return (
+      <UniversalWrapper>
+        <WidgetSettingsModal />
       </UniversalWrapper>
     );
   }

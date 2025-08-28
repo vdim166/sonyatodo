@@ -5,6 +5,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  z-index: 100;
+}
+
+@keyframes add_todo_appear_animation {
+  0% {
+    top: 50%;
+    transform: translateX(50px) translateY(-50%);
+  }
+
+  100% {
+    transform: translateX(0) translateY(-50%);
+  }
 }
 
 .add_todo_container_inputs {
@@ -15,6 +28,13 @@
   background-color: rgb(101, 101, 207);
   padding: 50px;
   border-radius: 5px;
+
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 5px;
+
+  animation: 0.5s ease-out add_todo_appear_animation;
 }
 
 .add_todo_container_inputs_option p {
