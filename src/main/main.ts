@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -19,12 +19,38 @@ import { database } from './classes/Database';
 import fs from 'fs';
 import { WidgetSettingsType } from './preload';
 
+let tray: Tray | null = null;
+
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
   }
+}
+
+function enableAutoLaunch() {
+  if (process.env.NODE_ENV === 'production') {
+    app.setLoginItemSettings({
+      openAtLogin: true, // запускать при входе
+      path: app.getPath('exe'), // путь к exe (на win/mac корректно работает)
+      args: ['--hidden'],
+    });
+  }
+}
+
+// Проверить статус
+function isAutoLaunchEnabled() {
+  const settings = app.getLoginItemSettings();
+  return settings.openAtLogin;
+}
+
+// Отключить автозагрузку
+function disableAutoLaunch() {
+  app.setLoginItemSettings({
+    openAtLogin: false,
+    path: app.getPath('exe'),
+  });
 }
 
 let mainWindow: BrowserWindow | null = null;
@@ -149,18 +175,18 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
+
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
+};
+
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
   }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
 
   mainWindow = new BrowserWindow({
     show: false,
@@ -173,6 +199,11 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  // mainWindow.on('close', (event) => {
+  //   event.preventDefault();
+  //   mainWindow?.hide();
+  // });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
@@ -221,7 +252,49 @@ app
   .whenReady()
   .then(async () => {
     await database.checkForDataFile();
-    createWindow();
+
+    if (!app.commandLine.hasSwitch('hidden')) {
+      createWindow();
+    }
+
+    if (!isAutoLaunchEnabled()) {
+      enableAutoLaunch();
+    }
+
+    tray = new Tray(getAssetPath('icon.png'));
+
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Открыть',
+        click: () => {
+          if (!mainWindow) {
+            createWindow();
+          } else {
+            mainWindow.show();
+          }
+        },
+      },
+      {
+        label: 'Выход',
+        click: () => {
+          app.quit();
+        },
+      },
+    ]);
+
+    tray.setToolTip('Моё Electron-приложение');
+    tray.setContextMenu(contextMenu);
+
+    // клик по иконке (например, чтобы сворачивать/разворачивать окно)
+    tray.on('click', () => {
+      if (mainWindow) {
+        if (mainWindow.isVisible()) {
+          mainWindow.hide();
+        } else {
+          mainWindow.show();
+        }
+      }
+    });
 
     createWidgetWindow();
     app.on('activate', () => {
@@ -278,13 +351,16 @@ function createWidgetWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       // enableRemoteModule: false,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
 
-  widgetWindow.loadFile(
-    path.join(__dirname, '..', '..', 'html', 'widget.html'),
-  );
+  // widgetWindow.loadFile(
+  //   path.join(__dirname, '..', '..', 'html', 'widget.html'),
+  // );
+  widgetWindow.loadFile(getAssetPath('html', 'widget.html'));
 
   widgetWindow.once('ready-to-show', () => {
     if (widgetWindow) {
