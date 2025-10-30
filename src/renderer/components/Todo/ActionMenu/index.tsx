@@ -1,4 +1,5 @@
 import { ipcSignals } from '../../../classes/ipcSignals';
+import { DISPATCH_EVENTS } from '../../../consts/dispatchEvents';
 import { MODALS } from '../../../contexts/ModalsContext';
 import { useAppContext } from '../../../hooks/useAppContext';
 import { useModalsContext } from '../../../hooks/useModalsContext';
@@ -15,16 +16,21 @@ type ActionMenuProps = {
 
 export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
   const { openModal, closeModal } = useModalsContext();
-  const { setTodos, currentProjectName } = useAppContext();
+  const { currentProjectName, currentTab } = useAppContext();
 
   const { addNotification } = useNotificationManager();
 
   const handleDelete = async () => {
     try {
       if (!currentProjectName) return;
-      const data = await ipcSignals.deleteData(id, currentProjectName);
+      const data = await ipcSignals.deleteData(
+        id,
+        currentTab || 'TODO',
+        currentProjectName,
+      );
+
       if (data) {
-        setTodos(data.todos);
+        window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
         addNotification('Задача удалена');
       }
     } catch (error) {
@@ -37,10 +43,15 @@ export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
   const handleSendTodo = (tab: string) => async () => {
     try {
       if (!currentProjectName) return;
-      const data = await ipcSignals.moveTo(id, tab, currentProjectName);
+      const data = await ipcSignals.moveTo(
+        id,
+        tab,
+        currentTab || 'TODO',
+        currentProjectName,
+      );
 
       if (data) {
-        setTodos(data.todos);
+        window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
         addNotification(`Задача передвинута в ${tab}`);
       }
     } catch (error) {

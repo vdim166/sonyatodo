@@ -8,6 +8,7 @@ import { useAppContext } from '../../hooks/useAppContext';
 import { CancelButton } from '../shared/CancelButton';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
 import { TextareaWithTools } from '../shared/TextareaWithTools';
+import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 
 type AddTodoContainerProps = {
   changeTempTodo: (props: TodoProps | null) => void;
@@ -21,7 +22,7 @@ export const AddTodoContainer = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { setTodos, currentTab, currentProjectName } = useAppContext();
+  const { setTodos, currentProjectName } = useAppContext();
 
   const { addNotification } = useNotificationManager();
 
@@ -34,14 +35,12 @@ export const AddTodoContainer = ({
         {
           name,
           desc: description,
-          currentTab,
         } as saveTodoType,
         currentProjectName,
       );
 
       if (data) {
-        setTodos(data.todos);
-
+        window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
         addNotification('Задача добавлена');
       }
     } catch (error) {

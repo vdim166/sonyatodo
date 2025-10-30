@@ -23,7 +23,7 @@ export const EditTodoModal = ({
   state,
   setShowEditModal,
 }: EditTodoModalProps) => {
-  const { setTodos, currentProjectName } = useAppContext();
+  const { setTodos, currentProjectName, currentTab } = useAppContext();
 
   const { addNotification } = useNotificationManager();
 
@@ -39,8 +39,8 @@ export const EditTodoModal = ({
   const handleChange = async () => {
     if (!currentProjectName) return;
     try {
-      const response = await ipcSignals.changeTab(
-        state.current,
+      const response = await ipcSignals.changeTodo(
+        { ...state.current, currentTab: currentTab || 'TODO' },
         currentProjectName,
       );
 

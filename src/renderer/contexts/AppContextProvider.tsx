@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ipcSignals, saveTodoType } from '../classes/ipcSignals';
 import { AppContext, AppContextType, TabType } from './AppContext';
+import { log } from 'console';
+import { DISPATCH_EVENTS } from '../consts/dispatchEvents';
 
 type AppContextProviderProps = {
   children: React.ReactNode;
@@ -43,12 +45,19 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         const data = await ipcSignals.loadData(currentProjectName);
 
         if (data) {
-          setTodos(data.todos);
+          const findTopic = data.allTopics.find(
+            (topic) => topic.name === (currentTab || 'TODO'),
+          );
+
+          if (findTopic) {
+            setTodos(findTopic.todos);
+          }
           setTabs(data.tabs);
 
-          if (data.tabs.length > 0) {
-            setCurrentTab(data.tabs[0].name);
-          }
+          if (!currentTab)
+            if (data.tabs.length > 0) {
+              setCurrentTab(data.tabs[0].name);
+            }
         }
       } catch (error) {
         console.log('error', error);
@@ -56,7 +65,13 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     };
 
     loadTodos();
-  }, [currentProjectName]);
+
+    window.addEventListener(DISPATCH_EVENTS.FETCH_TODOS, loadTodos);
+
+    return () => {
+      window.removeEventListener(DISPATCH_EVENTS.FETCH_TODOS, loadTodos);
+    };
+  }, [currentProjectName, currentTab]);
 
   const value: AppContextType = {
     todos,

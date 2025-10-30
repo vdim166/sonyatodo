@@ -2,8 +2,8 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { IPC_SIGNALS } from './consts';
 import { saveTodoType } from '../renderer/classes/ipcSignals';
-import { DatabaseType } from './classes/Database';
 import { TabType } from '../renderer/contexts/AppContext';
+import { DatabaseType } from './types/DatabaseType';
 
 // Типы для каналов IPC
 
@@ -42,15 +42,31 @@ const electronHandler = {
     loadData(): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.LOAD_DATA_BASE);
     },
-    deleteData(id: string, projectName: string): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.DELETE_DATA, id, projectName);
+    deleteData(
+      id: string,
+      currentTab: string,
+      projectName: string,
+    ): Promise<DatabaseType> {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.DELETE_DATA,
+        id,
+        currentTab,
+        projectName,
+      );
     },
     moveTo(
       id: string,
       newTab: string,
+      currentTab: string,
       projectName: string,
     ): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.MOVE_TO, id, newTab, projectName);
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.MOVE_TO,
+        id,
+        newTab,
+        currentTab,
+        projectName,
+      );
     },
     addTab(name: string, projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.ADD_TAB, name, projectName);
@@ -68,11 +84,11 @@ const electronHandler = {
         projectName,
       );
     },
-    changeTab(
+    changeTodo(
       todo: { name: string; desc: string },
       projectName: string,
     ): Promise<DatabaseType> {
-      return ipcRenderer.invoke(IPC_SIGNALS.CHANGE_TAB, todo, projectName);
+      return ipcRenderer.invoke(IPC_SIGNALS.CHANGE_TODO, todo, projectName);
     },
 
     fetchProjects(): Promise<string[]> {

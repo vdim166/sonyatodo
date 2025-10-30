@@ -24,18 +24,25 @@ class IpcSignals {
     return data[projectName];
   };
 
-  deleteData = async (id: string, projectName = 'main') => {
+  deleteData = async (id: string, currentTab: string, projectName = 'main') => {
     const result = await window.electron.ipcRenderer.deleteData(
       id,
+      currentTab,
       projectName,
     );
     return result[projectName];
   };
 
-  moveTo = async (id: string, newTab: string, projectName = 'main') => {
+  moveTo = async (
+    id: string,
+    newTab: string,
+    currentTab: string,
+    projectName = 'main',
+  ) => {
     const result = await window.electron.ipcRenderer.moveTo(
       id,
       newTab,
+      currentTab,
       projectName,
     );
     return result[projectName];
@@ -68,13 +75,21 @@ class IpcSignals {
     return result[projectName].tabs;
   };
 
-  changeTab = async (tab: saveTodoType, projectName = 'main') => {
-    const result = await window.electron.ipcRenderer.changeTab(
-      tab,
+  changeTodo = async (todoToChange: saveTodoType, projectName = 'main') => {
+    const result = await window.electron.ipcRenderer.changeTodo(
+      todoToChange,
       projectName,
     );
 
-    return result[projectName].todos;
+    console.log('result[projectName]', result[projectName]);
+
+    const findTopic = result[projectName].allTopics.find(
+      (topic) => topic.name === todoToChange.currentTab,
+    );
+
+    if (!findTopic) return [];
+
+    return findTopic.todos;
   };
 
   fetchProjects = async () => {

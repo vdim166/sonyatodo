@@ -30,10 +30,6 @@ export const Main = () => {
     return <div>Loading....</div>;
   }
 
-  const currentTodos = todos.filter((todo) => {
-    return currentTab === todo.currentTab;
-  });
-
   return (
     <div className="main_page">
       <BurgerMenu />
@@ -72,8 +68,8 @@ export const Main = () => {
           <TodoNavbar />
           <div className="todos">
             {tempTodo !== null && <Todo isTemp {...tempTodo} />}
-            {currentTodos.length > 0
-              ? currentTodos.map((todo) => {
+            {todos.length > 0
+              ? todos.map((todo) => {
                   return (
                     <Todo
                       {...todo}

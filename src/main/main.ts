@@ -63,13 +63,19 @@ ipcMain.handle(IPC_SIGNALS.LOAD_DATA_BASE, () => {
   return database.loadDataFromFile();
 });
 
-ipcMain.handle(IPC_SIGNALS.DELETE_DATA, (_event, id, projectName) => {
-  return database.deleteDataFromFile(id, projectName);
-});
+ipcMain.handle(
+  IPC_SIGNALS.DELETE_DATA,
+  (_event, id, currentTab, projectName) => {
+    return database.deleteDataFromFile(id, currentTab, projectName);
+  },
+);
 
-ipcMain.handle(IPC_SIGNALS.MOVE_TO, (_event, id, newTab, projectName) => {
-  return database.moveTo(id, newTab, projectName);
-});
+ipcMain.handle(
+  IPC_SIGNALS.MOVE_TO,
+  (_event, id, newTab, currentTab, projectName) => {
+    return database.moveTo(id, newTab, currentTab, projectName);
+  },
+);
 
 ipcMain.handle(IPC_SIGNALS.ADD_TAB, (_event, name, projectName) => {
   return database.addTab(name, projectName);
@@ -83,8 +89,8 @@ ipcMain.handle(IPC_SIGNALS.CHANGE_TABS_ORDER, (_event, tabs, projectName) => {
   return database.changeTabsOrder(tabs, projectName);
 });
 
-ipcMain.handle(IPC_SIGNALS.CHANGE_TAB, (_event, todo, projectName) => {
-  return database.changeTab(todo, projectName);
+ipcMain.handle(IPC_SIGNALS.CHANGE_TODO, (_event, todo, projectName) => {
+  return database.changeTodo(todo, projectName);
 });
 
 ipcMain.handle(IPC_SIGNALS.FETCH_PROJECTS, (_event) => {

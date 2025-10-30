@@ -4,12 +4,9 @@ import path from 'path';
 import fs from 'fs';
 import { generateRandomId } from '../utils/generateRandomId';
 import { TabType } from '../../renderer/contexts/AppContext';
+import { DatabaseType } from '../types/DatabaseType';
 
 // TODO: maybe use async functions later
-
-export type DatabaseType = {
-  [key: string]: { todos: saveTodoType[]; tabs: TabType[] };
-};
 
 class Database {
   private userDataPath = app.getPath('userData');
@@ -32,63 +29,102 @@ class Database {
     try {
       const prevData = this.loadDataFromFile();
       const id = generateRandomId();
-
       data.id = id;
 
       if (!prevData[projectName]) {
         prevData[projectName] = {
-          todos: [data],
+          allTopics: [
+            {
+              name: 'TODO',
+              todos: [data],
+            },
+          ],
           tabs: [{ name: 'TODO' }, { name: 'DONE' }],
         };
         fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
       } else {
-        prevData[projectName].todos.unshift(data);
+        const findTopicIndex = prevData[projectName].allTopics.findIndex(
+          (topic) => topic.name === 'TODO',
+        );
 
-        fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
+        if (findTopicIndex !== -1) {
+          prevData[projectName].allTopics[findTopicIndex].todos.unshift(data);
+          fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
+        }
       }
-
       const newData = this.loadDataFromFile();
-
       return newData;
     } catch (err) {
       console.error('Ошибка при сохранении файла:', err);
-
       return {};
     }
   };
 
-  deleteDataFromFile = (id: string, projectName = 'main') => {
+  deleteDataFromFile = (
+    id: string,
+    currentTab: string,
+    projectName = 'main',
+  ) => {
     try {
       const data = this.loadDataFromFile();
-      const newData = data[projectName].todos.filter((item) => item.id !== id);
 
-      data[projectName].todos = newData;
+      const findTopicIndex = data[projectName].allTopics.findIndex(
+        (topic) => topic.name === currentTab,
+      );
+
+      if (findTopicIndex === -1) return {};
+
+      const newData = data[projectName].allTopics[findTopicIndex].todos.filter(
+        (item) => item.id !== id,
+      );
+      data[projectName].allTopics[findTopicIndex].todos = newData;
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
-
       return data;
     } catch (error) {
       console.log('error', error);
-
       return {};
     }
   };
 
-  moveTo = (id: string, tab: string, projectName = 'main') => {
+  moveTo = (
+    id: string,
+    tab: string,
+    currentTab: string,
+    projectName = 'main',
+  ) => {
     try {
       const data = this.loadDataFromFile();
 
-      const index = data[projectName].todos.findIndex((item) => item.id === id);
+      const findTopicIndex = data[projectName].allTopics.findIndex(
+        (topic) => topic.name === currentTab,
+      );
 
-      if (index !== -1) {
-        data[projectName].todos[index].currentTab = tab;
+      if (findTopicIndex === -1) return {};
+
+      const todoIndex = data[projectName].allTopics[
+        findTopicIndex
+      ].todos.findIndex((todo) => todo.id === id);
+
+      if (todoIndex !== -1) {
+        const secondTopicIndex = data[projectName].allTopics.findIndex(
+          (topic) => topic.name === tab,
+        );
+
+        if (secondTopicIndex === -1) return {};
+
+        data[projectName].allTopics[secondTopicIndex].todos.unshift(
+          data[projectName].allTopics[findTopicIndex].todos[todoIndex],
+        );
+
+        data[projectName].allTopics[findTopicIndex].todos = data[
+          projectName
+        ].allTopics[findTopicIndex].todos.filter((todo) => todo.id !== id);
       }
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
-
       return this.loadDataFromFile();
     } catch (error) {
       console.log('error', error);
-
       return {};
     }
   };
@@ -134,6 +170,11 @@ class Database {
 
       data[projectName].tabs.unshift({ name });
 
+      data[projectName].allTopics = [
+        ...data[projectName].allTopics,
+        { name, todos: [] },
+      ];
+
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 
       return this.loadDataFromFile();
@@ -154,6 +195,14 @@ class Database {
       });
 
       data[projectName].tabs = newData;
+
+      data[projectName].allTopics = data[projectName].allTopics.filter(
+        (topic) => {
+          const found = tabs.find((t) => t.name === topic.name);
+
+          return !found;
+        },
+      );
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
       return this.loadDataFromFile();
@@ -176,25 +225,39 @@ class Database {
     }
   };
 
-  changeTab = (tab: saveTodoType, projectName = 'main') => {
+  changeTodo = (todoToChange: saveTodoType, projectName = 'main') => {
     try {
       const data = this.loadDataFromFile();
 
-      const findIndex = data[projectName].todos.findIndex(
-        (todo) => todo.id === tab.id,
+      const findTopicIndex = data[projectName].allTopics.findIndex(
+        (topic) => topic.name === todoToChange.currentTab,
       );
 
-      if (findIndex !== -1) {
-        if (data[projectName].todos[findIndex].name !== tab.name) {
-          data[projectName].todos[findIndex].name = tab.name;
-        }
+      if (findTopicIndex === -1) return {};
 
-        if (data[projectName].todos[findIndex].desc !== tab.desc) {
-          data[projectName].todos[findIndex].desc = tab.desc;
-        }
+      const findTodoIndex = data[projectName].allTopics[
+        findTopicIndex
+      ].todos.findIndex((todo) => todo.id === todoToChange.id);
 
-        fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+      if (findTodoIndex === -1) return {};
+
+      if (
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+          .name !== todoToChange.name
+      ) {
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].name =
+          todoToChange.name;
       }
+
+      if (
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+          .desc !== todoToChange.desc
+      ) {
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc =
+          todoToChange.desc;
+      }
+
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 
       return this.loadDataFromFile();
     } catch (error) {
@@ -216,7 +279,19 @@ class Database {
     try {
       const data = this.loadDataFromFile();
 
-      data[name] = { todos: [], tabs: [{ name: 'TODO' }, { name: 'DONE' }] };
+      data[name] = {
+        allTopics: [
+          {
+            name: 'TODO',
+            todos: [],
+          },
+          {
+            name: 'DONE',
+            todos: [],
+          },
+        ],
+        tabs: [{ name: 'TODO' }, { name: 'DONE' }],
+      };
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
 

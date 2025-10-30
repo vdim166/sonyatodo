@@ -1,0 +1,3 @@
+export const DISPATCH_EVENTS = {
+  FETCH_TODOS: 'FETCH_TODOS',
+};
