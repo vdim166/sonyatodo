@@ -1,0 +1,80 @@
+.deadlines_main {
+  position: absolute;
+
+  bottom: 0px;
+  left: 0;
+
+  display: flex;
+  width: 510px;
+  box-sizing: border-box;
+
+  z-index: 100;
+}
+
+.deadlines_main_date {
+  margin-left: 10px;
+
+  color: rgb(207, 201, 201);
+  font-weight: bold;
+
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.deadlines_main_date.red {
+  color: rgb(230, 113, 113);
+  text-shadow: none;
+}
+
+.deadlines_main p:hover {
+  color: rgb(216, 211, 211);
+  cursor: pointer;
+}
+
+.deadline_input_container {
+  display: flex;
+  gap: 10px;
+
+  padding-left: 10px;
+}
+
+.deadline_input {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  height: 13px;
+  color: #333;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.deadline_input_container_cross svg {
+  height: 15px;
+}
+.deadline_input_container_cross svg:hover {
+  cursor: pointer;
+}
+
+.deadline_input_container_cross svg:hover path {
+  stroke: red;
+}
+
+.deadline_input_container_cross svg:active path {
+  stroke: rgb(189, 55, 55);
+}
+
+.deadline_input_container_success:hover {
+  cursor: pointer;
+}
+
+.deadline_input_container_success.disabled path {
+  stroke: grey;
+}
+
+.deadline_input_container_success:not(.disabled):hover path {
+  stroke: rgb(52, 201, 52);
+}
+
+.deadline_input_container_success:not(.disabled):active path {
+  stroke: rgb(70, 184, 70);
+}

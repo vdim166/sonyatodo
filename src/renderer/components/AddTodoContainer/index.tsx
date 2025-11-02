@@ -9,6 +9,7 @@ import { CancelButton } from '../shared/CancelButton';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
 import { TextareaWithTools } from '../shared/TextareaWithTools';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
+import { imagesToAddType } from '../EditTodoModal';
 
 type AddTodoContainerProps = {
   changeTempTodo: (props: TodoProps | null) => void;
@@ -22,8 +23,9 @@ export const AddTodoContainer = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { setTodos, currentProjectName } = useAppContext();
+  const { currentProjectName } = useAppContext();
 
+  const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
   const { addNotification } = useNotificationManager();
 
   const handleCreate = async () => {
@@ -31,15 +33,29 @@ export const AddTodoContainer = ({
       if (!currentProjectName) return;
       if (name === '') return;
 
-      const data = await ipcSignals.saveData(
+      const { data: todo }: { data: saveTodoType } = await ipcSignals.saveData(
         {
           name,
           desc: description,
+          currentTopic: 'TODO',
         } as saveTodoType,
         currentProjectName,
       );
 
-      if (data) {
+      if (todo) {
+        for (let i = 0; i < imagesToAdd.length; ++i) {
+          const imageToAdd = imagesToAdd[i];
+
+          const data = {
+            id: todo.id,
+            name: imageToAdd.name,
+            data: imageToAdd.buffer,
+            topic: 'TODO',
+          };
+
+          window.electron.ipcRenderer.addTodoImage(data, currentProjectName);
+        }
+
         window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
         addNotification('Задача добавлена');
       }
@@ -69,6 +85,8 @@ export const AddTodoContainer = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.shiftKey) return;
+
       if (event.key === 'Enter') {
         handleCreate();
       } else if (event.key === 'Escape') {
@@ -101,6 +119,13 @@ export const AddTodoContainer = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             setValue={setDescription}
+            addFile={(fileObj) => {
+              setImagesToAdd((prev) => {
+                const newState = [...prev, fileObj];
+
+                return newState;
+              });
+            }}
           />
         </div>
 

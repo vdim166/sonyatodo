@@ -7,17 +7,17 @@
 .textarea_tools {
   display: flex;
 
-  gap: 5px;
+  gap: 10px;
 }
 
-.textarea_tool_link:hover {
+.textarea_tool:hover {
   cursor: pointer;
 }
 
-.textarea_tool_link:hover path {
+.textarea_tool:hover path {
   fill: rgb(57, 57, 197);
 }
 
-.textarea_tool_link:active path {
+.textarea_tool:active path {
   fill: rgb(39, 39, 133);
 }

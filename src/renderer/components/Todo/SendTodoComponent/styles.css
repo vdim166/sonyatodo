@@ -1,6 +1,9 @@
+.todo_success:hover {
+  cursor: pointer;
+}
+
 .todo_success:hover path {
   fill: rgb(38, 218, 38);
-  cursor: pointer;
 }
 
 .todo_success:active path {

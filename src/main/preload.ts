@@ -4,6 +4,8 @@ import { IPC_SIGNALS } from './consts';
 import { saveTodoType } from '../renderer/classes/ipcSignals';
 import { TabType } from '../renderer/contexts/AppContext';
 import { DatabaseType } from './types/DatabaseType';
+import { setDeadlineType } from './types/setDeadlineType';
+import { addTodoImageType } from './types/addTodoImageType';
 
 // Типы для каналов IPC
 
@@ -36,7 +38,7 @@ const electronHandler = {
     },
 
     // Новые методы для работы с JSON
-    saveData(data: saveTodoType, projectName: string): Promise<DatabaseType> {
+    saveData(data: saveTodoType, projectName: string) {
       return ipcRenderer.invoke(IPC_SIGNALS.SAVE_DATA_BASE, data, projectName);
     },
     loadData(): Promise<DatabaseType> {
@@ -84,10 +86,7 @@ const electronHandler = {
         projectName,
       );
     },
-    changeTodo(
-      todo: { name: string; desc: string },
-      projectName: string,
-    ): Promise<DatabaseType> {
+    changeTodo(todo: saveTodoType, projectName: string): Promise<DatabaseType> {
       return ipcRenderer.invoke(IPC_SIGNALS.CHANGE_TODO, todo, projectName);
     },
 
@@ -105,6 +104,25 @@ const electronHandler = {
 
     getWidgetSettings(): Promise<WidgetSettingsType> {
       return ipcRenderer.invoke(IPC_SIGNALS.GET_WIDGET_SETTINGS);
+    },
+
+    setDeadLine(options: setDeadlineType, projectName: string) {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.SET_TODO_DEADLINE,
+        options,
+        projectName,
+      );
+    },
+    addTodoImage(options: addTodoImageType, projectName: string) {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.SAVE_TODO_IMAGE,
+        options,
+        projectName,
+      );
+    },
+
+    loadTodoImage(name: string) {
+      return ipcRenderer.invoke(IPC_SIGNALS.LOAD_TODO_IMAGE, name);
     },
 
     setAutoStartWidget(state: boolean) {

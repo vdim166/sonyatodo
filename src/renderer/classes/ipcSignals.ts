@@ -1,3 +1,4 @@
+import { setDeadlineType } from '../../main/types/setDeadlineType';
 import { TabType } from '../contexts/AppContext';
 
 export type saveTodoType = {
@@ -5,8 +6,13 @@ export type saveTodoType = {
   desc: string;
   id: string;
 
+  currentTopic: string;
+
   tabs: { name: string; id: string }[];
-  currentTab: string;
+
+  deadline?: { from: string | null; to: string | null };
+
+  images?: { name: string }[];
 };
 
 class IpcSignals {
@@ -15,7 +21,8 @@ class IpcSignals {
       data,
       projectName,
     );
-    return result[projectName];
+
+    return result;
   };
 
   loadData = async (projectName = 'main') => {
@@ -81,10 +88,8 @@ class IpcSignals {
       projectName,
     );
 
-    console.log('result[projectName]', result[projectName]);
-
     const findTopic = result[projectName].allTopics.find(
-      (topic) => topic.name === todoToChange.currentTab,
+      (topic) => topic.name === todoToChange.currentTopic,
     );
 
     if (!findTopic) return [];
@@ -114,6 +119,15 @@ class IpcSignals {
 
   setAutoStartWidget = async (state: boolean) => {
     await window.electron.ipcRenderer.setAutoStartWidget(state);
+  };
+
+  setDeadLine = async (options: setDeadlineType, projectName = 'main') => {
+    const data = await await window.electron.ipcRenderer.setDeadLine(
+      options,
+      projectName,
+    );
+
+    return data;
   };
 }
 

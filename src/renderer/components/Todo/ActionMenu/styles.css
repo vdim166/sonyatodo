@@ -1,11 +1,12 @@
 .todo_action_menu {
   position: absolute;
 
-  bottom: 5px;
-  right: 5px;
+  bottom: 0px;
+  right: 15px;
 
   display: flex;
   gap: 5px;
+  z-index: 101;
 }
 
 .todo_action_menu_cross:hover {

@@ -18,6 +18,9 @@ import { IPC_SIGNALS } from './consts';
 import { database } from './classes/Database';
 import fs from 'fs';
 import { WidgetSettingsType } from './preload';
+import { addTodoImageType } from './types/addTodoImageType';
+
+const savedImagesPath = path.join(process.cwd(), 'saved_images');
 
 let tray: Tray | null = null;
 
@@ -103,6 +106,38 @@ ipcMain.handle(IPC_SIGNALS.ADD_PROJECT, (_event, name) => {
 
 ipcMain.handle(IPC_SIGNALS.DELETE_PROJECT, (_event, name) => {
   return database.deleteProject(name);
+});
+
+ipcMain.handle(IPC_SIGNALS.SET_TODO_DEADLINE, (_event, options) => {
+  return database.setTodoDeadLine(options);
+});
+
+ipcMain.handle(
+  IPC_SIGNALS.SAVE_TODO_IMAGE,
+  (_event, { name, data, id, topic }: addTodoImageType) => {
+    const savePath = path.join(savedImagesPath, `${id}-${name}.jpg`);
+
+    // убедимся, что папка существует
+    fs.mkdirSync(path.dirname(savePath), { recursive: true });
+
+    const buffer = Buffer.from(data); // Здесь Buffer доступен
+    fs.writeFile(savePath, buffer, (err) => {
+      if (err) console.error(err);
+      else console.log('Saved:', savePath);
+    });
+  },
+);
+
+ipcMain.handle(IPC_SIGNALS.LOAD_TODO_IMAGE, async (_event, filename) => {
+  const filePath = path.join(savedImagesPath, filename);
+
+  try {
+    const data = fs.readFileSync(filePath); // Buffer
+    return data.toString('base64'); // отправляем как base64
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 });
 
 ipcMain.handle(IPC_SIGNALS.GET_WIDGET_SETTINGS, (_event) => {

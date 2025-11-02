@@ -18,7 +18,7 @@ export const Main = () => {
     null,
   );
 
-  const { todos, currentTab } = useAppContext();
+  const { todos } = useAppContext();
 
   const showAddTodo = () => {
     setShowEditModal(null);

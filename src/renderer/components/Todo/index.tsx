@@ -3,6 +3,8 @@ import { ArrowDown } from '../../icons/ArrowDown';
 import './styles.css';
 import { ActionMenu } from './ActionMenu';
 import { editModalState } from '../EditTodoModal';
+import { DeadlinesWidget } from '../DeadlinesWidget';
+import { SmartLoadingImg } from '../SmartLoadingImg';
 
 export type TodoProps = {
   isTemp?: boolean;
@@ -12,6 +14,11 @@ export type TodoProps = {
 
   editState: editModalState | null;
   openEditModal: () => void;
+
+  deadline?: {
+    to: string | null;
+    from: string | null;
+  };
 };
 
 export const Todo = ({
@@ -21,6 +28,7 @@ export const Todo = ({
   id,
   editState,
   openEditModal,
+  deadline,
 }: TodoProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hover, setHover] = useState(false);
@@ -80,6 +88,31 @@ export const Todo = ({
     }
   };
 
+  const findImage = (value: string) => {
+    const first = value.indexOf('<img>');
+
+    if (first === -1) null;
+
+    const second = value.indexOf('</img>');
+    if (second === -1) null;
+    if (first < second) {
+      const imgLink = value.substring(first + 5, second);
+      const textBefore = value.substring(0, first);
+
+      const newValue = value.replace(`<img>${imgLink}</img>`, '');
+
+      return {
+        imgLink,
+        value: newValue,
+        first,
+        second,
+        textBefore,
+      };
+    }
+
+    return null;
+  };
+
   const parseDesc = (desc: string) => {
     const components = [];
 
@@ -88,60 +121,95 @@ export const Todo = ({
     while (true) {
       const result = findLink(currentValue);
 
-      if (!result) {
+      if (result) {
+        components.push(result.textBefore);
+        components.push(
+          <span
+            className="todo_link"
+            onClick={() => {
+              window.open(result.word, '_blank');
+            }}
+          >
+            {result.word}
+          </span>,
+        );
+
+        currentValue = result.value;
+      } else {
         if (currentValue) {
-          components.push(currentValue);
+          // components.push(currentValue);
+
+          while (true) {
+            const resultImage = findImage(currentValue);
+
+            // {resultImage.imgLink}
+            if (resultImage) {
+              components.push(resultImage.textBefore);
+              components.push(<br />);
+              components.push(
+                <SmartLoadingImg link={`${id}-${resultImage.imgLink}.jpg`} />,
+              );
+              components.push(<br />);
+
+              currentValue = resultImage.value;
+            } else {
+              if (currentValue) {
+                components.push(currentValue);
+              }
+
+              break;
+            }
+          }
         }
 
         break;
       }
-
-      components.push(result.textBefore);
-      components.push(
-        <span
-          className="todo_link"
-          onClick={() => {
-            window.open(result.word, '_blank');
-          }}
-        >
-          {result.word}
-        </span>,
-      );
-
-      currentValue = result.value;
     }
 
     return components;
   };
 
   return (
-    <div
-      className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''} ${!isOpen && hover ? 'todo_hover_open' : ''}`}
-      onClick={handleOpen}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div className="todo_name">
-        <p>{calcName}</p>
-      </div>
+    <>
+      <div className="todo_main">
+        <div>
+          <div
+            className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''} ${!isOpen && hover ? 'todo_hover_open' : ''}`}
+            onClick={handleOpen}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+          >
+            <div className="todo_name">
+              <p>{calcName}</p>
+            </div>
 
-      <div className="todo_desc">
-        {editState && editState.forRecover.id === id ? (
-          <p>{editState.current.desc}</p>
-        ) : (
-          <p>{parseDesc(desc)}</p>
+            <div className="todo_desc">
+              {editState && editState.forRecover.id === id ? (
+                <p>{editState.current.desc}</p>
+              ) : (
+                <p>{parseDesc(desc)}</p>
+              )}
+            </div>
+
+            {!isTemp && (
+              <div className="todo_arrow_down" onClick={handleClose}>
+                <ArrowDown />
+              </div>
+            )}
+          </div>
+
+          <DeadlinesWidget
+            id={id}
+            to={deadline?.to || null}
+            from={deadline?.from || null}
+          />
+        </div>
+        {!isTemp && isOpen && (
+          <div className="todo_action_menu_container">
+            <ActionMenu id={id} openEditModal={openEditModal} />
+          </div>
         )}
       </div>
-
-      {!isTemp && isOpen && (
-        <ActionMenu id={id} openEditModal={openEditModal} />
-      )}
-
-      {!isTemp && (
-        <div className="todo_arrow_down" onClick={handleClose}>
-          <ArrowDown />
-        </div>
-      )}
-    </div>
+    </>
   );
 };

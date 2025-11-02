@@ -5,6 +5,7 @@ import fs from 'fs';
 import { generateRandomId } from '../utils/generateRandomId';
 import { TabType } from '../../renderer/contexts/AppContext';
 import { DatabaseType } from '../types/DatabaseType';
+import { setDeadlineType } from '../types/setDeadlineType';
 
 // TODO: maybe use async functions later
 
@@ -53,7 +54,7 @@ class Database {
         }
       }
       const newData = this.loadDataFromFile();
-      return newData;
+      return { database: newData, data };
     } catch (err) {
       console.error('Ошибка при сохранении файла:', err);
       return {};
@@ -111,6 +112,12 @@ class Database {
         );
 
         if (secondTopicIndex === -1) return {};
+
+        data[projectName].allTopics[findTopicIndex].todos[
+          todoIndex
+        ].currentTopic = tab;
+
+        console.log('njkodcsnikjdcsoinjkdcfvsonklijfvcdjinkfvdnjkiofvd', tab);
 
         data[projectName].allTopics[secondTopicIndex].todos.unshift(
           data[projectName].allTopics[findTopicIndex].todos[todoIndex],
@@ -230,7 +237,7 @@ class Database {
       const data = this.loadDataFromFile();
 
       const findTopicIndex = data[projectName].allTopics.findIndex(
-        (topic) => topic.name === todoToChange.currentTab,
+        (topic) => topic.name === todoToChange.currentTopic,
       );
 
       if (findTopicIndex === -1) return {};
@@ -255,6 +262,11 @@ class Database {
       ) {
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc =
           todoToChange.desc;
+      }
+
+      if (todoToChange.images) {
+        data[projectName].allTopics[findTodoIndex].todos[findTodoIndex].images =
+          todoToChange.images;
       }
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
@@ -317,6 +329,35 @@ class Database {
       return Object.keys(this.loadDataFromFile());
     } catch (error) {
       console.log('error', error);
+    }
+  };
+
+  setTodoDeadLine = (options: setDeadlineType, projectName = 'main') => {
+    try {
+      const data = this.loadDataFromFile();
+
+      const topicName = data[projectName].allTopics.findIndex(
+        (t) => t.name === options.topic,
+      );
+
+      if (topicName === -1) return {};
+
+      const todoIndex = data[projectName].allTopics[topicName].todos.findIndex(
+        (t) => t.id === options.id,
+      );
+
+      if (todoIndex === -1) return {};
+
+      data[projectName].allTopics[topicName].todos[todoIndex].deadline = {
+        to: options.to,
+        from: options.from,
+      };
+
+      fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+      return this.loadDataFromFile();
+    } catch (error) {
+      console.log('error', error);
+      return {};
     }
   };
 }

@@ -19,11 +19,18 @@ type EditTodoModalProps = {
   setShowEditModal: React.Dispatch<React.SetStateAction<editModalState | null>>;
 };
 
+export type imagesToAddType = {
+  name: string;
+  buffer: Uint8Array<ArrayBuffer>;
+};
+
 export const EditTodoModal = ({
   state,
   setShowEditModal,
 }: EditTodoModalProps) => {
   const { setTodos, currentProjectName, currentTab } = useAppContext();
+
+  const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
 
   const { addNotification } = useNotificationManager();
 
@@ -39,8 +46,21 @@ export const EditTodoModal = ({
   const handleChange = async () => {
     if (!currentProjectName) return;
     try {
+      for (let i = 0; i < imagesToAdd.length; ++i) {
+        const imageToAdd = imagesToAdd[i];
+
+        const data = {
+          id: state.current.id,
+          name: imageToAdd.name,
+          data: imageToAdd.buffer,
+          topic: state.current.currentTopic,
+        };
+
+        window.electron.ipcRenderer.addTodoImage(data, currentProjectName);
+      }
+
       const response = await ipcSignals.changeTodo(
-        { ...state.current, currentTab: currentTab || 'TODO' },
+        { ...state.current, currentTopic: currentTab || 'TODO' },
         currentProjectName,
       );
 
@@ -59,6 +79,7 @@ export const EditTodoModal = ({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.shiftKey) return;
       if (event.key === 'Enter') {
         handleChange();
       }
@@ -108,6 +129,13 @@ export const EditTodoModal = ({
                 if (!prev) return null;
                 const newState = { ...prev };
                 newState.current.desc = value;
+
+                return newState;
+              });
+            }}
+            addFile={(fileObj) => {
+              setImagesToAdd((prev) => {
+                const newState = [...prev, fileObj];
 
                 return newState;
               });
