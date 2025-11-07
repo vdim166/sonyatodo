@@ -6,6 +6,7 @@ import { generateRandomId } from '../utils/generateRandomId';
 import { TabType } from '../../renderer/contexts/AppContext';
 import { DatabaseType } from '../types/DatabaseType';
 import { setDeadlineType } from '../types/setDeadlineType';
+import { candidateLinkType } from '../../renderer/components/AddLinksToTodo';
 
 // TODO: maybe use async functions later
 
@@ -32,26 +33,13 @@ class Database {
       const id = generateRandomId();
       data.id = id;
 
-      if (!prevData[projectName]) {
-        prevData[projectName] = {
-          allTopics: [
-            {
-              name: 'TODO',
-              todos: [data],
-            },
-          ],
-          tabs: [{ name: 'TODO' }, { name: 'DONE' }],
-        };
-        fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
-      } else {
-        const findTopicIndex = prevData[projectName].allTopics.findIndex(
-          (topic) => topic.name === 'TODO',
-        );
+      const findTopicIndex = prevData[projectName].allTopics.findIndex(
+        (topic) => topic.name === data.currentTopic,
+      );
 
-        if (findTopicIndex !== -1) {
-          prevData[projectName].allTopics[findTopicIndex].todos.unshift(data);
-          fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
-        }
+      if (findTopicIndex !== -1) {
+        prevData[projectName].allTopics[findTopicIndex].todos.unshift(data);
+        fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
       }
       const newData = this.loadDataFromFile();
       return { database: newData, data };
@@ -106,26 +94,63 @@ class Database {
         findTopicIndex
       ].todos.findIndex((todo) => todo.id === id);
 
-      if (todoIndex !== -1) {
-        const secondTopicIndex = data[projectName].allTopics.findIndex(
-          (topic) => topic.name === tab,
-        );
+      if (todoIndex === -1) return {};
 
-        if (secondTopicIndex === -1) return {};
+      const secondTopicIndex = data[projectName].allTopics.findIndex(
+        (topic) => topic.name === tab,
+      );
 
-        data[projectName].allTopics[findTopicIndex].todos[
-          todoIndex
-        ].currentTopic = tab;
+      if (secondTopicIndex === -1) return {};
 
-        console.log('njkodcsnikjdcsoinjkdcfvsonklijfvcdjinkfvdnjkiofvd', tab);
+      data[projectName].allTopics[findTopicIndex].todos[
+        todoIndex
+      ].currentTopic = tab;
 
-        data[projectName].allTopics[secondTopicIndex].todos.unshift(
-          data[projectName].allTopics[findTopicIndex].todos[todoIndex],
-        );
+      data[projectName].allTopics[secondTopicIndex].todos.unshift(
+        data[projectName].allTopics[findTopicIndex].todos[todoIndex],
+      );
 
-        data[projectName].allTopics[findTopicIndex].todos = data[
-          projectName
-        ].allTopics[findTopicIndex].todos.filter((todo) => todo.id !== id);
+      data[projectName].allTopics[findTopicIndex].todos = data[
+        projectName
+      ].allTopics[findTopicIndex].todos.filter((todo) => todo.id !== id);
+
+      if (data[projectName].allTopics[secondTopicIndex].todos[0].linkedTo) {
+        for (
+          let i = 0;
+          i <
+          data[projectName].allTopics[secondTopicIndex].todos[0].linkedTo
+            .length;
+          ++i
+        ) {
+          const tempObj =
+            data[projectName].allTopics[secondTopicIndex].todos[0].linkedTo[i];
+
+          const tempTopicIndex = data[tempObj.projectName].allTopics.findIndex(
+            (t) => t.name === tempObj.todo.currentTopic,
+          );
+
+          if (tempTopicIndex !== -1) {
+            const tempTodoIndex = data[tempObj.projectName].allTopics[
+              tempTopicIndex
+            ].todos.findIndex((t) => t.id === tempObj.todo.id);
+
+            if (tempTodoIndex !== -1) {
+              const linksTempIndex = data[tempObj.projectName].allTopics[
+                tempTopicIndex
+              ].todos[tempTodoIndex].links?.findIndex(
+                (t) =>
+                  t.todo.id ===
+                  data[projectName].allTopics[secondTopicIndex].todos[0].id,
+              );
+
+              if (linksTempIndex !== undefined && linksTempIndex !== -1) {
+                data[tempObj.projectName].allTopics[tempTopicIndex].todos[
+                  tempTodoIndex
+                ].links![linksTempIndex].todo.currentTopic = tab;
+              }
+            }
+          }
+        }
       }
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
@@ -332,7 +357,7 @@ class Database {
     }
   };
 
-  setTodoDeadLine = (options: setDeadlineType, projectName = 'main') => {
+  setTodoDeadLine = (options: setDeadlineType, projectName: string) => {
     try {
       const data = this.loadDataFromFile();
 
@@ -345,6 +370,8 @@ class Database {
       const todoIndex = data[projectName].allTopics[topicName].todos.findIndex(
         (t) => t.id === options.id,
       );
+
+      console.log('todoIndex', todoIndex);
 
       if (todoIndex === -1) return {};
 
@@ -359,6 +386,198 @@ class Database {
       console.log('error', error);
       return {};
     }
+  };
+
+  findTodosByPattern = (pattern: string) => {
+    const data = this.loadDataFromFile();
+
+    const result = [];
+
+    const projects = Object.keys(data);
+
+    for (let i = 0; i < projects.length; ++i) {
+      const projectName = projects[i];
+
+      for (let j = 0; j < data[projectName].allTopics.length; ++j) {
+        const topicName = data[projectName].allTopics[j].name;
+
+        for (let k = 0; k < data[projectName].allTopics[j].todos.length; ++k) {
+          const todoName = data[projectName].allTopics[j].todos[k].name;
+
+          if (todoName.startsWith(pattern)) {
+            result.push({
+              projectName,
+              topicName,
+              todo: data[projectName].allTopics[j].todos[k],
+            });
+          }
+        }
+      }
+    }
+
+    return result;
+  };
+
+  addLinkToTodo = async (
+    id: string,
+    topic: string,
+    project: string,
+    link: candidateLinkType,
+  ) => {
+    const data = this.loadDataFromFile();
+
+    const findTopicIndex = data[project].allTopics.findIndex(
+      (t) => t.name === topic,
+    );
+
+    if (findTopicIndex === -1) return;
+
+    const findTodoIndex = data[project].allTopics[
+      findTopicIndex
+    ].todos.findIndex((t) => t.id === id);
+
+    if (findTodoIndex === -1) return;
+
+    const obj = {
+      projectName: link.projectName,
+      todo: {
+        id: link.todo.id,
+        currentTopic: link.todo.currentTopic,
+      },
+    } as candidateLinkType;
+
+    if (
+      data[link.projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+        .links
+    ) {
+      data[link.projectName].allTopics[findTopicIndex].todos[
+        findTodoIndex
+      ].links?.push(obj);
+    } else {
+      data[link.projectName].allTopics[findTopicIndex].todos[
+        findTodoIndex
+      ].links = [obj];
+    }
+
+    /// link section
+
+    const linkTopicIndex = data[link.projectName].allTopics.findIndex(
+      (t) => t.name === link.todo.currentTopic,
+    );
+
+    if (linkTopicIndex === -1) return null;
+
+    const linkTodoIndex = data[link.projectName].allTopics[
+      linkTopicIndex
+    ].todos.findIndex((t) => t.id === link.todo.id);
+
+    if (linkTodoIndex === -1) return null;
+
+    const linkObj = {
+      projectName: project,
+      todo: {
+        id: id,
+        currentTopic: topic,
+      },
+    } as candidateLinkType;
+    if (
+      data[link.projectName].allTopics[linkTopicIndex].todos[linkTodoIndex]
+        .linkedTo
+    ) {
+      data[link.projectName].allTopics[linkTopicIndex].todos[
+        linkTodoIndex
+      ].linkedTo?.push(linkObj);
+    } else {
+      data[link.projectName].allTopics[linkTopicIndex].todos[
+        linkTodoIndex
+      ].linkedTo = [linkObj];
+    }
+
+    ////
+
+    fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+
+    return;
+  };
+
+  getTodoById = async (id: string, topic: string, project: string) => {
+    const data = this.loadDataFromFile();
+
+    const findTopicIndex = data[project].allTopics.findIndex(
+      (t) => t.name === topic,
+    );
+
+    if (findTopicIndex === -1) return null;
+
+    const findTodoIndex = data[project].allTopics[
+      findTopicIndex
+    ].todos.findIndex((t) => t.id === id);
+
+    if (findTodoIndex === -1) return null;
+
+    return data[project].allTopics[findTopicIndex].todos[findTodoIndex];
+  };
+
+  deleteLinkFromTodo = async (
+    id: string,
+    topic: string,
+    project: string,
+    index: number,
+  ) => {
+    const data = this.loadDataFromFile();
+
+    const findTopicIndex = data[project].allTopics.findIndex(
+      (t) => t.name === topic,
+    );
+
+    if (findTopicIndex === -1) return null;
+
+    const findTodoIndex = data[project].allTopics[
+      findTopicIndex
+    ].todos.findIndex((t) => t.id === id);
+
+    if (findTodoIndex === -1) return null;
+
+    if (data[project].allTopics[findTopicIndex].todos[findTodoIndex].links) {
+      const tempObj =
+        data[project].allTopics[findTopicIndex].todos[findTodoIndex].links[
+          index
+        ];
+
+      const tempTopicIndex = data[tempObj.projectName].allTopics.findIndex(
+        (t) => t.name === tempObj.todo.currentTopic,
+      );
+
+      if (tempTopicIndex === -1) return;
+
+      const tempTodoIndex = data[tempObj.projectName].allTopics[
+        tempTopicIndex
+      ].todos.findIndex((t) => t.id === tempObj.todo.id);
+
+      if (tempTodoIndex === -1) return;
+
+      if (
+        data[tempObj.projectName].allTopics[tempTopicIndex].todos[tempTodoIndex]
+          .linkedTo
+      ) {
+        data[tempObj.projectName].allTopics[tempTopicIndex].todos[
+          tempTodoIndex
+        ].linkedTo = data[tempObj.projectName].allTopics[tempTopicIndex].todos[
+          tempTodoIndex
+        ].linkedTo?.filter(
+          (t) =>
+            t.todo.id !==
+            data[project].allTopics[findTopicIndex].todos[findTodoIndex].id,
+        );
+      }
+
+      data[project].allTopics[findTopicIndex].todos[findTodoIndex].links.splice(
+        index,
+        1,
+      );
+    }
+
+    fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
   };
 }
 

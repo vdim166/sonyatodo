@@ -1,0 +1,52 @@
+.edit_todo_modal_links {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.edit_todo_modal_links_title {
+  color: white;
+  font-size: 20px;
+}
+
+.edit_todo_modal_links_container {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.edit_todo_modal_links_container_add_link_container {
+  position: relative;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown {
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  box-sizing: border-box;
+
+  border-radius: 5px;
+
+  padding: 5px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown_option {
+  padding: 2px;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown_option:hover {
+  background-color: rgb(68, 68, 219);
+  cursor: pointer;
+  border-radius: 5px;
+  color: white;
+}

@@ -1,4 +1,18 @@
 .edit_todo_modal {
   display: flex;
   flex-direction: column;
+
+  z-index: 100;
+}
+
+.edit_todo_modal_title {
+  text-align: center;
+}
+
+.edit_todo_modal_action_menu {
+  position: relative;
+}
+
+.edit_todo_modal_action_menu div {
+  bottom: auto;
 }

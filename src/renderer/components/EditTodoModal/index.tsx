@@ -1,50 +1,37 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../shared/Button';
-import { Input } from '../shared/Input';
-import { Textarea } from '../shared/Textarea';
+import { Button } from '../shared/components/Button';
+import { Input } from '../shared/components/Input';
 import './styles.css';
 import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
-import { CancelButton } from '../shared/CancelButton';
+import { CancelButton } from '../shared/components/CancelButton';
 import { useAppContext } from '../../hooks/useAppContext';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
-import { TextareaWithTools } from '../shared/TextareaWithTools';
-
-export type editModalState = {
-  current: saveTodoType;
-  forRecover: saveTodoType;
-};
-
-type EditTodoModalProps = {
-  state: editModalState;
-  setShowEditModal: React.Dispatch<React.SetStateAction<editModalState | null>>;
-};
+import { Cross } from '../../icons/Cross';
+import { AddLinksToTodo } from '../AddLinksToTodo';
+import { TextareaWithTools } from '../shared/components/TextareaWithTools';
+import { ActionMenu } from '../Todo/ActionMenu';
 
 export type imagesToAddType = {
   name: string;
   buffer: Uint8Array<ArrayBuffer>;
 };
 
-export const EditTodoModal = ({
-  state,
-  setShowEditModal,
-}: EditTodoModalProps) => {
-  const { setTodos, currentProjectName, currentTab } = useAppContext();
+export const EditTodoModal = () => {
+  const { showEditModal, setShowEditModal, setTodos, currentProjectName } =
+    useAppContext();
 
   const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
 
-  const { addNotification } = useNotificationManager();
+  const [state, setState] = useState<{
+    current: saveTodoType;
+    forRecovery: saveTodoType;
+  } | null>(null);
 
-  const backHandle = () => {
-    setShowEditModal((prev) => {
-      if (!prev) return null;
-      const newState = { ...prev };
-      newState.current = structuredClone(newState.forRecover);
-      return newState;
-    });
-  };
+  const { addNotification } = useNotificationManager();
 
   const handleChange = async () => {
     if (!currentProjectName) return;
+    if (state === null) return;
     try {
       for (let i = 0; i < imagesToAdd.length; ++i) {
         const imageToAdd = imagesToAdd[i];
@@ -60,7 +47,7 @@ export const EditTodoModal = ({
       }
 
       const response = await ipcSignals.changeTodo(
-        { ...state.current, currentTopic: currentTab || 'TODO' },
+        { ...state.current },
         currentProjectName,
       );
 
@@ -72,10 +59,6 @@ export const EditTodoModal = ({
       console.log('error', error);
     }
   };
-
-  const isChangeDisabled =
-    state.current.name === state.forRecover.name &&
-    state.current.desc === state.forRecover.desc;
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -91,17 +74,76 @@ export const EditTodoModal = ({
     };
   }, [state]);
 
+  useEffect(() => {
+    if (showEditModal) {
+      const getTodo = async () => {
+        try {
+          const todo = await ipcSignals.getTodoById(
+            showEditModal.id,
+            showEditModal.currentTopic,
+            currentProjectName || 'main',
+          );
+
+          console.log('todo', todo);
+
+          if (todo === null) return setState(null);
+
+          setState({
+            current: structuredClone(todo),
+            forRecovery: structuredClone(todo),
+          });
+        } catch (error) {
+          console.log('error', error);
+        }
+      };
+
+      getTodo();
+    } else {
+      setState(null);
+    }
+  }, [showEditModal]);
+
+  if (state === null) return;
+
+  if (state.current === null) return;
+
+  const backHandle = () => {
+    setState((prev) => {
+      if (!prev) return null;
+      const newState = { ...prev };
+      newState.current = structuredClone(newState.forRecovery);
+      return newState;
+    });
+  };
+
+  const isChangeDisabled =
+    state.current.name === state.forRecovery.name &&
+    state.current.desc === state.forRecovery.desc;
+
   return (
     <div className="edit_todo_modal">
-      <div className="add_todo_container_inputs">
-        <h1>Изменить</h1>
+      <div
+        className="add_todo_container_inputs"
+        style={{
+          minWidth: '250px',
+        }}
+      >
+        <div
+          className="add_todo_container_inputs_cross"
+          onClick={() => {
+            setShowEditModal(null);
+          }}
+        >
+          <Cross />
+        </div>
+        <h1 className="edit_todo_modal_title">Изменить</h1>
         <div className="add_todo_container_inputs_option">
           <p>Name:</p>
           <Input
             autoFocus
             value={state.current.name}
             onChange={(e) =>
-              setShowEditModal((prev) => {
+              setState((prev) => {
                 if (!prev) return null;
 
                 const newState = { ...prev };
@@ -116,7 +158,7 @@ export const EditTodoModal = ({
           <TextareaWithTools
             value={state.current.desc}
             onChange={(e) =>
-              setShowEditModal((prev) => {
+              setState((prev) => {
                 if (!prev) return null;
                 const newState = { ...prev };
                 newState.current.desc = e.target.value;
@@ -125,7 +167,7 @@ export const EditTodoModal = ({
               })
             }
             setValue={(value) => {
-              setShowEditModal((prev) => {
+              setState((prev) => {
                 if (!prev) return null;
                 const newState = { ...prev };
                 newState.current.desc = value;
@@ -140,6 +182,19 @@ export const EditTodoModal = ({
                 return newState;
               });
             }}
+          />
+        </div>
+
+        <div className="edit_todo_modal_action_menu">
+          <ActionMenu todo={state.current} />
+        </div>
+
+        <div className="edit_todo_modal_links">
+          <p className="edit_todo_modal_links_title">Связи</p>
+
+          <AddLinksToTodo
+            todo={state.current}
+            setShowEditModal={setShowEditModal}
           />
         </div>
 

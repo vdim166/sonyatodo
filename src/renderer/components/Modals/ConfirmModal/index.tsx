@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useModalsContext } from '../../../hooks/useModalsContext';
-import { Button } from '../../shared/Button';
+import { Button } from '../../shared/components/Button';
 import { confirmModalType } from '../types/confirmModalType';
 import './styles.css';
 

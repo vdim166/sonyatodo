@@ -6,6 +6,7 @@ import { TabType } from '../renderer/contexts/AppContext';
 import { DatabaseType } from './types/DatabaseType';
 import { setDeadlineType } from './types/setDeadlineType';
 import { addTodoImageType } from './types/addTodoImageType';
+import { candidateLinkType } from '../renderer/components/AddLinksToTodo';
 
 // Типы для каналов IPC
 
@@ -106,6 +107,10 @@ const electronHandler = {
       return ipcRenderer.invoke(IPC_SIGNALS.GET_WIDGET_SETTINGS);
     },
 
+    findTodoByPattern(pattern: string) {
+      return ipcRenderer.invoke(IPC_SIGNALS.FIND_TODO_BY_PATTERN, pattern);
+    },
+
     setDeadLine(options: setDeadlineType, projectName: string) {
       return ipcRenderer.invoke(
         IPC_SIGNALS.SET_TODO_DEADLINE,
@@ -119,6 +124,39 @@ const electronHandler = {
         options,
         projectName,
       );
+    },
+
+    addLinkToTodo(
+      id: string,
+      topic: string,
+      project: string,
+      link: candidateLinkType,
+    ) {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.ADD_LINK_TO_TODO,
+        id,
+        topic,
+        project,
+        link,
+      );
+    },
+
+    deleteLinkFromTodo(
+      id: string,
+      topic: string,
+      project: string,
+      index: number,
+    ) {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.DELETE_LINK_FROM_TODO,
+        id,
+        topic,
+        project,
+        index,
+      );
+    },
+    getTodoById(id: string, topic: string, project: string) {
+      return ipcRenderer.invoke(IPC_SIGNALS.GET_TODO_BY_ID, id, topic, project);
     },
 
     loadTodoImage(name: string) {

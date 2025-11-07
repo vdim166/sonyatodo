@@ -3,6 +3,7 @@ import { ipcSignals, saveTodoType } from '../classes/ipcSignals';
 import { AppContext, AppContextType, TabType } from './AppContext';
 import { log } from 'console';
 import { DISPATCH_EVENTS } from '../consts/dispatchEvents';
+import { editModalState } from '../components/shared/types/editModalState';
 
 type AppContextProviderProps = {
   children: React.ReactNode;
@@ -18,6 +19,10 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   );
 
   const [projects, setProjects] = useState<string[] | null>(null);
+
+  const [showEditModal, setShowEditModal] = useState<editModalState | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -84,6 +89,8 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setCurrentProjectName,
     projects,
     setProjects,
+    showEditModal,
+    setShowEditModal,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

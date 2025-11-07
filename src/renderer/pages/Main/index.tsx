@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Button } from '../../components/shared/Button';
+import { useState } from 'react';
+import { Button } from '../../components/shared/components/Button';
 import { Navbar } from '../../components/Navbar';
 import './styles.css';
 import { AddTodoContainer } from '../../components/AddTodoContainer';
@@ -7,16 +7,15 @@ import { Todo, TodoProps } from '../../components/Todo';
 import { useAppContext } from '../../hooks/useAppContext';
 import { TodoNavbar } from '../../components/TodoNavbar';
 import { BurgerMenu } from '../../components/BurgerMenu';
-import { editModalState, EditTodoModal } from '../../components/EditTodoModal';
+import { EditTodoModal } from '../../components/EditTodoModal';
 import { ProjectsHolder } from '../../components/ProjectsHolder';
+import { sortTodosByDeadline } from '../../components/shared/functions/sortTodosByDeadline';
 
 export const Main = () => {
+  const { setShowEditModal } = useAppContext();
+
   const [showTodoBtn, setShowTodoBtn] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<TodoProps | null>(null);
-
-  const [showEditModal, setShowEditModal] = useState<editModalState | null>(
-    null,
-  );
 
   const { todos } = useAppContext();
 
@@ -42,7 +41,17 @@ export const Main = () => {
 
         {showTodoBtn && (
           <AddTodoContainer
-            changeTempTodo={(todo) => setTempTodo(todo)}
+            changeTempTodo={(name, desc) =>
+              setTempTodo((prev) => {
+                if (!prev) return null;
+                const newState = { ...prev };
+
+                newState.todo.name = name;
+                newState.todo.desc = desc;
+
+                return newState;
+              })
+            }
             closeModal={() => {
               setTempTodo(null);
               setShowTodoBtn(false);
@@ -50,12 +59,7 @@ export const Main = () => {
           />
         )}
 
-        {showEditModal && (
-          <EditTodoModal
-            state={showEditModal}
-            setShowEditModal={setShowEditModal}
-          />
-        )}
+        <EditTodoModal />
 
         <div
           style={{
@@ -69,18 +73,17 @@ export const Main = () => {
           <div className="todos">
             {tempTodo !== null && <Todo isTemp {...tempTodo} />}
             {todos.length > 0
-              ? todos.map((todo) => {
+              ? sortTodosByDeadline(todos).map((todo) => {
                   return (
                     <Todo
-                      {...todo}
                       openEditModal={() => {
                         setShowTodoBtn(false);
                         setShowEditModal({
-                          current: structuredClone(todo),
-                          forRecover: structuredClone(todo),
+                          id: todo.id,
+                          currentTopic: todo.currentTopic,
                         });
                       }}
-                      editState={showEditModal}
+                      todo={todo}
                       key={todo.id}
                     />
                   );

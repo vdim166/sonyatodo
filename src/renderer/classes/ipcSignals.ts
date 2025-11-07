@@ -1,4 +1,5 @@
 import { setDeadlineType } from '../../main/types/setDeadlineType';
+import { candidateLinkType } from '../components/AddLinksToTodo';
 import { TabType } from '../contexts/AppContext';
 
 export type saveTodoType = {
@@ -13,6 +14,9 @@ export type saveTodoType = {
   deadline?: { from: string | null; to: string | null };
 
   images?: { name: string }[];
+
+  links?: candidateLinkType[];
+  linkedTo?: candidateLinkType[];
 };
 
 class IpcSignals {
@@ -122,11 +126,55 @@ class IpcSignals {
   };
 
   setDeadLine = async (options: setDeadlineType, projectName = 'main') => {
-    const data = await await window.electron.ipcRenderer.setDeadLine(
+    const data = await window.electron.ipcRenderer.setDeadLine(
       options,
       projectName,
     );
 
+    return data;
+  };
+
+  findTodoByPattern = async (pattern: string) => {
+    const data = await window.electron.ipcRenderer.findTodoByPattern(pattern);
+    return data;
+  };
+
+  addLinkToTodo = async (
+    id: string,
+    topic: string,
+    project: string,
+    link: candidateLinkType,
+  ) => {
+    const data = await window.electron.ipcRenderer.addLinkToTodo(
+      id,
+      topic,
+      project,
+      link,
+    );
+    return data;
+  };
+
+  getTodoById = async (id: string, topic: string, project: string) => {
+    const data = await window.electron.ipcRenderer.getTodoById(
+      id,
+      topic,
+      project,
+    );
+    return data;
+  };
+
+  deleteLinkFromTodo = async (
+    id: string,
+    topic: string,
+    project: string,
+    index: number,
+  ) => {
+    const data = await window.electron.ipcRenderer.deleteLinkFromTodo(
+      id,
+      topic,
+      project,
+      index,
+    );
     return data;
   };
 }

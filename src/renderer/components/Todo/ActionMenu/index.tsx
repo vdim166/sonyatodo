@@ -1,4 +1,4 @@
-import { ipcSignals } from '../../../classes/ipcSignals';
+import { ipcSignals, saveTodoType } from '../../../classes/ipcSignals';
 import { DISPATCH_EVENTS } from '../../../consts/dispatchEvents';
 import { MODALS } from '../../../contexts/ModalsContext';
 import { useAppContext } from '../../../hooks/useAppContext';
@@ -10,13 +10,13 @@ import { SendTodoComponent } from '../SendTodoComponent';
 import './styles.css';
 
 type ActionMenuProps = {
-  id: string;
-  openEditModal: () => void;
+  todo: saveTodoType;
+  openEditModal?: () => void;
 };
 
-export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
+export const ActionMenu = ({ todo, openEditModal }: ActionMenuProps) => {
   const { openModal, closeModal } = useModalsContext();
-  const { currentProjectName, currentTab } = useAppContext();
+  const { currentProjectName, setShowEditModal } = useAppContext();
 
   const { addNotification } = useNotificationManager();
 
@@ -24,12 +24,13 @@ export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
     try {
       if (!currentProjectName) return;
       const data = await ipcSignals.deleteData(
-        id,
-        currentTab || 'TODO',
+        todo.id,
+        todo.currentTopic,
         currentProjectName,
       );
 
       if (data) {
+        setShowEditModal(null);
         window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
         addNotification('Задача удалена');
       }
@@ -44,9 +45,9 @@ export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
     try {
       if (!currentProjectName) return;
       const data = await ipcSignals.moveTo(
-        id,
+        todo.id,
         tab,
-        currentTab || 'TODO',
+        todo.currentTopic,
         currentProjectName,
       );
 
@@ -61,10 +62,12 @@ export const ActionMenu = ({ id, openEditModal }: ActionMenuProps) => {
 
   return (
     <div className="todo_action_menu">
-      <div className="todo_action_edit" onClick={openEditModal}>
-        <Pencil />
-      </div>
-      <SendTodoComponent handleSendTodo={handleSendTodo} />
+      {openEditModal && (
+        <div className="todo_action_edit" onClick={openEditModal}>
+          <Pencil />
+        </div>
+      )}
+      <SendTodoComponent handleSendTodo={handleSendTodo} todo={todo} />
       <div
         className="todo_action_menu_cross"
         onClick={() => {

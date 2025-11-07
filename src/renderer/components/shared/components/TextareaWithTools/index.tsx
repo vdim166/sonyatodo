@@ -1,9 +1,9 @@
 import { useRef } from 'react';
-import { Link } from '../../../icons/Link';
-import { Textarea } from '../Textarea';
 import './styles.css';
-import { Image } from '../../../icons/Image';
-import { generateRandomId } from '../../../../main/utils/generateRandomId';
+import { generateRandomId } from '../../../../../main/utils/generateRandomId';
+import { Link } from '../../../../icons/Link';
+import { Textarea } from '../Textarea';
+import { Image } from '../../../../icons/Image';
 
 type TextareaWithTools = {
   value: string;

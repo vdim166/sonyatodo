@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import { saveTodoType } from '../classes/ipcSignals';
+import { editModalState } from '../components/shared/types/editModalState';
 
 export type TabType = {
   name: string;
@@ -16,9 +17,11 @@ export type AppContextType = {
   setCurrentProjectName: React.Dispatch<React.SetStateAction<string | null>>;
   projects: string[] | null;
   setProjects: React.Dispatch<React.SetStateAction<string[] | null>>;
+  showEditModal: editModalState | null;
+  setShowEditModal: React.Dispatch<React.SetStateAction<editModalState | null>>;
 };
 
-const init = {
+const init: AppContextType = {
   todos: null,
   setTodos: () => {},
   tabs: null,
@@ -29,6 +32,8 @@ const init = {
   setCurrentProjectName: () => {},
   projects: null,
   setProjects: () => {},
+  showEditModal: null,
+  setShowEditModal: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(init);

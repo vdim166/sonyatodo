@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './styles.css';
 import { Cross } from '../../icons/Cross';
 import { Check } from '../../icons/Check';
-import { ipcSignals } from '../../classes/ipcSignals';
+import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { setDeadlineType } from '../../../main/types/setDeadlineType';
 import { useAppContext } from '../../hooks/useAppContext';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
@@ -10,11 +10,11 @@ import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 type DeadlinesWidgetProps = {
   from: string | null;
   to: string | null;
-  id: string;
+  todo: saveTodoType;
 };
 
 export const DeadlinesWidget = ({
-  id,
+  todo,
   from: initFrom,
   to: initTo,
 }: DeadlinesWidgetProps) => {
@@ -26,7 +26,7 @@ export const DeadlinesWidget = ({
   const [to, setTo] = useState(initTo || '');
   const [from, setFrom] = useState(initFrom || '');
 
-  const { currentProjectName, currentTab } = useAppContext();
+  const { currentProjectName } = useAppContext();
 
   useEffect(() => {
     if (isPicking) {
@@ -43,8 +43,8 @@ export const DeadlinesWidget = ({
       const data: setDeadlineType = {
         from: from,
         to: to,
-        topic: currentTab || 'TODO',
-        id,
+        topic: todo.currentTopic,
+        id: todo.id,
       };
 
       await ipcSignals.setDeadLine(data, currentProjectName || 'main');
@@ -69,7 +69,7 @@ export const DeadlinesWidget = ({
     const today = new Date();
     const targetDate = new Date(date);
 
-    if (today < targetDate) {
+    if (today > targetDate) {
       return 'red';
     } else {
       return '';

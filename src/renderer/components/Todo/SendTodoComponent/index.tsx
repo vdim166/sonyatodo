@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { SuccessSvg } from '../../../icons/SuccessSvg';
 import './styles.css';
 import { useAppContext } from '../../../hooks/useAppContext';
+import { saveTodoType } from '../../../classes/ipcSignals';
 
 type SendTodoComponentType = {
   handleSendTodo: (tab: string) => () => void;
+  todo: saveTodoType;
 };
 
 export const SendTodoComponent = ({
   handleSendTodo,
+  todo,
 }: SendTodoComponentType) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { tabs, currentTab } = useAppContext();
+  const { tabs } = useAppContext();
 
   const onClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     setIsOpen((prev) => !prev);
@@ -25,7 +28,7 @@ export const SendTodoComponent = ({
       {isOpen && (
         <div className="todo_success_modal">
           {tabs
-            .filter((tab) => tab.name !== currentTab)
+            .filter((tab) => tab.name !== todo.currentTopic)
             .map((tab) => {
               return (
                 <div

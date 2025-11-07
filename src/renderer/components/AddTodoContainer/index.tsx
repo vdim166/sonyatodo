@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../shared/Button';
-import { Input } from '../shared/Input';
+import { Button } from '../shared/components/Button';
+import { Input } from '../shared/components/Input';
 import { TodoProps } from '../Todo';
 import './styles.css';
 import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { useAppContext } from '../../hooks/useAppContext';
-import { CancelButton } from '../shared/CancelButton';
+import { CancelButton } from '../shared/components/CancelButton';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
-import { TextareaWithTools } from '../shared/TextareaWithTools';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 import { imagesToAddType } from '../EditTodoModal';
+import { Cross } from '../../icons/Cross';
+import { TextareaWithTools } from '../shared/components/TextareaWithTools';
 
 type AddTodoContainerProps = {
-  changeTempTodo: (props: TodoProps | null) => void;
+  changeTempTodo: (name: string, desc: string) => void;
   closeModal: () => void;
 };
 
@@ -23,10 +24,12 @@ export const AddTodoContainer = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  const { currentProjectName } = useAppContext();
+  const { currentProjectName, currentTab } = useAppContext();
 
   const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
   const { addNotification } = useNotificationManager();
+
+  console.log('currentTab', currentTab);
 
   const handleCreate = async () => {
     try {
@@ -37,7 +40,7 @@ export const AddTodoContainer = ({
         {
           name,
           desc: description,
-          currentTopic: 'TODO',
+          currentTopic: currentTab,
         } as saveTodoType,
         currentProjectName,
       );
@@ -50,7 +53,7 @@ export const AddTodoContainer = ({
             id: todo.id,
             name: imageToAdd.name,
             data: imageToAdd.buffer,
-            topic: 'TODO',
+            topic: currentTab || 'TODO',
           };
 
           window.electron.ipcRenderer.addTodoImage(data, currentProjectName);
@@ -74,12 +77,7 @@ export const AddTodoContainer = ({
 
   useEffect(() => {
     if (name !== '' || description !== '') {
-      changeTempTodo({
-        name,
-        desc: description,
-      } as TodoProps);
-    } else {
-      changeTempTodo(null);
+      changeTempTodo(name, description);
     }
   }, [name, description]);
 
@@ -104,6 +102,9 @@ export const AddTodoContainer = ({
   return (
     <div className="add_todo_container">
       <div className="add_todo_container_inputs">
+        <div className="add_todo_container_inputs_cross" onClick={closeModal}>
+          <Cross />
+        </div>
         <h1>Добавьте дело</h1>
         <div className="add_todo_container_inputs_option">
           <p>Name:</p>

@@ -3,8 +3,8 @@ import './styles.css';
 import { ipcSignals } from '../../../classes/ipcSignals';
 import { useAppContext } from '../../../hooks/useAppContext';
 import { Cross } from '../../../icons/Cross';
-import { Input } from '../../shared/Input';
-import { Button } from '../../shared/Button';
+import { Input } from '../../shared/components/Input';
+import { Button } from '../../shared/components/Button';
 import { useModalsContext } from '../../../hooks/useModalsContext';
 
 export const ProjectConstructor = () => {

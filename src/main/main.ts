@@ -108,8 +108,25 @@ ipcMain.handle(IPC_SIGNALS.DELETE_PROJECT, (_event, name) => {
   return database.deleteProject(name);
 });
 
-ipcMain.handle(IPC_SIGNALS.SET_TODO_DEADLINE, (_event, options) => {
-  return database.setTodoDeadLine(options);
+ipcMain.handle(
+  IPC_SIGNALS.SET_TODO_DEADLINE,
+  (_event, options, projectName) => {
+    return database.setTodoDeadLine(options, projectName);
+  },
+);
+
+ipcMain.handle(IPC_SIGNALS.FIND_TODO_BY_PATTERN, (_event, pattern) => {
+  return database.findTodosByPattern(pattern);
+});
+
+ipcMain.handle(
+  IPC_SIGNALS.ADD_LINK_TO_TODO,
+  (_event, id, topic, project, link) => {
+    return database.addLinkToTodo(id, topic, project, link);
+  },
+);
+ipcMain.handle(IPC_SIGNALS.GET_TODO_BY_ID, (_event, id, topic, project) => {
+  return database.getTodoById(id, topic, project);
 });
 
 ipcMain.handle(
@@ -125,6 +142,12 @@ ipcMain.handle(
       if (err) console.error(err);
       else console.log('Saved:', savePath);
     });
+  },
+);
+ipcMain.handle(
+  IPC_SIGNALS.DELETE_LINK_FROM_TODO,
+  (_event, id, topic, project, index) => {
+    return database.deleteLinkFromTodo(id, topic, project, index);
   },
 );
 

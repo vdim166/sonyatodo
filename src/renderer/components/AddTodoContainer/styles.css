@@ -44,3 +44,13 @@
 .add_todo_container_inputs h1 {
   color: white;
 }
+
+.add_todo_container_inputs_cross {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.add_todo_container_inputs_cross:hover {
+  cursor: pointer;
+}

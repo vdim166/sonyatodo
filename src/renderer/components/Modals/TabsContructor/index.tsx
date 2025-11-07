@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useAppContext } from '../../../hooks/useAppContext';
 import { useModalsContext } from '../../../hooks/useModalsContext';
-import { Button } from '../../shared/Button';
+import { Button } from '../../shared/components/Button';
 import './styles.css';
-import { Input } from '../../shared/Input';
+import { Input } from '../../shared/components/Input';
 import { ipcSignals } from '../../../classes/ipcSignals';
 import { TabType } from '../../../contexts/AppContext';
 import { useNotificationManager } from '../../../hooks/useNotificationManager';

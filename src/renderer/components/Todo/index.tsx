@@ -2,34 +2,19 @@ import { useMemo, useState } from 'react';
 import { ArrowDown } from '../../icons/ArrowDown';
 import './styles.css';
 import { ActionMenu } from './ActionMenu';
-import { editModalState } from '../EditTodoModal';
 import { DeadlinesWidget } from '../DeadlinesWidget';
 import { SmartLoadingImg } from '../SmartLoadingImg';
+import { saveTodoType } from '../../classes/ipcSignals';
 
 export type TodoProps = {
   isTemp?: boolean;
-  name: string;
-  desc: string;
-  id: string;
 
-  editState: editModalState | null;
+  todo: saveTodoType;
+
   openEditModal: () => void;
-
-  deadline?: {
-    to: string | null;
-    from: string | null;
-  };
 };
 
-export const Todo = ({
-  name,
-  desc,
-  isTemp = false,
-  id,
-  editState,
-  openEditModal,
-  deadline,
-}: TodoProps) => {
+export const Todo = ({ isTemp = false, todo, openEditModal }: TodoProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hover, setHover] = useState(false);
 
@@ -44,11 +29,14 @@ export const Todo = ({
   };
 
   const calcName = useMemo(() => {
-    if (editState) {
-      if (editState.forRecover.id === id) {
-        return editState.current.name;
-      }
-    }
+    // TODO:
+    // if (editState) {
+    //   if (editState.forRecover.id === id) {
+    //     return editState.current.name;
+    //   }
+    // }
+
+    const name = todo.name;
 
     if (isOpen) {
       return name;
@@ -60,7 +48,7 @@ export const Todo = ({
 
     if (!isOpen) return name.substring(0, 30);
     return name;
-  }, [isOpen, hover, name, editState]);
+  }, [isOpen, hover, todo]);
 
   const findLink = (value: string) => {
     const first = value.indexOf('<a>');
@@ -147,7 +135,9 @@ export const Todo = ({
               components.push(resultImage.textBefore);
               components.push(<br />);
               components.push(
-                <SmartLoadingImg link={`${id}-${resultImage.imgLink}.jpg`} />,
+                <SmartLoadingImg
+                  link={`${todo.id}-${resultImage.imgLink}.jpg`}
+                />,
               );
               components.push(<br />);
 
@@ -184,11 +174,7 @@ export const Todo = ({
             </div>
 
             <div className="todo_desc">
-              {editState && editState.forRecover.id === id ? (
-                <p>{editState.current.desc}</p>
-              ) : (
-                <p>{parseDesc(desc)}</p>
-              )}
+              <p>{parseDesc(todo.desc)}</p>
             </div>
 
             {!isTemp && (
@@ -199,14 +185,14 @@ export const Todo = ({
           </div>
 
           <DeadlinesWidget
-            id={id}
-            to={deadline?.to || null}
-            from={deadline?.from || null}
+            todo={todo}
+            to={todo.deadline?.to || null}
+            from={todo.deadline?.from || null}
           />
         </div>
         {!isTemp && isOpen && (
           <div className="todo_action_menu_container">
-            <ActionMenu id={id} openEditModal={openEditModal} />
+            <ActionMenu todo={todo} openEditModal={openEditModal} />
           </div>
         )}
       </div>
