@@ -10,6 +10,9 @@ import { Cross } from '../../icons/Cross';
 import { AddLinksToTodo } from '../AddLinksToTodo';
 import { TextareaWithTools } from '../shared/components/TextareaWithTools';
 import { ActionMenu } from '../Todo/ActionMenu';
+import { DeadlinesWidget } from '../DeadlinesWidget';
+import { BackArrow } from '../../icons/BackArrow';
+import { LinkToWidget } from '../LinkToWidget';
 
 export type imagesToAddType = {
   name: string;
@@ -84,8 +87,6 @@ export const EditTodoModal = () => {
             currentProjectName || 'main',
           );
 
-          console.log('todo', todo);
-
           if (todo === null) return setState(null);
 
           setState({
@@ -136,6 +137,25 @@ export const EditTodoModal = () => {
         >
           <Cross />
         </div>
+
+        {showEditModal?.original && (
+          <div
+            className="add_todo_container_inputs_back"
+            onClick={() => {
+              setShowEditModal(null);
+
+              setTimeout(() => {
+                if (!showEditModal.original) return;
+                setShowEditModal({
+                  id: showEditModal.original.id,
+                  currentTopic: showEditModal.original.currentTopic,
+                });
+              }, 0);
+            }}
+          >
+            <BackArrow />
+          </div>
+        )}
         <h1 className="edit_todo_modal_title">Изменить</h1>
         <div className="add_todo_container_inputs_option">
           <p>Name:</p>
@@ -187,6 +207,19 @@ export const EditTodoModal = () => {
 
         <div className="edit_todo_modal_action_menu">
           <ActionMenu todo={state.current} />
+        </div>
+
+        <div className="edit_todo_modal_deadline_widget">
+          <DeadlinesWidget
+            todo={state.current}
+            to={state.current.deadline?.to || null}
+            from={state.current.deadline?.from || null}
+          />
+        </div>
+
+        <div className="edit_todo_modal_links">
+          <p className="edit_todo_modal_links_title">Привязать к</p>
+          <LinkToWidget todo={state.current} />
         </div>
 
         <div className="edit_todo_modal_links">

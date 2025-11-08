@@ -371,8 +371,6 @@ class Database {
         (t) => t.id === options.id,
       );
 
-      console.log('todoIndex', todoIndex);
-
       if (todoIndex === -1) return {};
 
       data[projectName].allTopics[topicName].todos[todoIndex].deadline = {
@@ -522,7 +520,7 @@ class Database {
     id: string,
     topic: string,
     project: string,
-    index: number,
+    linkId: string,
   ) => {
     const data = this.loadDataFromFile();
 
@@ -539,9 +537,15 @@ class Database {
     if (findTodoIndex === -1) return null;
 
     if (data[project].allTopics[findTopicIndex].todos[findTodoIndex].links) {
+      const findLinkIndex = data[project].allTopics[findTopicIndex].todos[
+        findTodoIndex
+      ].links.findIndex((t) => t.todo.id === linkId);
+
+      if (findLinkIndex === -1) return null;
+
       const tempObj =
         data[project].allTopics[findTopicIndex].todos[findTodoIndex].links[
-          index
+          findLinkIndex
         ];
 
       const tempTopicIndex = data[tempObj.projectName].allTopics.findIndex(
@@ -572,7 +576,7 @@ class Database {
       }
 
       data[project].allTopics[findTopicIndex].todos[findTodoIndex].links.splice(
-        index,
+        findLinkIndex,
         1,
       );
     }

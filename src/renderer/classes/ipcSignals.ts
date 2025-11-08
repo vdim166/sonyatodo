@@ -167,13 +167,13 @@ class IpcSignals {
     id: string,
     topic: string,
     project: string,
-    index: number,
+    linkId: string,
   ) => {
     const data = await window.electron.ipcRenderer.deleteLinkFromTodo(
       id,
       topic,
       project,
-      index,
+      linkId,
     );
     return data;
   };

@@ -1,0 +1,63 @@
+.todo_search {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+
+  position: relative;
+}
+
+.todo_search_input {
+  max-width: 500px;
+  width: 500px;
+}
+
+.todo_search_input_dropdown {
+  display: flex;
+
+  flex-direction: column;
+
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  width: 500px;
+
+  gap: 5px;
+
+  z-index: 101;
+
+  overflow: hidden auto;
+
+  max-height: 200px;
+}
+
+.todo_search_input_dropdown::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.todo_search_input_dropdown::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.todo_search_input_dropdown::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.todo_search_input_dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
+
+.todo_search_input_dropdown_option {
+  padding-block: 10px;
+  padding-left: 5px;
+}
+
+.todo_search_input_dropdown_option:hover {
+  cursor: pointer;
+  background-color: rgb(52, 52, 184);
+  color: white;
+}

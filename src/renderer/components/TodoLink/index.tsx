@@ -6,20 +6,20 @@ import { ipcSignals, saveTodoType } from '../../classes/ipcSignals';
 import { Cross } from '../../icons/Cross';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 import { editModalState } from '../shared/types/editModalState';
+import { useAppContext } from '../../hooks/useAppContext';
 
 type TodoLinkProps = {
   link: candidateLinkType;
-  index: number;
   original: saveTodoType;
   setShowEditModal: React.Dispatch<React.SetStateAction<editModalState | null>>;
 };
 
 export const TodoLink = ({
   link,
-  index,
   original,
   setShowEditModal,
 }: TodoLinkProps) => {
+  const { currentProjectName } = useAppContext();
   const [current, setCurrent] = useState<saveTodoType | null>(null);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export const TodoLink = ({
         original.id,
         original.currentTopic,
         link.projectName,
-        index,
+        link.todo.id,
       );
 
       window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
@@ -76,6 +76,7 @@ export const TodoLink = ({
           setShowEditModal({
             id: link.todo.id,
             currentTopic: link.todo.currentTopic,
+            original,
           });
         }, 0);
       }}
@@ -88,8 +89,26 @@ export const TodoLink = ({
       <div className="edit_todo_modal_links_option_action_menu">
         <div
           className={`edit_todo_modal_links_option_check ${current.currentTopic === 'DONE' ? 'checked' : ''}`}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
+
+            if (current.currentTopic === 'DONE') {
+              await ipcSignals.moveTo(
+                current.id,
+                'TODO',
+                current.currentTopic,
+                currentProjectName || 'main',
+              );
+            } else {
+              await ipcSignals.moveTo(
+                current.id,
+                'DONE',
+                current.currentTopic,
+                currentProjectName || 'main',
+              );
+            }
+
+            window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
           }}
         >
           <Check />

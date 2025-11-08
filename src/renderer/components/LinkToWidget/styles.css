@@ -1,0 +1,103 @@
+.link_to_widget {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.link_to_widget_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.link_to_widget_container_option {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 5px;
+
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.link_to_widget_container_option:hover {
+  background-color: rgb(50, 50, 190);
+  cursor: pointer;
+}
+
+.link_to_widget_container_option p {
+  color: white;
+
+  max-width: 150px;
+  text-overflow: ellipsis;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+}
+
+.link_to_widget_container_option_cross svg {
+  width: 15px;
+  height: 15px;
+}
+
+.link_to_widget_container_option_cross:hover {
+  cursor: pointer;
+}
+
+.link_to_widget_container_option_cross:hover path {
+  stroke: rgb(196, 43, 43);
+}
+
+.link_to_widget_input {
+  position: relative;
+}
+
+.link_to_widget_input_dropdown {
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  box-sizing: border-box;
+
+  border-radius: 5px;
+
+  padding: 5px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  overflow: hidden auto;
+  max-height: 200px;
+}
+
+.link_to_widget_input_dropdown::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.link_to_widget_input_dropdown::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.link_to_widget_input_dropdown::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.link_to_widget_input_dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
+
+.link_to_widget_input_dropdown_option {
+  padding: 2px;
+}
+
+.link_to_widget_input_dropdown:hover {
+  background-color: rgb(68, 68, 219);
+  cursor: pointer;
+  border-radius: 5px;
+  color: white;
+}

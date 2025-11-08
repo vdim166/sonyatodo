@@ -10,6 +10,7 @@ import { BurgerMenu } from '../../components/BurgerMenu';
 import { EditTodoModal } from '../../components/EditTodoModal';
 import { ProjectsHolder } from '../../components/ProjectsHolder';
 import { sortTodosByDeadline } from '../../components/shared/functions/sortTodosByDeadline';
+import { TodoSearch } from '../../components/TodoSearch';
 
 export const Main = () => {
   const { setShowEditModal } = useAppContext();
@@ -34,6 +35,7 @@ export const Main = () => {
       <BurgerMenu />
       <ProjectsHolder />
       <Navbar />
+      <TodoSearch />
       <div className="things_to_do">
         <Button onClick={showAddTodo} className="add_button">
           {!showTodoBtn ? 'Добавить дело' : 'Скрыть дело'}
@@ -66,7 +68,7 @@ export const Main = () => {
             position: 'absolute',
             left: '50%',
             transform: 'translate(-50%)',
-            top: '140px',
+            top: '180px',
           }}
         >
           <TodoNavbar />

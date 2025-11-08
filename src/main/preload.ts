@@ -145,14 +145,14 @@ const electronHandler = {
       id: string,
       topic: string,
       project: string,
-      index: number,
+      linkId: string,
     ) {
       return ipcRenderer.invoke(
         IPC_SIGNALS.DELETE_LINK_FROM_TODO,
         id,
         topic,
         project,
-        index,
+        linkId,
       );
     },
     getTodoById(id: string, topic: string, project: string) {

@@ -29,8 +29,6 @@ export const AddTodoContainer = ({
   const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
   const { addNotification } = useNotificationManager();
 
-  console.log('currentTab', currentTab);
-
   const handleCreate = async () => {
     try {
       if (!currentProjectName) return;

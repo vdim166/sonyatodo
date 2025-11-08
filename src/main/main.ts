@@ -146,8 +146,8 @@ ipcMain.handle(
 );
 ipcMain.handle(
   IPC_SIGNALS.DELETE_LINK_FROM_TODO,
-  (_event, id, topic, project, index) => {
-    return database.deleteLinkFromTodo(id, topic, project, index);
+  (_event, id, topic, project, linkId) => {
+    return database.deleteLinkFromTodo(id, topic, project, linkId);
   },
 );
 

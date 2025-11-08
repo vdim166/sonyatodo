@@ -16,3 +16,41 @@
 .edit_todo_modal_action_menu div {
   bottom: auto;
 }
+
+.edit_todo_modal_deadline_widget {
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.edit_todo_modal_deadline_widget div {
+  bottom: auto;
+}
+
+.edit_todo_modal_deadline_widget div div {
+  padding-left: 0px;
+}
+
+.edit_todo_modal_deadline_widget div p {
+  margin-left: 0px;
+}
+
+.add_todo_container_inputs_cross {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.add_todo_container_inputs_cross:hover {
+  cursor: pointer;
+}
+
+.add_todo_container_inputs_back {
+  position: absolute;
+  left: 20px;
+  top: 15px;
+}
+
+.add_todo_container_inputs_back:hover {
+  cursor: pointer;
+}

@@ -38,6 +38,29 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  overflow: hidden auto;
+  max-height: 200px;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.edit_todo_modal_links_container_add_link_container_dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
 }
 
 .edit_todo_modal_links_container_add_link_container_dropdown_option {

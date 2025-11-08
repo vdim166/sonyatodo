@@ -44,11 +44,11 @@ export const AddLinksToTodo = ({
             await ipcSignals.findTodoByPattern(debouncedQuery);
 
           let sorted = data.filter((can) => can.todo.id !== todo.id);
-          if (todos[todoIndex].links) {
+          if (todo.links) {
             let result: candidateLinkType[] = [];
 
             for (let i = 0; i < sorted.length; ++i) {
-              const findIndex = todos[todoIndex].links.findIndex(
+              const findIndex = todo.links.findIndex(
                 (l) => l.todo.id === sorted[i].todo.id,
               );
 
@@ -73,10 +73,6 @@ export const AddLinksToTodo = ({
   }, [debouncedQuery]);
 
   if (!todos) return;
-
-  const todoIndex = todos.findIndex((t) => t.id === todo.id);
-
-  if (todoIndex === -1) return;
 
   const addLinkToTodo = async (candidate: candidateLinkType) => {
     try {
@@ -129,13 +125,12 @@ export const AddLinksToTodo = ({
       </div>
 
       <div className="edit_todo_modal_links_option_container">
-        {todos[todoIndex].links &&
-          todos[todoIndex].links.map((link, index) => {
+        {todo.links &&
+          todo.links.map((link) => {
             return (
               <TodoLink
                 original={todo}
                 link={link}
-                index={index}
                 key={link.todo.id}
                 setShowEditModal={setShowEditModal}
               />
