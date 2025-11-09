@@ -1,5 +1,6 @@
 import { MODALS } from '../../contexts/ModalsContext';
 import { useModalsContext } from '../../hooks/useModalsContext';
+import { AddImportantDateModal } from '../Modals/AddImportantDateModal';
 import { ConfirmModal } from '../Modals/ConfirmModal';
 import { ProjectConstructor } from '../Modals/ProjectConstructor';
 import { TabsConstructor } from '../Modals/TabsContructor';
@@ -34,6 +35,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <WidgetSettingsModal />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.ADD_IMPORTANT_DATE) {
+    return (
+      <UniversalWrapper>
+        <AddImportantDateModal />
       </UniversalWrapper>
     );
   }

@@ -122,8 +122,8 @@ class Database {
             .length;
           ++i
         ) {
-          const tempObj =
-            data[projectName].allTopics[secondTopicIndex].todos[0].linkedTo[i];
+          const tempObj = data[projectName].allTopics[secondTopicIndex].todos[0]
+            .linkedTo[i] as candidateLinkType;
 
           const tempTopicIndex = data[tempObj.projectName].allTopics.findIndex(
             (t) => t.name === tempObj.todo.currentTopic,

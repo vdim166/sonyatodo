@@ -1,12 +1,13 @@
 // preload.ts
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { IPC_SIGNALS } from './consts';
+import { IMPORTANT_DATES_SIGNALS, IPC_SIGNALS } from './consts';
 import { saveTodoType } from '../renderer/classes/ipcSignals';
 import { TabType } from '../renderer/contexts/AppContext';
 import { DatabaseType } from './types/DatabaseType';
 import { setDeadlineType } from './types/setDeadlineType';
 import { addTodoImageType } from './types/addTodoImageType';
 import { candidateLinkType } from '../renderer/components/AddLinksToTodo';
+import { ImportantDateType } from './classes/ImportantDatesDatabase';
 
 // Типы для каналов IPC
 
@@ -155,12 +156,41 @@ const electronHandler = {
         linkId,
       );
     },
+
     getTodoById(id: string, topic: string, project: string) {
       return ipcRenderer.invoke(IPC_SIGNALS.GET_TODO_BY_ID, id, topic, project);
     },
 
     loadTodoImage(name: string) {
       return ipcRenderer.invoke(IPC_SIGNALS.LOAD_TODO_IMAGE, name);
+    },
+
+    addImportantDate(date: ImportantDateType) {
+      return ipcRenderer.invoke(
+        IMPORTANT_DATES_SIGNALS.ADD_IMPORTANT_DATE,
+        date,
+      );
+    },
+
+    deleteImportantDate(id: string) {
+      return ipcRenderer.invoke(
+        IMPORTANT_DATES_SIGNALS.DELETE_IMPORTANT_DATE,
+        id,
+      );
+    },
+
+    changeImportantDate(id: string, newDate: ImportantDateType) {
+      return ipcRenderer.invoke(
+        IMPORTANT_DATES_SIGNALS.CHANGE_IMPORTANT_DATE,
+        id,
+        newDate,
+      );
+    },
+
+    getAllImportantDates() {
+      return ipcRenderer.invoke(
+        IMPORTANT_DATES_SIGNALS.GET_ALL_IMPORTANT_DATES,
+      );
     },
 
     setAutoStartWidget(state: boolean) {

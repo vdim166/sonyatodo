@@ -7,22 +7,29 @@ import { ModalsManager } from './components/ModalsManager';
 import { ModalsContextProvider } from './contexts/ModalsContextProvider';
 import { NotificationManager } from './components/NotificationManager';
 import { NotificationManagerContextProvider } from './contexts/NotificationManagerContextProvider';
+import { ImportantDates } from './pages/ImportantDates';
+import { ImportantDatesContextProvider } from './contexts/ImportantDatesContextProvider';
+import { DailySchedule } from './pages/DailySchedule';
 
 export default function App() {
   return (
     <AppContextProvider>
-      <NotificationManagerContextProvider>
-        <ModalsContextProvider>
-          <NotificationManager />
-          <ModalsManager />
-          <Router>
-            <Routes>
-              <Route path="/" element={<Main />} />
-              <Route path="/alarm" element={<Alarm />} />
-            </Routes>
-          </Router>
-        </ModalsContextProvider>
-      </NotificationManagerContextProvider>
+      <ImportantDatesContextProvider>
+        <NotificationManagerContextProvider>
+          <ModalsContextProvider>
+            <NotificationManager />
+            <ModalsManager />
+            <Router>
+              <Routes>
+                <Route path="/" element={<Main />} />
+                <Route path="/alarm" element={<Alarm />} />
+                <Route path="/schedule" element={<DailySchedule />} />
+                <Route path="/importantDates" element={<ImportantDates />} />
+              </Routes>
+            </Router>
+          </ModalsContextProvider>
+        </NotificationManagerContextProvider>
+      </ImportantDatesContextProvider>
     </AppContextProvider>
   );
 }

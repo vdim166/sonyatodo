@@ -1,0 +1,46 @@
+.PickDateForImportantDate_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.PickDateForImportantDate_container_date {
+  font-size: 15px;
+}
+
+.PickDateForImportantDate_container_date:hover {
+  cursor: pointer;
+
+  color: rgb(66, 64, 64);
+}
+.PickDateForImportantDate_container_date:active {
+  color: rgb(116, 108, 108);
+}
+
+.PickDateForImportantDate_container_date_picker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.PickDateForImportantDate_container_date_picker_check {
+  border: none;
+  background-color: transparent;
+}
+
+.PickDateForImportantDate_container_date_picker_check:hover {
+  cursor: pointer;
+}
+
+.PickDateForImportantDate_container_date_picker_check:hover path {
+  stroke: green;
+}
+
+.PickDateForImportantDate_container_date_picker_check:active path {
+  stroke: rgb(108, 184, 108);
+}
+.PickDateForImportantDate_container_date_picker_check:disabled path {
+  stroke: gray;
+}
+
+.PickDateForImportantDate_container_date_picker_check:disabled:hover path {
+  stroke: gray;
+}

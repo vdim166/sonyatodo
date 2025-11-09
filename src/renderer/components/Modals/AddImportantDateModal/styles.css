@@ -1,0 +1,20 @@
+.widget_settings_modal_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.widget_settings_modal_textarea {
+  border: 1px solid rgb(53, 53, 180);
+
+  width: 300px;
+  margin-top: 10px;
+
+  font-size: 15px;
+}
+
+.widget_settings_modal_textarea_title {
+  font-size: 20px;
+}
+.PickDateForImportantDate_container_btn {
+  margin-top: 10px;
+}

@@ -14,11 +14,12 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { IPC_SIGNALS } from './consts';
+import { IMPORTANT_DATES_SIGNALS, IPC_SIGNALS } from './consts';
 import { database } from './classes/Database';
 import fs from 'fs';
 import { WidgetSettingsType } from './preload';
 import { addTodoImageType } from './types/addTodoImageType';
+import { importantDatesDatabase } from './classes/ImportantDatesDatabase';
 
 const savedImagesPath = path.join(process.cwd(), 'saved_images');
 
@@ -185,6 +186,25 @@ ipcMain.handle(IPC_SIGNALS.GET_WIDGET_SETTINGS, (_event) => {
 
     return newSettings;
   }
+});
+
+ipcMain.handle(IMPORTANT_DATES_SIGNALS.ADD_IMPORTANT_DATE, (_event, date) => {
+  return importantDatesDatabase.addImportantDate(date);
+});
+
+ipcMain.handle(IMPORTANT_DATES_SIGNALS.DELETE_IMPORTANT_DATE, (_event, id) => {
+  return importantDatesDatabase.deleteImportantDate(id);
+});
+
+ipcMain.handle(
+  IMPORTANT_DATES_SIGNALS.CHANGE_IMPORTANT_DATE,
+  (_event, id, newDate) => {
+    return importantDatesDatabase.changeImportantDate(id, newDate);
+  },
+);
+
+ipcMain.handle(IMPORTANT_DATES_SIGNALS.GET_ALL_IMPORTANT_DATES, () => {
+  return importantDatesDatabase.getAllImportantDates();
 });
 
 ipcMain.on(IPC_SIGNALS.SET_WIDGET_AUTO_START, (_event, autoStart) => {
