@@ -8,6 +8,27 @@ import { Pencil } from '../../icons/Pencil';
 import { Check } from '../../icons/Check';
 import { Textarea } from '../shared/components/Textarea';
 
+function getMonthName(date: string) {
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const [monthIndex, dayIndex] = date.split('-');
+
+  return `${months[Number(monthIndex) - 1]} ${dayIndex}`;
+}
+
 type ImportantDateProps = { date: ImportantDateDto };
 
 export const ImportantDate = ({ date }: ImportantDateProps) => {
@@ -37,9 +58,11 @@ export const ImportantDate = ({ date }: ImportantDateProps) => {
     }
 
     try {
+      const [, month, day] = dateEditing.split('-');
+
       await importantDatesApi.changeImportantDate(date.id, {
         name: nameEditing,
-        date: dateEditing,
+        date: `${month}-${day}`,
       });
 
       window.dispatchEvent(
@@ -83,7 +106,7 @@ export const ImportantDate = ({ date }: ImportantDateProps) => {
 
       <div className="important_date_action_menu">
         {!isEditing ? (
-          <div>{date.date}</div>
+          <div>{getMonthName(date.date)}</div>
         ) : (
           <div>
             <input

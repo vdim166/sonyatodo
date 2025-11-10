@@ -40,8 +40,10 @@ export const PickDateForImportantDate = ({
             className="PickDateForImportantDate_container_date_picker_check"
             disabled={localDate === ''}
             onClick={() => {
+              const [, month, day] = localDate.split('-');
+
               setIsPicked(false);
-              setDate(localDate);
+              setDate(`${month}-${day}`);
             }}
           >
             <Check />

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Widget</title>
+
     <style>
       body {
         margin: 0;
@@ -87,21 +88,6 @@
         padding: 5px 0;
       }
 
-      .time-display {
-        font-size: 24px;
-        font-weight: 300;
-        text-align: center;
-        margin: 10px 0;
-        opacity: 0.95;
-      }
-
-      .widget-info {
-        font-size: 11px;
-        opacity: 0.6;
-        text-align: center;
-        margin-top: 15px;
-      }
-
       /* Анимация для перетаскивания */
       @keyframes pulse {
         0% {
@@ -118,27 +104,89 @@
       .dragging .widget-container {
         animation: pulse 0.5s ease-in-out;
       }
+
+      #important_dates {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        max-height: 100px;
+        overflow: hidden auto;
+      }
+
+      #important_dates::-webkit-scrollbar {
+        width: 6px; /* Vertical scrollbar width */
+        height: 8px;
+      }
+
+      #important_dates::-webkit-scrollbar-track {
+        background: transparent; /* Track color */
+        border-radius: 5px;
+      }
+
+      #important_dates::-webkit-scrollbar-thumb {
+        background: rgb(69, 69, 99); /* Thumb color */
+        border-radius: 5px;
+      }
+
+      #important_dates::-webkit-scrollbar-thumb:hover {
+        background: rgb(88, 88, 228); /* Hover effect */
+        cursor: grab;
+      }
+
+      .birthday {
+        padding: 8px;
+        color: white;
+        background-color: rgb(104, 104, 226);
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+
+      .birthday.soon {
+        background-color: orange;
+      }
+
+      .birthday.today {
+        background-color: red;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
     <div class="widget-container">
       <div class="header" id="widget-header">
-        <div class="header-title">📋 Мой Виджет</div>
+        <div class="header-title">📋 SONYA TODO</div>
         <div class="controls">
-          <button class="control-btn minimize" title="Свернуть">—</button>
-          <button class="control-btn close" title="Закрыть">×</button>
+          <button class="control-btn refresh" onclick="loadImportantDates()">
+            <svg
+              width="20px"
+              height="20px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </g>
+            </svg>
+          </button>
         </div>
       </div>
 
       <div class="content">
-        <div class="time-display">
-          <span id="time">00:00:00</span>
-        </div>
-
-        <div class="widget-info">
-          Перетаскивайте за заголовок<br />
-          Двойной клик для сворачивания
-        </div>
+        <div id="important_dates"></div>
       </div>
     </div>
   </body>
@@ -153,7 +201,6 @@
 
     init() {
       this.setupEventListeners();
-      this.updateTime();
     }
 
     setupEventListeners() {
@@ -252,15 +299,6 @@
         window.electron.ipcRenderer.minimizeWidget();
       }
     }
-
-    updateTime() {
-      const timeElement = document.getElementById('time');
-      if (timeElement) {
-        const now = new Date();
-        timeElement.textContent = now.toLocaleTimeString();
-      }
-      setTimeout(() => this.updateTime(), 1000);
-    }
   }
 
   // Функции управления окном
@@ -294,4 +332,96 @@
 
     console.log('Widget loaded with fixed drag functionality');
   });
+</script>
+
+<script>
+  function getUpcomingBirthdays(list) {
+    const MS_DAY = 24 * 60 * 60 * 1000;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // midnight сегодня
+
+    return list
+      .map((item) => {
+        const [mm, dd] = item.date.split('-').map(Number);
+        // собрать дату для этого года
+        let next = new Date(today.getFullYear(), mm - 1, dd);
+
+        // Если birthday уже прошёл в этом году (меньше чем midnight сегодня) — берем следующий год
+        if (next < today) next.setFullYear(next.getFullYear() + 1);
+
+        // diff в днях (0 = сегодня)
+        const diffDays = Math.round((next - today) / MS_DAY);
+
+        return { ...item, next, diffDays };
+      })
+      .sort((a, b) => a.next - b.next);
+  }
+
+  function getMonthName(date) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    const [monthIndex, dayIndex] = date.split('-');
+
+    return `${months[Number(monthIndex) - 1]} ${dayIndex}`;
+  }
+
+  // Пример использования + отрисовка
+  function renderUpcoming(birthdays) {
+    const sorted = getUpcomingBirthdays(birthdays);
+    const container = document.querySelector('#important_dates');
+    if (!container) return;
+
+    // ближайшее
+    const nearest = sorted[0];
+
+    // рисуем список
+    container.innerHTML = sorted
+      .map((b) => {
+        const cls =
+          b.diffDays === 0
+            ? 'today'
+            : b.diffDays > 0 && b.diffDays <= 10
+              ? 'soon'
+              : '';
+        return `<div class="birthday ${cls}" data-diff="${b.diffDays}">
+        <strong>${b.name}</strong> — <span>${getMonthName(b.date)}</span>
+        <small> (${b.diffDays} ${pluralizeDays(b.diffDays)})</small>
+      </div>`;
+      })
+      .join('');
+  }
+
+  // Небольшая функция для правильного склонения слова "день"
+  function pluralizeDays(n) {
+    if (n === 0) return 'сегодня';
+    n = Math.abs(n) % 100;
+    if (n > 10 && n < 20) return 'дней';
+    const rem = n % 10;
+    if (rem === 1) return 'день';
+    if (rem >= 2 && rem <= 4) return 'дня';
+    return 'дней';
+  }
+
+  // Запуск
+
+  const loadImportantDates = async () => {
+    const dates = await window.electron.ipcRenderer.getAllImportantDates();
+
+    renderUpcoming(dates.dates);
+  };
+
+  loadImportantDates();
 </script>

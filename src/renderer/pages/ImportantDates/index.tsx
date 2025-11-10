@@ -33,7 +33,7 @@ export const ImportantDates = () => {
         <div className="important_dates_container_dates">
           {dates.length > 0 ? (
             dates.map((date) => {
-              return <ImportantDate date={date} />;
+              return <ImportantDate date={date} key={date.id} />;
             })
           ) : (
             <div
