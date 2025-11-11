@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown } from '../../icons/ArrowDown';
 import './styles.css';
 import { ActionMenu } from './ActionMenu';
@@ -16,7 +16,10 @@ export type TodoProps = {
 
 export const Todo = ({ isTemp = false, todo, openEditModal }: TodoProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [hover, setHover] = useState(false);
+
+  const [components, setComponents] = useState<React.ReactNode[] | null>(null);
+
+  const [cacheImg, setCacheImg] = useState<{ [key: string]: string }>({});
 
   const handleOpen = () => {
     if (!isOpen) setIsOpen(true);
@@ -29,152 +32,125 @@ export const Todo = ({ isTemp = false, todo, openEditModal }: TodoProps) => {
   };
 
   const calcName = useMemo(() => {
-    // TODO:
-    // if (editState) {
-    //   if (editState.forRecover.id === id) {
-    //     return editState.current.name;
-    //   }
-    // }
-
     const name = todo.name;
 
     if (isOpen) {
       return name;
     }
 
-    if (hover) {
-      return name.substring(0, 40);
-    }
-
     if (!isOpen) return name.substring(0, 30);
     return name;
-  }, [isOpen, hover, todo]);
+  }, [isOpen, todo]);
 
-  const findLink = (value: string) => {
-    const first = value.indexOf('<a>');
+  const findTag = (value: string) => {
+    const linkStart = value.indexOf('<a>');
+    const imgStart = value.indexOf('<img>');
 
-    if (first === -1) null;
+    // Find which tag comes first
+    let tagType: 'link' | 'img' | null = null;
+    let start = -1;
+    let end = -1;
+    let content = '';
 
-    const second = value.indexOf('</a>');
-    if (second === -1) null;
-    if (first < second) {
-      const word = value.substring(first + 3, second);
-
-      const textBefore = value.substring(0, first);
-
-      const newValue = value.replace(`<a>${word}</a>`, '');
-
-      return {
-        word,
-        value: newValue,
-        first,
-        second,
-        textBefore,
-      };
-    } else {
-      return null;
+    if (linkStart !== -1 && (imgStart === -1 || linkStart < imgStart)) {
+      start = linkStart;
+      end = value.indexOf('</a>', start);
+      tagType = 'link';
+      if (end !== -1) {
+        content = value.substring(start + 3, end);
+      }
+    } else if (imgStart !== -1) {
+      start = imgStart;
+      end = value.indexOf('</img>', start);
+      tagType = 'img';
+      if (end !== -1) {
+        content = value.substring(start + 5, end);
+      }
     }
-  };
 
-  const findImage = (value: string) => {
-    const first = value.indexOf('<img>');
-
-    if (first === -1) null;
-
-    const second = value.indexOf('</img>');
-    if (second === -1) null;
-    if (first < second) {
-      const imgLink = value.substring(first + 5, second);
-      const textBefore = value.substring(0, first);
-
-      const newValue = value.replace(`<img>${imgLink}</img>`, '');
-
-      return {
-        imgLink,
-        value: newValue,
-        first,
-        second,
-        textBefore,
-      };
+    if (tagType && start !== -1 && end !== -1) {
+      const textBefore = value.substring(0, start);
+      const newValue = value.substring(end + (tagType === 'link' ? 4 : 6)); // skip closing tag
+      return { tagType, content, textBefore, value: newValue };
     }
 
     return null;
   };
 
-  const parseDesc = (desc: string) => {
-    const components = [];
+  const parseDesc = () => {
+    const components: React.ReactNode[] = [];
+    let currentValue = todo.desc;
 
-    let currentValue = desc;
+    while (currentValue.length > 0) {
+      const result = findTag(currentValue);
 
-    while (true) {
-      const result = findLink(currentValue);
-
-      if (result) {
-        components.push(result.textBefore);
-        components.push(
-          <span
-            className="todo_link"
-            onClick={() => {
-              window.open(result.word, '_blank');
-            }}
-          >
-            {result.word}
-          </span>,
-        );
-
-        currentValue = result.value;
-      } else {
-        if (currentValue) {
-          // components.push(currentValue);
-
-          while (true) {
-            const resultImage = findImage(currentValue);
-
-            // {resultImage.imgLink}
-            if (resultImage) {
-              components.push(resultImage.textBefore);
-              components.push(<br />);
-              components.push(
-                <SmartLoadingImg
-                  link={`${todo.id}-${resultImage.imgLink}.jpg`}
-                />,
-              );
-              components.push(<br />);
-
-              currentValue = resultImage.value;
-            } else {
-              if (currentValue) {
-                components.push(currentValue);
-              }
-
-              break;
-            }
-          }
-        }
-
+      if (!result) {
+        components.push(currentValue);
         break;
       }
+
+      if (result.textBefore) {
+        components.push(result.textBefore);
+      }
+
+      if (result.tagType === 'link') {
+        components.push(
+          <span
+            key={Math.random()}
+            className="todo_link"
+            onClick={() => window.open(result.content, '_blank')}
+          >
+            {result.content}
+          </span>,
+        );
+      } else if (result.tagType === 'img') {
+        components.push(<br key={Math.random()} />);
+        components.push(
+          <SmartLoadingImg
+            key={`${todo.id}-${result.content}.jpg`}
+            link={`${todo.id}-${result.content}.jpg`}
+            isClickable={isOpen}
+            setCache={(value) => {
+              setCacheImg((prev) => {
+                const newCache = { ...prev };
+                newCache[`${todo.id}-${result.content}.jpg`] = value;
+
+                return newCache;
+              });
+            }}
+            alreadyHave={
+              cacheImg[`${todo.id}-${result.content}.jpg`] || undefined
+            }
+          />,
+        );
+        components.push(<br key={Math.random()} />);
+      }
+
+      currentValue = result.value;
     }
 
-    return components;
+    setComponents(components);
   };
 
+  useEffect(() => {
+    parseDesc();
+  }, [todo, isOpen]);
+
+  if (!components) return <div>Loading...</div>;
   return (
     <>
       <div className="todo_main">
         <div>
           <div
-            className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''} ${!isOpen && hover ? 'todo_hover_open' : ''}`}
+            className={`${isOpen ? 'todo_open' : 'todo'} ${isTemp ? 'todo_temp' : ''}`}
             onClick={handleOpen}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
           >
             <div className="todo_name">
               <p>{calcName}</p>
             </div>
 
             <div className="todo_desc">
-              <p>{parseDesc(todo.desc)}</p>
+              <p>{components}</p>
             </div>
 
             {!isTemp && (

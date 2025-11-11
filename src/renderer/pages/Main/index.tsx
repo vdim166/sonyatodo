@@ -75,21 +75,23 @@ export const Main = () => {
           <div className="todos">
             {tempTodo !== null && <Todo isTemp {...tempTodo} />}
             {todos.length > 0
-              ? sortTodosByDeadline(todos).map((todo) => {
-                  return (
-                    <Todo
-                      openEditModal={() => {
-                        setShowTodoBtn(false);
-                        setShowEditModal({
-                          id: todo.id,
-                          currentTopic: todo.currentTopic,
-                        });
-                      }}
-                      todo={todo}
-                      key={todo.id}
-                    />
-                  );
-                })
+              ? sortTodosByDeadline(todos.filter((t) => t.hidden !== true)).map(
+                  (todo) => {
+                    return (
+                      <Todo
+                        openEditModal={() => {
+                          setShowTodoBtn(false);
+                          setShowEditModal({
+                            id: todo.id,
+                            currentTopic: todo.currentTopic,
+                          });
+                        }}
+                        todo={todo}
+                        key={todo.id}
+                      />
+                    );
+                  },
+                )
               : !tempTodo && (
                   <div className="no_todo_yet">
                     <p>У вас пока что нет дел</p>

@@ -7,6 +7,8 @@ import { useAppContext } from '../../hooks/useAppContext';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 import { TodoLink } from '../TodoLink';
 import { editModalState } from '../shared/types/editModalState';
+import { Plus } from '../../icons/Plus';
+import { AddInvisibleWidget } from '../AddInvisibleWidget';
 
 export type candidateLinkType = {
   projectName: string;
@@ -115,6 +117,7 @@ export const AddLinksToTodo = ({
                     onClick={() => {
                       addLinkToTodo(candidate);
                     }}
+                    key={candidate.todo.id}
                   >
                     <p>{candidate.todo.name}</p>
                   </div>
@@ -136,6 +139,8 @@ export const AddLinksToTodo = ({
               />
             );
           })}
+
+        <AddInvisibleWidget currentTodo={todo} />
       </div>
     </div>
   );

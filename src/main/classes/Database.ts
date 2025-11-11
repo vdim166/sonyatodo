@@ -7,6 +7,20 @@ import { TabType } from '../../renderer/contexts/AppContext';
 import { DatabaseType } from '../types/DatabaseType';
 import { setDeadlineType } from '../types/setDeadlineType';
 import { candidateLinkType } from '../../renderer/components/AddLinksToTodo';
+import { savedImagesPath } from '../main';
+
+const findImgs = (str: string) => {
+  const regex = /<img>(.*?)<\/img>/g;
+
+  const matches = [];
+  let match;
+
+  while ((match = regex.exec(str)) !== null) {
+    matches.push(match[1]); // match[1] contains content inside <img> tag
+  }
+
+  return matches;
+};
 
 // TODO: maybe use async functions later
 
@@ -63,10 +77,38 @@ class Database {
 
       if (findTopicIndex === -1) return {};
 
+      const findTodoIndex = data[projectName].allTopics[
+        findTopicIndex
+      ].todos.findIndex((t) => t.id === id);
+
+      // deleteImages
+      if (findTodoIndex !== -1) {
+        const t =
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex];
+
+        if (t.desc) {
+          const matches = findImgs(t.desc);
+
+          for (let i = 0; i < matches.length; ++i) {
+            try {
+              const filePath = path.join(
+                savedImagesPath,
+                `${t.id}-${matches[i]}.jpg`,
+              );
+
+              fs.unlinkSync(filePath);
+            } catch (error) {
+              console.log('error', error);
+            }
+          }
+        }
+      }
+
       const newData = data[projectName].allTopics[findTopicIndex].todos.filter(
         (item) => item.id !== id,
       );
       data[projectName].allTopics[findTopicIndex].todos = newData;
+
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
       return data;
     } catch (error) {
@@ -285,6 +327,31 @@ class Database {
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
           .desc !== todoToChange.desc
       ) {
+        // delete images
+
+        const matches = findImgs(
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc,
+        );
+
+        const newMatches = findImgs(todoToChange.desc);
+
+        for (let i = 0; i < matches.length; ++i) {
+          const status = newMatches.includes(matches[i]);
+
+          if (!status) {
+            try {
+              const filePath = path.join(
+                savedImagesPath,
+                `${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].id}-${matches[i]}.jpg`,
+              );
+
+              fs.unlinkSync(filePath);
+            } catch (error) {
+              console.log('error', error);
+            }
+          }
+        }
+
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc =
           todoToChange.desc;
       }
@@ -292,6 +359,12 @@ class Database {
       if (todoToChange.images) {
         data[projectName].allTopics[findTodoIndex].todos[findTodoIndex].images =
           todoToChange.images;
+      }
+
+      if (todoToChange.hidden !== undefined) {
+        data[projectName].allTopics[findTopicIndex].todos[
+          findTodoIndex
+        ].hidden = todoToChange.hidden;
       }
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
@@ -402,7 +475,7 @@ class Database {
         for (let k = 0; k < data[projectName].allTopics[j].todos.length; ++k) {
           const todoName = data[projectName].allTopics[j].todos[k].name;
 
-          if (todoName.startsWith(pattern)) {
+          if (todoName.includes(pattern)) {
             result.push({
               projectName,
               topicName,

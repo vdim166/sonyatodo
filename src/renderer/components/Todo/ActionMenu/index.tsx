@@ -4,7 +4,9 @@ import { MODALS } from '../../../contexts/ModalsContext';
 import { useAppContext } from '../../../hooks/useAppContext';
 import { useModalsContext } from '../../../hooks/useModalsContext';
 import { useNotificationManager } from '../../../hooks/useNotificationManager';
+import { ClosedEye } from '../../../icons/ClosedEye';
 import { Cross } from '../../../icons/Cross';
+import { OpenEye } from '../../../icons/OpenEye';
 import { Pencil } from '../../../icons/Pencil';
 import { SendTodoComponent } from '../SendTodoComponent';
 import './styles.css';
@@ -12,9 +14,14 @@ import './styles.css';
 type ActionMenuProps = {
   todo: saveTodoType;
   openEditModal?: () => void;
+  showHidden?: boolean;
 };
 
-export const ActionMenu = ({ todo, openEditModal }: ActionMenuProps) => {
+export const ActionMenu = ({
+  todo,
+  openEditModal,
+  showHidden = false,
+}: ActionMenuProps) => {
   const { openModal, closeModal } = useModalsContext();
   const { currentProjectName, setShowEditModal } = useAppContext();
 
@@ -60,8 +67,35 @@ export const ActionMenu = ({ todo, openEditModal }: ActionMenuProps) => {
     }
   };
 
+  const handleVisibility = async () => {
+    try {
+      let newHidden: boolean;
+
+      if (todo.hidden === undefined) {
+        newHidden = true;
+      } else {
+        newHidden = !todo.hidden;
+      }
+
+      await ipcSignals.changeTodo(
+        { ...todo, hidden: newHidden },
+        currentProjectName || 'main',
+      );
+
+      window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   return (
     <div className="todo_action_menu">
+      {showHidden && (
+        <div className="todo_action_invisible" onClick={handleVisibility}>
+          {todo.hidden ? <OpenEye /> : <ClosedEye />}
+        </div>
+      )}
+
       {openEditModal && (
         <div className="todo_action_edit" onClick={openEditModal}>
           <Pencil />

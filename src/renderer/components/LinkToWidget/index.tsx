@@ -157,6 +157,7 @@ export const LinkToWidget = ({ todo }: LinkToWidgetProps) => {
             {candidates.map((c) => {
               return (
                 <div
+                  key={c.todo.id}
                   className="link_to_widget_input_dropdown_option"
                   onClick={() => {
                     handlePick(c);

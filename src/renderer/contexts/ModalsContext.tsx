@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import { confirmModalType } from '../components/Modals/types/confirmModalType';
+import { imgViewerType } from '../components/Modals/types/imgViewerType';
 
 export const MODALS = {
   CONFIRM: 'CONFIRM',
@@ -7,9 +8,10 @@ export const MODALS = {
   PROJECT_CONSTRUCTOR: 'PROJECT_CONSTRUCTOR',
   WIDGET_SETTINGS: 'WIDGET_SETTINGS',
   ADD_IMPORTANT_DATE: 'ADD_IMPORTANT_DATE',
+  IMG_VIEWER: 'IMG_VIEWER',
 } as const;
 
-type OpenModalPropsType = confirmModalType;
+type OpenModalPropsType = confirmModalType | imgViewerType;
 
 export type OpenModalType = {
   type: keyof typeof MODALS;

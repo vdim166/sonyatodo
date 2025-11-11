@@ -206,7 +206,7 @@ export const EditTodoModal = () => {
         </div>
 
         <div className="edit_todo_modal_action_menu">
-          <ActionMenu todo={state.current} />
+          <ActionMenu todo={state.current} showHidden />
         </div>
 
         <div className="edit_todo_modal_deadline_widget">

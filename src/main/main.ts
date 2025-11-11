@@ -21,7 +21,7 @@ import { WidgetSettingsType } from './preload';
 import { addTodoImageType } from './types/addTodoImageType';
 import { importantDatesDatabase } from './classes/ImportantDatesDatabase';
 
-const savedImagesPath = path.join(process.cwd(), 'saved_images');
+export const savedImagesPath = path.join(process.cwd(), 'saved_images');
 
 let tray: Tray | null = null;
 

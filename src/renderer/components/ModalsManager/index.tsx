@@ -2,9 +2,11 @@ import { MODALS } from '../../contexts/ModalsContext';
 import { useModalsContext } from '../../hooks/useModalsContext';
 import { AddImportantDateModal } from '../Modals/AddImportantDateModal';
 import { ConfirmModal } from '../Modals/ConfirmModal';
+import { ImageViewerModal } from '../Modals/ImageViewerModal';
 import { ProjectConstructor } from '../Modals/ProjectConstructor';
 import { TabsConstructor } from '../Modals/TabsContructor';
 import { confirmModalType } from '../Modals/types/confirmModalType';
+import { imgViewerType } from '../Modals/types/imgViewerType';
 import { UniversalWrapper } from '../Modals/UniversalWrapper';
 import { WidgetSettingsModal } from '../Modals/WidgetSettingsModal';
 
@@ -41,6 +43,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <AddImportantDateModal />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.IMG_VIEWER) {
+    return (
+      <UniversalWrapper>
+        <ImageViewerModal {...(modalState.props as imgViewerType)} />
       </UniversalWrapper>
     );
   }

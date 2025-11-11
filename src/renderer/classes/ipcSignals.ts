@@ -17,6 +17,8 @@ export type saveTodoType = {
 
   links?: candidateLinkType[];
   linkedTo?: candidateLinkType[];
+
+  hidden?: boolean;
 };
 
 class IpcSignals {
