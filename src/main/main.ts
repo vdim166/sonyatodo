@@ -14,12 +14,17 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { IMPORTANT_DATES_SIGNALS, IPC_SIGNALS } from './consts';
+import {
+  IMPORTANT_DATES_SIGNALS,
+  IPC_SIGNALS,
+  LONG_TERM_AFFAIRS_SIGNALS,
+} from './consts';
 import { database } from './classes/Database';
 import fs from 'fs';
 import { WidgetSettingsType } from './preload';
 import { addTodoImageType } from './types/addTodoImageType';
 import { importantDatesDatabase } from './classes/ImportantDatesDatabase';
+import { longTermAffairsDatabase } from './classes/LongTermAffairsDatabase';
 
 export const savedImagesPath = path.join(process.cwd(), 'saved_images');
 
@@ -234,6 +239,41 @@ ipcMain.on(IPC_SIGNALS.SET_WIDGET_AUTO_START, (_event, autoStart) => {
   }
 });
 
+ipcMain.handle(
+  LONG_TERM_AFFAIRS_SIGNALS.ADD_LONG_TERM_AFFAIR,
+  (_event, data) => {
+    return longTermAffairsDatabase.addNewTodo(data);
+  },
+);
+
+ipcMain.handle(
+  LONG_TERM_AFFAIRS_SIGNALS.DELETE_LONG_TERM_AFFAIR,
+  (_event, id, state) => {
+    return longTermAffairsDatabase.deleteTodo(id, state);
+  },
+);
+
+ipcMain.handle(
+  LONG_TERM_AFFAIRS_SIGNALS.CHANGE_LONG_TERM_AFFAIR,
+  (_event, id, state, newTodo) => {
+    return longTermAffairsDatabase.changeTodo(id, state, newTodo);
+  },
+);
+
+ipcMain.handle(
+  LONG_TERM_AFFAIRS_SIGNALS.GET_ALL_LONG_TERM_AFFAIRS,
+  (_event) => {
+    return longTermAffairsDatabase.getAllTodos();
+  },
+);
+
+ipcMain.handle(
+  LONG_TERM_AFFAIRS_SIGNALS.MOVE_LONG_TERM_AFFAIR,
+  (_event, id: string, moveFrom, moveTo) => {
+    return longTermAffairsDatabase.moveTodo(id, moveFrom, moveTo);
+  },
+);
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -391,6 +431,8 @@ app
 
 let widgetWindow: BrowserWindow | null = null;
 
+let longTermAffairsWidgetWindow: BrowserWindow | null = null;
+
 let dragStartPosition: {
   mouseX: number;
   mouseY: number;
@@ -441,9 +483,6 @@ function createWidgetWindow() {
     },
   });
 
-  // widgetWindow.loadFile(
-  //   path.join(__dirname, '..', '..', 'html', 'widget.html'),
-  // );
   widgetWindow.loadFile(getAssetPath('html', 'widget.html'));
 
   widgetWindow.once('ready-to-show', () => {
@@ -462,6 +501,62 @@ function createWidgetWindow() {
   widgetWindow.on('closed', () => {
     widgetWindow = null;
     dragStartPosition = null;
+  });
+
+  longTermAffairsWidget(widgetSettings);
+}
+
+function longTermAffairsWidget(widgetSettings: any) {
+  if (!widgetSettings.autoStart) return;
+
+  if (longTermAffairsWidgetWindow) {
+    longTermAffairsWidgetWindow.focus();
+    return;
+  }
+
+  longTermAffairsWidgetWindow = new BrowserWindow({
+    width: 300,
+    height: 200,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: false,
+    resizable: false,
+    skipTaskbar: true,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: true,
+    fullscreenable: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      // enableRemoteModule: false,
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+  longTermAffairsWidgetWindow.loadFile(
+    getAssetPath('html', 'longTermAffairs.html'),
+  );
+
+  longTermAffairsWidgetWindow.once('ready-to-show', () => {
+    if (longTermAffairsWidgetWindow) {
+      if (widgetSettings.position) {
+        longTermAffairsWidgetWindow.setPosition(
+          widgetSettings.position.x - 300,
+          widgetSettings.position.y,
+        );
+      }
+
+      longTermAffairsWidgetWindow.show();
+    }
+  });
+
+  longTermAffairsWidgetWindow.on('closed', () => {
+    longTermAffairsWidgetWindow = null;
   });
 }
 
@@ -497,6 +592,10 @@ ipcMain.on('window-drag', (event, mousePosition) => {
 
     // Устанавливаем новую позицию
     win.setPosition(newX, newY);
+
+    if (longTermAffairsWidgetWindow) {
+      longTermAffairsWidgetWindow.setPosition(newX - 300, newY);
+    }
   }
 });
 

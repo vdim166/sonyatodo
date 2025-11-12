@@ -20,6 +20,10 @@ const tabs: { [key: string]: Tab } = {
     name: 'ВАЖНЫЕ ДАТЫ',
     path: '/importantDates',
   },
+  longTermAffairs: {
+    name: 'ДОЛГОСРОЧНЫЕ ДЕЛА',
+    path: '/longTermAffairs',
+  },
 };
 
 export const Navbar = () => {

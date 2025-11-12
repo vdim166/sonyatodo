@@ -1,6 +1,10 @@
 // preload.ts
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { IMPORTANT_DATES_SIGNALS, IPC_SIGNALS } from './consts';
+import {
+  IMPORTANT_DATES_SIGNALS,
+  IPC_SIGNALS,
+  LONG_TERM_AFFAIRS_SIGNALS,
+} from './consts';
 import { saveTodoType } from '../renderer/classes/ipcSignals';
 import { TabType } from '../renderer/contexts/AppContext';
 import { DatabaseType } from './types/DatabaseType';
@@ -8,6 +12,7 @@ import { setDeadlineType } from './types/setDeadlineType';
 import { addTodoImageType } from './types/addTodoImageType';
 import { candidateLinkType } from '../renderer/components/AddLinksToTodo';
 import { ImportantDateType } from './classes/ImportantDatesDatabase';
+import { LongTermAffairsDTO } from './classes/LongTermAffairsDatabase';
 
 // Типы для каналов IPC
 
@@ -190,6 +195,53 @@ const electronHandler = {
     getAllImportantDates() {
       return ipcRenderer.invoke(
         IMPORTANT_DATES_SIGNALS.GET_ALL_IMPORTANT_DATES,
+      );
+    },
+
+    addLongTermAffair(data: LongTermAffairsDTO) {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.ADD_LONG_TERM_AFFAIR,
+        data,
+      );
+    },
+
+    deleteLongTermAffair(id: string, state: 'TODO' | 'DONE') {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.DELETE_LONG_TERM_AFFAIR,
+        id,
+        state,
+      );
+    },
+
+    changeLongTermAffair(
+      id: string,
+      state: 'TODO' | 'DONE',
+      newData: LongTermAffairsDTO,
+    ) {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.CHANGE_LONG_TERM_AFFAIR,
+        id,
+        state,
+        newData,
+      );
+    },
+
+    getAllLongTermAffairs() {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.GET_ALL_LONG_TERM_AFFAIRS,
+      );
+    },
+
+    moveLongTermAffair(
+      id: string,
+      moveFrom: 'TODO' | 'DONE',
+      moveTo: 'TODO' | 'DONE',
+    ) {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.MOVE_LONG_TERM_AFFAIR,
+        id,
+        moveFrom,
+        moveTo,
       );
     },
 

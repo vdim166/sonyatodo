@@ -1,6 +1,7 @@
 import { MODALS } from '../../contexts/ModalsContext';
 import { useModalsContext } from '../../hooks/useModalsContext';
 import { AddImportantDateModal } from '../Modals/AddImportantDateModal';
+import { AddLongTermAffairModal } from '../Modals/AddLongTermAffairModal';
 import { ConfirmModal } from '../Modals/ConfirmModal';
 import { ImageViewerModal } from '../Modals/ImageViewerModal';
 import { ProjectConstructor } from '../Modals/ProjectConstructor';
@@ -49,6 +50,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <ImageViewerModal {...(modalState.props as imgViewerType)} />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.ADD_LONG_TERM_AFFAIR) {
+    return (
+      <UniversalWrapper>
+        <AddLongTermAffairModal />
       </UniversalWrapper>
     );
   }

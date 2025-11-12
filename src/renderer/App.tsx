@@ -10,25 +10,33 @@ import { NotificationManagerContextProvider } from './contexts/NotificationManag
 import { ImportantDates } from './pages/ImportantDates';
 import { ImportantDatesContextProvider } from './contexts/ImportantDatesContextProvider';
 import { DailySchedule } from './pages/DailySchedule';
+import { LongTermAffairs } from './pages/LongTermAffairs';
+import { LongTermAffairsContextProvider } from './contexts/LongTermAffairsContextProvider';
 
 export default function App() {
   return (
     <AppContextProvider>
       <ImportantDatesContextProvider>
-        <NotificationManagerContextProvider>
-          <ModalsContextProvider>
-            <NotificationManager />
-            <ModalsManager />
-            <Router>
-              <Routes>
-                <Route path="/" element={<Main />} />
-                <Route path="/alarm" element={<Alarm />} />
-                <Route path="/schedule" element={<DailySchedule />} />
-                <Route path="/importantDates" element={<ImportantDates />} />
-              </Routes>
-            </Router>
-          </ModalsContextProvider>
-        </NotificationManagerContextProvider>
+        <LongTermAffairsContextProvider>
+          <NotificationManagerContextProvider>
+            <ModalsContextProvider>
+              <NotificationManager />
+              <ModalsManager />
+              <Router>
+                <Routes>
+                  <Route path="/" element={<Main />} />
+                  <Route path="/alarm" element={<Alarm />} />
+                  <Route path="/schedule" element={<DailySchedule />} />
+                  <Route path="/importantDates" element={<ImportantDates />} />
+                  <Route
+                    path="/longTermAffairs"
+                    element={<LongTermAffairs />}
+                  />
+                </Routes>
+              </Router>
+            </ModalsContextProvider>
+          </NotificationManagerContextProvider>
+        </LongTermAffairsContextProvider>
       </ImportantDatesContextProvider>
     </AppContextProvider>
   );

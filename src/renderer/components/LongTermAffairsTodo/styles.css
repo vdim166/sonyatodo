@@ -1,0 +1,12 @@
+.LongTermAffairsTodo_check:hover {
+  cursor: pointer;
+}
+
+.LongTermAffairsTodo_check:hover path {
+  fill: rgb(91, 219, 91);
+}
+
+.LongTermAffairsTodo_check svg {
+  width: 20px;
+  height: 20px;
+}

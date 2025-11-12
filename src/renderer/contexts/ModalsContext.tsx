@@ -9,6 +9,7 @@ export const MODALS = {
   WIDGET_SETTINGS: 'WIDGET_SETTINGS',
   ADD_IMPORTANT_DATE: 'ADD_IMPORTANT_DATE',
   IMG_VIEWER: 'IMG_VIEWER',
+  ADD_LONG_TERM_AFFAIR: 'ADD_LONG_TERM_AFFAIR',
 } as const;
 
 type OpenModalPropsType = confirmModalType | imgViewerType;

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: rgba(0, 0, 0, 0);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+        user-select: none;
+        cursor: default;
+      }
+
+      .widget-container {
+        background: rgba(40, 40, 40, 0.9);
+        border-radius: 12px;
+        color: white;
+        padding: 15px;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        height: calc(100% - 32px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        max-height: 100px;
+        overflow: hidden auto;
+      }
+
+      .content::-webkit-scrollbar {
+        width: 6px; /* Vertical scrollbar width */
+        height: 8px;
+      }
+
+      .content::-webkit-scrollbar-track {
+        background: transparent; /* Track color */
+        border-radius: 5px;
+      }
+
+      .content::-webkit-scrollbar-thumb {
+        background: rgb(69, 69, 99); /* Thumb color */
+        border-radius: 5px;
+      }
+
+      .content::-webkit-scrollbar-thumb:hover {
+        background: rgb(88, 88, 228); /* Hover effect */
+        cursor: grab;
+      }
+
+      .affair {
+        padding: 8px;
+        color: white;
+        background-color: rgb(74, 74, 145);
+        border-radius: 5px;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="widget-container">
+      <div class="content"></div>
+    </div>
+  </body>
+</html>
+
+<script>
+  const renderTodos = async () => {
+    const todos = await window.electron.ipcRenderer.getAllLongTermAffairs();
+
+    const widgetContainer = document.querySelector('.widget-container');
+
+    widgetContainer.innerHTML = todos['TODO']
+      .map((t) => `<div class="affair">${t.name}</div>`)
+      .join('');
+  };
+
+  renderTodos();
+</script>

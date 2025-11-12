@@ -1,0 +1,36 @@
+.longTermAffairs_main {
+  padding-top: 20px;
+}
+
+.longTermAffairss_container_dates {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  overflow: auto;
+
+  max-height: calc(100vh - 10px - 29px - 44px - 17px - 10px - 15px - 33px);
+
+  width: 560px;
+}
+
+.longTermAffairss_container_dates::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.longTermAffairss_container_dates::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.longTermAffairss_container_dates::-webkit-scrollbar-thumb {
+  background: rgb(47, 47, 211); /* Thumb color */
+  border-radius: 5px;
+}
+
+.longTermAffairss_container_dates::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}
