@@ -45,6 +45,10 @@ class LongTermAffairsApi {
     );
     return data;
   };
+
+  updateWidgetData = () => {
+    window.electron.ipcRenderer.updateLongTermAffairsTodoWidget();
+  };
 }
 
 export const longTermAffairsApi = new LongTermAffairsApi();

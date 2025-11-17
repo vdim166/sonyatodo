@@ -139,9 +139,8 @@ export const AddLinksToTodo = ({
               />
             );
           })}
-
-        <AddInvisibleWidget currentTodo={todo} />
       </div>
+      <AddInvisibleWidget currentTodo={todo} />
     </div>
   );
 };

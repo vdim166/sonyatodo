@@ -72,6 +72,7 @@ export const AddInvisibleWidget = ({
               onChange={(e) => {
                 setValue(e.target.value);
               }}
+              autoFocus
             />
 
             <Button

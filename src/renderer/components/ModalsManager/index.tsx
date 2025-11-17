@@ -2,10 +2,12 @@ import { MODALS } from '../../contexts/ModalsContext';
 import { useModalsContext } from '../../hooks/useModalsContext';
 import { AddImportantDateModal } from '../Modals/AddImportantDateModal';
 import { AddLongTermAffairModal } from '../Modals/AddLongTermAffairModal';
+import { ChangeTodoDeadline } from '../Modals/ChangeTodoDeadline';
 import { ConfirmModal } from '../Modals/ConfirmModal';
 import { ImageViewerModal } from '../Modals/ImageViewerModal';
 import { ProjectConstructor } from '../Modals/ProjectConstructor';
 import { TabsConstructor } from '../Modals/TabsContructor';
+import { changeTodoDeadlineType } from '../Modals/types/changeTodoDeadlineType';
 import { confirmModalType } from '../Modals/types/confirmModalType';
 import { imgViewerType } from '../Modals/types/imgViewerType';
 import { UniversalWrapper } from '../Modals/UniversalWrapper';
@@ -56,6 +58,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <AddLongTermAffairModal />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.CHANGE_TODO_DEADLINE) {
+    return (
+      <UniversalWrapper>
+        <ChangeTodoDeadline {...(modalState.props as changeTodoDeadlineType)} />
       </UniversalWrapper>
     );
   }

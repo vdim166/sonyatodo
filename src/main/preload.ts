@@ -117,6 +117,18 @@ const electronHandler = {
       return ipcRenderer.invoke(IPC_SIGNALS.FIND_TODO_BY_PATTERN, pattern);
     },
 
+    updateImportantDatesData() {
+      ipcRenderer.invoke(
+        IMPORTANT_DATES_SIGNALS.UPDATE_IMPORTANT_DATE_TODOS_WIDGET,
+      );
+    },
+
+    updateLongTermAffairsTodoWidget() {
+      ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.UPDATE_LONG_TERM_AFFAIRS_TODOS_WIDGET,
+      );
+    },
+
     setDeadLine(options: setDeadlineType, projectName: string) {
       return ipcRenderer.invoke(
         IPC_SIGNALS.SET_TODO_DEADLINE,

@@ -27,6 +27,10 @@ class ImportantDatesApi {
     const data = await window.electron.ipcRenderer.getAllImportantDates();
     return data;
   };
+
+  updateWidgetTodos = () => {
+    window.electron.ipcRenderer.updateImportantDatesData();
+  };
 }
 
 export const importantDatesApi = new ImportantDatesApi();

@@ -1,0 +1,7 @@
+.change_todo_deadline_input_container {
+  max-width: 300px;
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}

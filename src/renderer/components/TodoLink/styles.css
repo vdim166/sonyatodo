@@ -2,6 +2,29 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+
+  overflow: hidden auto;
+  max-height: 200px;
+}
+
+.edit_todo_modal_links_option_container::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.edit_todo_modal_links_option_container::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.edit_todo_modal_links_option_container::-webkit-scrollbar-thumb {
+  background: rgb(69, 69, 99); /* Thumb color */
+  border-radius: 5px;
+}
+
+.edit_todo_modal_links_option_container::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
 }
 
 .edit_todo_modal_links_option {

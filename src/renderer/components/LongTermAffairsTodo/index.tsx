@@ -30,6 +30,8 @@ export const LongTermAffairsTodo = ({ todo }: LongTermAffairsTodoProps) => {
       window.dispatchEvent(
         new CustomEvent(DISPATCH_EVENTS.FETCH_LONG_TERM_AFFAIRS),
       );
+
+      longTermAffairsApi.updateWidgetData();
     } catch (error) {
       console.log('error', error);
     }
@@ -46,6 +48,8 @@ export const LongTermAffairsTodo = ({ todo }: LongTermAffairsTodoProps) => {
       window.dispatchEvent(
         new CustomEvent(DISPATCH_EVENTS.FETCH_LONG_TERM_AFFAIRS),
       );
+
+      longTermAffairsApi.updateWidgetData();
     } catch (error) {
       console.log('error', error);
     }
@@ -60,6 +64,8 @@ export const LongTermAffairsTodo = ({ todo }: LongTermAffairsTodoProps) => {
       window.dispatchEvent(
         new CustomEvent(DISPATCH_EVENTS.FETCH_LONG_TERM_AFFAIRS),
       );
+
+      longTermAffairsApi.updateWidgetData();
     } catch (error) {
       console.log('error', error);
     }

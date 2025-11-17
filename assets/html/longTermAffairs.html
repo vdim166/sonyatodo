@@ -86,3 +86,12 @@
 
   renderTodos();
 </script>
+
+<script>
+  window.electron.ipcRenderer.on(
+    'update-long-term-affairs-todo-data',
+    (event) => {
+      renderTodos();
+    },
+  );
+</script>

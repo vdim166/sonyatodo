@@ -7,6 +7,8 @@ import { Cross } from '../../icons/Cross';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 import { editModalState } from '../shared/types/editModalState';
 import { useAppContext } from '../../hooks/useAppContext';
+import { useModalsContext } from '../../hooks/useModalsContext';
+import { MODALS } from '../../contexts/ModalsContext';
 
 type TodoLinkProps = {
   link: candidateLinkType;
@@ -20,6 +22,7 @@ export const TodoLink = ({
   setShowEditModal,
 }: TodoLinkProps) => {
   const { currentProjectName } = useAppContext();
+  const { openModal } = useModalsContext();
   const [current, setCurrent] = useState<saveTodoType | null>(null);
 
   useEffect(() => {
@@ -66,6 +69,16 @@ export const TodoLink = ({
     }
   };
 
+  const changeDeadLine = () => {
+    openModal({
+      type: MODALS.CHANGE_TODO_DEADLINE,
+      props: {
+        id: link.todo.id,
+        topic: link.todo.currentTopic,
+      },
+    });
+  };
+
   return (
     <div
       className="edit_todo_modal_links_option"
@@ -82,7 +95,13 @@ export const TodoLink = ({
       }}
     >
       <p className="edit_todo_modal_links_option_title">{current.name}</p>
-      <div className="edit_todo_modal_links_option_deadline">
+      <div
+        className="edit_todo_modal_links_option_deadline"
+        onClick={(e) => {
+          e.stopPropagation();
+          changeDeadLine();
+        }}
+      >
         {calcDeadline()}
       </div>
 

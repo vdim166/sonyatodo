@@ -43,6 +43,8 @@ export const ImportantDate = ({ date }: ImportantDateProps) => {
       window.dispatchEvent(
         new CustomEvent(DISPATCH_EVENTS.FETCH_IMPORTANT_DATES),
       );
+
+      importantDatesApi.updateWidgetTodos();
     } catch (error) {
       console.log('error', error);
     }
@@ -70,6 +72,8 @@ export const ImportantDate = ({ date }: ImportantDateProps) => {
       );
 
       setIditing(false);
+
+      importantDatesApi.updateWidgetTodos();
     } catch (error) {
       console.log('error', error);
     }

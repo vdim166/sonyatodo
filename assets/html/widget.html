@@ -425,3 +425,9 @@
 
   loadImportantDates();
 </script>
+
+<script>
+  window.electron.ipcRenderer.on('update-widget-todo-data', (event) => {
+    loadImportantDates();
+  });
+</script>

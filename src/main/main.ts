@@ -274,6 +274,22 @@ ipcMain.handle(
   },
 );
 
+ipcMain.handle(
+  IMPORTANT_DATES_SIGNALS.UPDATE_IMPORTANT_DATE_TODOS_WIDGET,
+  (_event) => {
+    return widgetWindow?.webContents.send('update-widget-todo-data');
+  },
+);
+
+ipcMain.handle(
+  LONG_TERM_AFFAIRS_SIGNALS.UPDATE_LONG_TERM_AFFAIRS_TODOS_WIDGET,
+  (_event) => {
+    return longTermAffairsWidgetWindow?.webContents.send(
+      'update-long-term-affairs-todo-data',
+    );
+  },
+);
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -406,7 +422,7 @@ app
       },
     ]);
 
-    tray.setToolTip('Моё Electron-приложение');
+    tray.setToolTip('Sonya Todo');
     tray.setContextMenu(contextMenu);
 
     // клик по иконке (например, чтобы сворачивать/разворачивать окно)

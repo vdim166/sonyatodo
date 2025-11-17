@@ -25,6 +25,8 @@ export const AddImportantDateModal = () => {
       window.dispatchEvent(
         new CustomEvent(DISPATCH_EVENTS.FETCH_IMPORTANT_DATES),
       );
+
+      importantDatesApi.updateWidgetTodos();
     } catch (error) {
       console.log('error', error);
     }
