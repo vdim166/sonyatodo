@@ -1,6 +1,11 @@
 import { saveTodoType } from '../../../classes/ipcSignals';
 
-export function sortTodosByDeadline(todos: saveTodoType[]): saveTodoType[] {
+export function sortTodosByDeadline(
+  todos: saveTodoType[],
+  ignore: boolean,
+): saveTodoType[] {
+  if (ignore) return todos;
+
   return [...todos].sort((a, b) => {
     const aDate = a.deadline?.to ? new Date(a.deadline.to).getTime() : null;
     const bDate = b.deadline?.to ? new Date(b.deadline.to).getTime() : null;

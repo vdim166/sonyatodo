@@ -16,14 +16,18 @@ export const StatisticColumn = ({
   color = getRandomHexColor(),
 }: StatisticColumnProps) => {
   const [style, setStyle] = useState<CSSProperties>({
-    height: '0px',
+    height: 0,
     backgroundColor: color,
   });
 
   useEffect(() => {
-    setStyle({
-      height: `${percent * 4}px`,
-      backgroundColor: color,
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setStyle({
+          height: `${percent * 4}px`,
+          backgroundColor: color,
+        });
+      });
     });
   }, []);
 

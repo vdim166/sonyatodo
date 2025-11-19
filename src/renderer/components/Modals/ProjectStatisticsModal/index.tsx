@@ -64,6 +64,7 @@ export const ProjectStatisticsModal = () => {
             );
             return (
               <StatisticColumn
+                key={tab.name}
                 percent={percent}
                 count={`${data[tab.name]} / ${percent}%`}
                 name={tab.name}
