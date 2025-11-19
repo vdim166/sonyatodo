@@ -1,5 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import './styles.css';
+import { Statistics } from '../../icons/Statistics';
+import { useModalsContext } from '../../hooks/useModalsContext';
+import { MODALS } from '../../contexts/ModalsContext';
 
 type Tab = {
   name: string;
@@ -31,6 +34,8 @@ export const Navbar = () => {
 
   const nav = useNavigate();
 
+  const { openModal } = useModalsContext();
+
   const currentKey =
     Object.keys(tabs).find((key) => tabs[key].path === loc.pathname) || 'todos';
 
@@ -53,6 +58,16 @@ export const Navbar = () => {
       </div>
       <div className="navbar_title">
         <p>{tabs[currentKey].name}</p>
+        {loc.pathname === tabs['todos'].path && (
+          <div
+            className="navbar_title_statistics"
+            onClick={() => {
+              openModal({ type: MODALS.STATISTICS, props: null });
+            }}
+          >
+            <Statistics />
+          </div>
+        )}
       </div>
     </div>
   );

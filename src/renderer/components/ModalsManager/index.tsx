@@ -6,6 +6,7 @@ import { ChangeTodoDeadline } from '../Modals/ChangeTodoDeadline';
 import { ConfirmModal } from '../Modals/ConfirmModal';
 import { ImageViewerModal } from '../Modals/ImageViewerModal';
 import { ProjectConstructor } from '../Modals/ProjectConstructor';
+import { ProjectStatisticsModal } from '../Modals/ProjectStatisticsModal';
 import { TabsConstructor } from '../Modals/TabsContructor';
 import { changeTodoDeadlineType } from '../Modals/types/changeTodoDeadlineType';
 import { confirmModalType } from '../Modals/types/confirmModalType';
@@ -64,6 +65,12 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <ChangeTodoDeadline {...(modalState.props as changeTodoDeadlineType)} />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.STATISTICS) {
+    return (
+      <UniversalWrapper>
+        <ProjectStatisticsModal />
       </UniversalWrapper>
     );
   }

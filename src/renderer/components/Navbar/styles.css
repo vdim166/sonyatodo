@@ -27,9 +27,27 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: flex-end;
+  gap: 5px;
 }
 
 .navbar_title p {
   font-size: 30px;
   margin-top: 10px;
+}
+
+.navbar_title_statistics {
+  width: 30px;
+  height: 30px;
+}
+
+.navbar_title_statistics:hover {
+  cursor: pointer;
+}
+.navbar_title_statistics:hover path {
+  fill: rgb(52, 52, 197);
+}
+
+.navbar_title_statistics:active path {
+  fill: rgb(74, 74, 214);
 }

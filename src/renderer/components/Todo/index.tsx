@@ -107,7 +107,6 @@ export const Todo = ({ isTemp = false, todo, openEditModal }: TodoProps) => {
         components.push(<br key={Math.random()} />);
         components.push(
           <SmartLoadingImg
-            key={`${todo.id}-${result.content}.jpg`}
             link={`${todo.id}-${result.content}.jpg`}
             isClickable={isOpen}
             setCache={(value) => {

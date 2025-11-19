@@ -71,10 +71,14 @@
   stroke: grey;
 }
 
-.deadline_input_container_success:not(.disabled):hover path {
+.deadline_input_container_success.error path {
+  stroke: red;
+}
+
+.deadline_input_container_success:not(.disabled):not(.error):hover path {
   stroke: rgb(52, 201, 52);
 }
 
-.deadline_input_container_success:not(.disabled):active path {
+.deadline_input_container_success:not(.disabled):not(.error):active path {
   stroke: rgb(70, 184, 70);
 }

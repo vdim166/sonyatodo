@@ -431,3 +431,33 @@
     loadImportantDates();
   });
 </script>
+
+<script>
+  function calculateTimeUntilMidnight() {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0);
+    return midnight - now;
+  }
+
+  function startDailyInterval(callback) {
+    setInterval(
+      () => {
+        if (callback) callback();
+      },
+      24 * 60 * 60 * 1000,
+    );
+  }
+
+  const checkTodos = (callback) => {
+    const initialTime = calculateTimeUntilMidnight();
+
+    setTimeout(() => {
+      if (callback) callback();
+
+      startDailyInterval(callback);
+    }, initialTime);
+  };
+
+  checkTodos(loadImportantDates);
+</script>

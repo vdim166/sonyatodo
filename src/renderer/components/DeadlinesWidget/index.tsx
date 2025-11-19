@@ -36,8 +36,15 @@ export const DeadlinesWidget = ({
     }
   }, [isPicking]);
 
+  const calcError = () => {
+    return new Date(to).getTime() < new Date(from).getTime();
+  };
+
+  const isError = calcError();
   const handleSubmit = async () => {
     if (to === '') return;
+    if (!isChanged) return;
+    if (isError) return;
 
     try {
       const data: setDeadlineType = {
@@ -69,12 +76,21 @@ export const DeadlinesWidget = ({
     const today = new Date();
     const targetDate = new Date(date);
 
+    today.setHours(24, 0, 0, 0);
+    targetDate.setHours(24, 0, 0, 0);
+
     if (today > targetDate) {
       return 'red';
     } else {
       return '';
     }
   };
+
+  const calcIsChanged = () => {
+    return initFrom !== from || initTo !== to;
+  };
+
+  const isChanged = calcIsChanged();
 
   return (
     <div className="deadlines_main">
@@ -114,13 +130,16 @@ export const DeadlinesWidget = ({
             className="deadline_input_container_cross"
             onClick={() => {
               setIsPicking(false);
+
+              setTo(initTo || '');
+              setFrom(initFrom || '');
             }}
           >
             <Cross />
           </div>
 
           <div
-            className={`deadline_input_container_success ${to === '' ? 'disabled' : ''}`}
+            className={`deadline_input_container_success ${to === '' || !isChanged ? 'disabled' : ''} ${isError ? 'error' : ''}`}
             onClick={handleSubmit}
           >
             <Check />

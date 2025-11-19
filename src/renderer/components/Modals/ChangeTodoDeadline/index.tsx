@@ -19,6 +19,8 @@ export const ChangeTodoDeadline = ({ id, topic }: changeTodoDeadlineType) => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
+  const [data, setData] = useState<saveTodoType | null>(null);
+
   useEffect(() => {
     const loadTodo = async () => {
       try {
@@ -28,6 +30,7 @@ export const ChangeTodoDeadline = ({ id, topic }: changeTodoDeadlineType) => {
           topic,
           currentProjectName || 'main',
         );
+        setData(data);
 
         setDateFrom(data.deadline?.from || '');
         setDateTo(data.deadline?.to || '');
@@ -66,6 +69,19 @@ export const ChangeTodoDeadline = ({ id, topic }: changeTodoDeadlineType) => {
     }
   };
 
+  const calcError = () => {
+    return new Date(dateTo).getTime() < new Date(dateFrom).getTime();
+  };
+  const isError = calcError();
+
+  const calcIsChanged = () => {
+    if (!data) return false;
+
+    return data.deadline?.from !== dateFrom || data.deadline?.to !== dateTo;
+  };
+
+  const isChanged = calcIsChanged();
+
   return (
     <div>
       <div className="widget_settings_modal_cross" onClick={closeModal}>
@@ -74,6 +90,7 @@ export const ChangeTodoDeadline = ({ id, topic }: changeTodoDeadlineType) => {
       <h1>Введите дату</h1>
       <div className="change_todo_deadline_input_container">
         <Input
+          className={`${isError ? 'inputError' : ''}`}
           type="date"
           value={dateFrom}
           onChange={(e) => {
@@ -81,6 +98,7 @@ export const ChangeTodoDeadline = ({ id, topic }: changeTodoDeadlineType) => {
           }}
         />
         <Input
+          className={`${isError ? 'inputError' : ''}`}
           type="date"
           value={dateTo}
           onChange={(e) => {
@@ -89,7 +107,10 @@ export const ChangeTodoDeadline = ({ id, topic }: changeTodoDeadlineType) => {
         />
       </div>
 
-      <Button disabled={isBlocked} onClick={handleSubmit}>
+      <Button
+        disabled={isBlocked || isError || !isChanged}
+        onClick={handleSubmit}
+      >
         Сохранить
       </Button>
     </div>

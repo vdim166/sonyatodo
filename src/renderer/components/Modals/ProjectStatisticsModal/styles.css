@@ -1,0 +1,13 @@
+.project_statistics_content {
+  display: flex;
+
+  gap: 20px;
+}
+
+.project_statistics_main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  height: 500px;
+}
