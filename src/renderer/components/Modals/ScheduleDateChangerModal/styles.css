@@ -1,0 +1,25 @@
+.widget_settings_modal_back {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.widget_settings_modal_back:hover {
+  cursor: pointer;
+}
+
+.ScheduleDateChangerModal_title {
+  font-size: 25px;
+}
+
+.ScheduleDateChangerModal_container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.ScheduleDateChangerModal_main {
+  margin-top: 10px;
+}

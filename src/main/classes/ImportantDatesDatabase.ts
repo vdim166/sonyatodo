@@ -17,10 +17,20 @@ export type ImportantDateDto = {
 
 class ImportantDatesDatabase {
   private userDataPath = app.getPath('userData');
-  private filePath = path.join(this.userDataPath, 'important_dates_data.json');
+  private filePath = path.join(
+    this.userDataPath,
+    'sonyaTodo',
+    'important_dates_data.json',
+  );
 
   loadDataFromFile(): ImportantDatesDatabaseType {
     try {
+      if (!fs.existsSync(path.join(this.userDataPath, 'sonyaTodo'))) {
+        fs.mkdirSync(path.join(this.userDataPath, 'sonyaTodo'), {
+          recursive: true,
+        });
+      }
+
       if (fs.existsSync(this.filePath)) {
         const data = fs.readFileSync(this.filePath, 'utf-8');
         return JSON.parse(data);

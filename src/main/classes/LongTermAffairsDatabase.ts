@@ -23,11 +23,18 @@ class LongTermAffairsDatabase {
   private userDataPath = app.getPath('userData');
   private filePath = path.join(
     this.userDataPath,
+    'sonyaTodo',
     'long_term_affairs_data.json',
   );
 
   loadDataFromFile(): LongTermAffairsDatabaseType {
     try {
+      if (!fs.existsSync(path.join(this.userDataPath, 'sonyaTodo'))) {
+        fs.mkdirSync(path.join(this.userDataPath, 'sonyaTodo'), {
+          recursive: true,
+        });
+      }
+
       if (fs.existsSync(this.filePath)) {
         const data = fs.readFileSync(this.filePath, 'utf-8');
         return JSON.parse(data);

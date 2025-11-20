@@ -7,10 +7,14 @@ import { ConfirmModal } from '../Modals/ConfirmModal';
 import { ImageViewerModal } from '../Modals/ImageViewerModal';
 import { ProjectConstructor } from '../Modals/ProjectConstructor';
 import { ProjectStatisticsModal } from '../Modals/ProjectStatisticsModal';
+import { ScheduleDateChangerModal } from '../Modals/ScheduleDateChangerModal';
+import { ScheduleViewerModal } from '../Modals/ScheduleViewerModal';
 import { TabsConstructor } from '../Modals/TabsContructor';
 import { changeTodoDeadlineType } from '../Modals/types/changeTodoDeadlineType';
 import { confirmModalType } from '../Modals/types/confirmModalType';
 import { imgViewerType } from '../Modals/types/imgViewerType';
+import { scheduleDateChangerType } from '../Modals/types/scheduleDateChangerType';
+import { scheduleViewerModalType } from '../Modals/types/scheduleViewerModalType';
 import { UniversalWrapper } from '../Modals/UniversalWrapper';
 import { WidgetSettingsModal } from '../Modals/WidgetSettingsModal';
 
@@ -71,6 +75,22 @@ export const ModalsManager = () => {
     return (
       <UniversalWrapper>
         <ProjectStatisticsModal />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.SCHEDULE_VIEWER) {
+    return (
+      <UniversalWrapper>
+        <ScheduleViewerModal
+          {...(modalState.props as scheduleViewerModalType)}
+        />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.SCHEDULE_DATE_CHANGER) {
+    return (
+      <UniversalWrapper>
+        <ScheduleDateChangerModal
+          {...(modalState.props as scheduleDateChangerType)}
+        />
       </UniversalWrapper>
     );
   }

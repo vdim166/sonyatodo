@@ -18,6 +18,7 @@ import {
   IMPORTANT_DATES_SIGNALS,
   IPC_SIGNALS,
   LONG_TERM_AFFAIRS_SIGNALS,
+  SCHEDULE_SIGNALS,
 } from './consts';
 import { database } from './classes/Database';
 import fs from 'fs';
@@ -25,8 +26,15 @@ import { WidgetSettingsType } from './preload';
 import { addTodoImageType } from './types/addTodoImageType';
 import { importantDatesDatabase } from './classes/ImportantDatesDatabase';
 import { longTermAffairsDatabase } from './classes/LongTermAffairsDatabase';
+import { scheduleDatabase } from './classes/ScheduleDatabase';
 
-export const savedImagesPath = path.join(process.cwd(), 'saved_images');
+const userDataPath = app.getPath('userData');
+
+export const savedImagesPath = path.join(
+  userDataPath,
+  'sonyaTodo',
+  'saved_images',
+);
 
 let tray: Tray | null = null;
 
@@ -137,7 +145,13 @@ ipcMain.handle(IPC_SIGNALS.GET_TODO_BY_ID, (_event, id, topic, project) => {
 
 ipcMain.handle(
   IPC_SIGNALS.SAVE_TODO_IMAGE,
-  (_event, { name, data, id, topic }: addTodoImageType) => {
+  (_event, { name, data, id }: addTodoImageType) => {
+    if (!fs.existsSync(path.join(userDataPath, 'sonyaTodo'))) {
+      fs.mkdirSync(path.join(userDataPath, 'sonyaTodo'), {
+        recursive: true,
+      });
+    }
+
     const savePath = path.join(savedImagesPath, `${id}-${name}.jpg`);
 
     // убедимся, что папка существует
@@ -158,6 +172,12 @@ ipcMain.handle(
 );
 
 ipcMain.handle(IPC_SIGNALS.LOAD_TODO_IMAGE, async (_event, filename) => {
+  if (!fs.existsSync(path.join(userDataPath, 'sonyaTodo'))) {
+    fs.mkdirSync(path.join(userDataPath, 'sonyaTodo'), {
+      recursive: true,
+    });
+  }
+
   const filePath = path.join(savedImagesPath, filename);
 
   try {
@@ -171,7 +191,7 @@ ipcMain.handle(IPC_SIGNALS.LOAD_TODO_IMAGE, async (_event, filename) => {
 
 ipcMain.handle(IPC_SIGNALS.GET_WIDGET_SETTINGS, (_event) => {
   const userDataPath = app.getPath('userData');
-  const filePath = path.join(userDataPath, 'widget-settings.json');
+  const filePath = path.join(userDataPath, 'sonyaTodo', 'widget-settings.json');
 
   const status = fs.existsSync(filePath);
 
@@ -213,10 +233,8 @@ ipcMain.handle(IMPORTANT_DATES_SIGNALS.GET_ALL_IMPORTANT_DATES, () => {
 });
 
 ipcMain.on(IPC_SIGNALS.SET_WIDGET_AUTO_START, (_event, autoStart) => {
-  console.log('autoStart', autoStart);
-
   const userDataPath = app.getPath('userData');
-  const filePath = path.join(userDataPath, 'widget-settings.json');
+  const filePath = path.join(userDataPath, 'sonyaTodo', 'widget-settings.json');
   try {
     const status = fs.existsSync(filePath);
 
@@ -289,6 +307,25 @@ ipcMain.handle(
     );
   },
 );
+
+ipcMain.handle(SCHEDULE_SIGNALS.ADD_SCHEDULE_DATE, (_event, date, todo) => {
+  return scheduleDatabase.addScheduleTodo(date, todo);
+});
+
+ipcMain.handle(SCHEDULE_SIGNALS.DELETE_SCHEDULE_DATE, (_event, date, id) => {
+  return scheduleDatabase.deleteScheduleTodo(date, id);
+});
+
+ipcMain.handle(
+  SCHEDULE_SIGNALS.CHANGE_SCHEDULE_DATE,
+  (_event, date, id, options) => {
+    return scheduleDatabase.changeScheduleTodo(date, id, options);
+  },
+);
+
+ipcMain.handle(SCHEDULE_SIGNALS.GET_SCHEDULE_DATES, (_event, date) => {
+  return scheduleDatabase.getScheduleTodos(date);
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -459,7 +496,7 @@ let dragStartPosition: {
 
 function createWidgetWindow() {
   const userDataPath = app.getPath('userData');
-  const filePath = path.join(userDataPath, 'widget-settings.json');
+  const filePath = path.join(userDataPath, 'sonyaTodo', 'widget-settings.json');
 
   const status = fs.existsSync(filePath);
 
@@ -630,7 +667,11 @@ ipcMain.on('drag-end', (event, mousePosition) => {
       // win.setPosition(newX, newY);
 
       const userDataPath = app.getPath('userData');
-      const filePath = path.join(userDataPath, 'widget-settings.json');
+      const filePath = path.join(
+        userDataPath,
+        'sonyaTodo',
+        'widget-settings.json',
+      );
 
       const status = fs.existsSync(filePath);
 

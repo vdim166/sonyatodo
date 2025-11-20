@@ -1,0 +1,45 @@
+.ScheduleViewerModal_date {
+  background-color: rgb(52, 52, 189);
+  color: white;
+  padding: 2px;
+  border-radius: 2px;
+
+  display: flex;
+  align-items: center;
+}
+
+.ScheduleViewerModal_date:hover {
+  background-color: rgb(136, 136, 241);
+  cursor: pointer;
+}
+
+.ScheduleViewerModal_date:active {
+  background-color: rgb(127, 127, 196);
+  cursor: pointer;
+}
+.ScheduleViewerModal_date_cross {
+  margin-left: auto;
+  margin-right: 2px;
+}
+.ScheduleViewerModal_date_cross path {
+  fill: white;
+}
+
+.ScheduleViewerModal_date_cross svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ScheduleViewerModal_date_cross:hover {
+  cursor: pointer;
+}
+
+.ScheduleViewerModal_date_cross:hover path {
+  fill: red;
+}
+
+.ScheduleViewerModal_date p {
+  max-width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

@@ -8,28 +8,22 @@ import { DatabaseType } from '../types/DatabaseType';
 import { setDeadlineType } from '../types/setDeadlineType';
 import { candidateLinkType } from '../../renderer/components/AddLinksToTodo';
 import { savedImagesPath } from '../main';
-
-const findImgs = (str: string) => {
-  const regex = /<img>(.*?)<\/img>/g;
-
-  const matches = [];
-  let match;
-
-  while ((match = regex.exec(str)) !== null) {
-    matches.push(match[1]); // match[1] contains content inside <img> tag
-  }
-
-  return matches;
-};
+import { findImgs } from '../utils/findImgs';
 
 // TODO: maybe use async functions later
 
 class Database {
   private userDataPath = app.getPath('userData');
-  private filePath = path.join(this.userDataPath, 'data.json');
+  private filePath = path.join(this.userDataPath, 'sonyaTodo', 'data.json');
 
   loadDataFromFile(): DatabaseType {
     try {
+      if (!fs.existsSync(path.join(this.userDataPath, 'sonyaTodo'))) {
+        fs.mkdirSync(path.join(this.userDataPath, 'sonyaTodo'), {
+          recursive: true,
+        });
+      }
+
       if (fs.existsSync(this.filePath)) {
         const data = fs.readFileSync(this.filePath, 'utf-8');
         return JSON.parse(data);
@@ -206,7 +200,31 @@ class Database {
   checkForDataFile = () => {
     try {
       if (!fs.existsSync(this.filePath)) {
-        fs.writeFileSync(this.filePath, JSON.stringify({ main: {} }), 'utf-8');
+        if (!fs.existsSync(path.join(this.userDataPath, 'sonyaTodo'))) {
+          fs.mkdirSync(path.join(this.userDataPath, 'sonyaTodo'), {
+            recursive: true,
+          });
+        }
+
+        fs.writeFileSync(
+          this.filePath,
+          JSON.stringify({
+            main: {
+              allTopics: [
+                {
+                  name: 'TODO',
+                  todos: [],
+                },
+                {
+                  name: 'DONE',
+                  todos: [],
+                },
+              ],
+              tabs: ['TODO', 'DONE'],
+            },
+          }),
+          'utf-8',
+        );
       } else {
         const data = fs.readFileSync(this.filePath, 'utf-8');
 

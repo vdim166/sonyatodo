@@ -1,0 +1,33 @@
+.calendar_day_day {
+  width: 100%;
+  height: 100%;
+
+  position: relative;
+}
+
+.calendar_day_day_dates {
+  position: absolute;
+
+  bottom: 0px;
+  right: 0px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 5px;
+  height: 40px;
+
+  max-height: 40px;
+  overflow: hidden;
+}
+
+.calendar_day_day_dates_option {
+  border: 1px solid black;
+  width: 15px;
+  height: 15px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2px;
+}

@@ -1,0 +1,54 @@
+.ScheduleViewerModal_inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ScheduleViewerModal_inputs_input {
+  border: 1px solid rgb(136, 136, 241);
+}
+
+.ScheduleViewerModal_title {
+  font-size: 25px;
+  margin-bottom: 20px;
+}
+
+.ScheduleViewerModal_container {
+  display: flex;
+  gap: 15px;
+}
+
+.ScheduleViewerModal_dates_container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ScheduleViewerModal_dates {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  max-height: 200px;
+  overflow: hidden auto;
+  padding-right: 10px;
+}
+
+.ScheduleViewerModal_dates::-webkit-scrollbar {
+  width: 6px; /* Vertical scrollbar width */
+  height: 8px;
+}
+
+.ScheduleViewerModal_dates::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+  border-radius: 5px;
+}
+
+.ScheduleViewerModal_dates::-webkit-scrollbar-thumb {
+  background: rgb(82, 82, 165); /* Thumb color */
+  border-radius: 5px;
+}
+
+.ScheduleViewerModal_dates::-webkit-scrollbar-thumb:hover {
+  background: rgb(88, 88, 228); /* Hover effect */
+  cursor: grab;
+}

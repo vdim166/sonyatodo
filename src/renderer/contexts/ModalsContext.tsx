@@ -2,6 +2,8 @@ import { createContext } from 'react';
 import { confirmModalType } from '../components/Modals/types/confirmModalType';
 import { imgViewerType } from '../components/Modals/types/imgViewerType';
 import { changeTodoDeadlineType } from '../components/Modals/types/changeTodoDeadlineType';
+import { scheduleViewerModalType } from '../components/Modals/types/scheduleViewerModalType';
+import { scheduleDateChangerType } from '../components/Modals/types/scheduleDateChangerType';
 
 export const MODALS = {
   CONFIRM: 'CONFIRM',
@@ -13,12 +15,16 @@ export const MODALS = {
   ADD_LONG_TERM_AFFAIR: 'ADD_LONG_TERM_AFFAIR',
   CHANGE_TODO_DEADLINE: 'CHANGE_TODO_DEADLINE',
   STATISTICS: 'STATISTICS',
+  SCHEDULE_VIEWER: 'SCHEDULE_VIEWER',
+  SCHEDULE_DATE_CHANGER: 'SCHEDULE_DATE_CHANGER',
 } as const;
 
 type OpenModalPropsType =
   | confirmModalType
   | imgViewerType
-  | changeTodoDeadlineType;
+  | changeTodoDeadlineType
+  | scheduleViewerModalType
+  | scheduleDateChangerType;
 
 export type OpenModalType = {
   type: keyof typeof MODALS;

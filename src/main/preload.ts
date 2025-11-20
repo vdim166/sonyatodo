@@ -4,6 +4,7 @@ import {
   IMPORTANT_DATES_SIGNALS,
   IPC_SIGNALS,
   LONG_TERM_AFFAIRS_SIGNALS,
+  SCHEDULE_SIGNALS,
 } from './consts';
 import { saveTodoType } from '../renderer/classes/ipcSignals';
 import { TabType } from '../renderer/contexts/AppContext';
@@ -13,6 +14,7 @@ import { addTodoImageType } from './types/addTodoImageType';
 import { candidateLinkType } from '../renderer/components/AddLinksToTodo';
 import { ImportantDateType } from './classes/ImportantDatesDatabase';
 import { LongTermAffairsDTO } from './classes/LongTermAffairsDatabase';
+import { ScheduleDateType, ScheduleTodoType } from './classes/ScheduleDatabase';
 
 // Типы для каналов IPC
 
@@ -255,6 +257,35 @@ const electronHandler = {
         moveFrom,
         moveTo,
       );
+    },
+
+    addScheduleTodo(date: ScheduleDateType, todo: ScheduleTodoType) {
+      return ipcRenderer.invoke(SCHEDULE_SIGNALS.ADD_SCHEDULE_DATE, date, todo);
+    },
+
+    deleteScheduleTodo(date: ScheduleDateType, id: string) {
+      return ipcRenderer.invoke(
+        SCHEDULE_SIGNALS.DELETE_SCHEDULE_DATE,
+        date,
+        id,
+      );
+    },
+
+    changeScheduleTodo(
+      date: ScheduleDateType,
+      id: string,
+      options: { name?: string; description?: string },
+    ) {
+      return ipcRenderer.invoke(
+        SCHEDULE_SIGNALS.CHANGE_SCHEDULE_DATE,
+        date,
+        id,
+        options,
+      );
+    },
+
+    getScheduleTodos(date: ScheduleDateType) {
+      return ipcRenderer.invoke(SCHEDULE_SIGNALS.GET_SCHEDULE_DATES, date);
     },
 
     setAutoStartWidget(state: boolean) {
