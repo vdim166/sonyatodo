@@ -56,6 +56,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
           if (findTopic) {
             setTodos(findTopic.todos);
           }
+
           setTabs(data.tabs);
 
           if (!currentTab)

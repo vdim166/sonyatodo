@@ -26,10 +26,6 @@ export const Main = () => {
     setTempTodo(null);
   };
 
-  if (!todos) {
-    return <div>Loading....</div>;
-  }
-
   return (
     <div className="main_page">
       <BurgerMenu />
@@ -74,7 +70,7 @@ export const Main = () => {
           <TodoNavbar />
           <div className="todos">
             {tempTodo !== null && <Todo isTemp {...tempTodo} />}
-            {todos.length > 0
+            {todos && todos.length > 0
               ? sortTodosByDeadline(
                   todos.filter((t) => t.hidden !== true),
                   currentTab === 'DONE',

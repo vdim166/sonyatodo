@@ -60,6 +60,25 @@ class AppUpdater {
   }
 }
 
+if (!isDebug) {
+  const gotTheLock = app.requestSingleInstanceLock();
+
+  if (!gotTheLock) {
+    app.quit();
+    process.exit(0);
+  } else {
+    app.on('second-instance', () => {
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.show();
+        mainWindow.focus();
+      } else {
+        createWindow();
+      }
+    });
+  }
+}
+
 function enableAutoLaunch() {
   if (process.env.NODE_ENV === 'production') {
     app.setLoginItemSettings({
