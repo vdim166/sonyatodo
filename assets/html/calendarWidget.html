@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: rgba(0, 0, 0, 0);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+        user-select: none;
+        cursor: default;
+
+        height: 220px;
+      }
+
+      .widget-container {
+        background: rgba(40, 40, 40, 0.9);
+        border-radius: 12px;
+        color: white;
+        padding: 15px;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        height: calc(100% - 32px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+
+        overflow: hidden auto;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+      .content {
+        margin-top: 5px;
+      }
+
+      .day {
+        height: 25px;
+        width: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin-top: 2px;
+        border-radius: 5px;
+      }
+
+      .day.today {
+        background-color: rgb(43, 187, 43);
+      }
+
+      .day.work {
+        background-color: red;
+      }
+
+      .day.work.today {
+        background-color: purple;
+      }
+      .day:hover {
+        cursor: pointer;
+        background-color: rgb(102, 102, 221);
+      }
+
+      .day:active {
+        background-color: rgb(129, 129, 233);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="widget-container">
+      <div class="today">day</div>
+      <div class="content"></div>
+    </div>
+  </body>
+</html>
+
+<script>
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+</script>
+
+<script>
+  function generateCalendar(month, year) {
+    // вычисления исходя из month: 1-12
+    const firstDayJS = new Date(year, month - 1, 1).getDay(); // 0..6, 0 = Sunday
+    // переводим в индекс где 0 = Monday, 6 = Sunday
+    const startIndex = (firstDayJS + 6) % 7;
+
+    const daysInMonth = new Date(year, month, 0).getDate(); // дней в текущем месяце
+    const prevMonthDays = new Date(year, month - 1, 0).getDate(); // дней в предыдущем месяце
+
+    const calendar = [];
+    let week = [];
+
+    // вспомогательная функция для нормализации месяца/года в объекте (1-12, корректный год)
+    const normalize = (m, y) => {
+      if (m < 1) {
+        return { month: 12 + m, year: y - 1 }; // m будет 0 -> 12 prev year
+      }
+      if (m > 12) {
+        return {
+          month: ((m - 1) % 12) + 1,
+          year: y + Math.floor((m - 1) / 12),
+        };
+      }
+      return { month: m, year: y };
+    };
+
+    // заполняем дни предыдущего месяца перед началом месяца
+    for (let i = startIndex; i > 0; i--) {
+      const day = prevMonthDays - i + 1;
+      const norm = normalize(month - 1, year);
+      week.push({ day, month: norm.month, year: norm.year });
+    }
+
+    // текущий месяц
+    for (let d = 1; d <= daysInMonth; d++) {
+      week.push({ day: d, month, year });
+      if (week.length === 7) {
+        calendar.push(week);
+        week = [];
+      }
+    }
+
+    // заполнить последнюю неделю днями следующего месяца (если неполная)
+    let nextMonthDay = 1;
+    if (week.length > 0) {
+      while (week.length < 7) {
+        const norm = normalize(month + 1, year);
+        week.push({ day: nextMonthDay++, month: norm.month, year: norm.year });
+      }
+      calendar.push(week);
+      week = [];
+    }
+
+    // если нужно всегда вернуть 6 строк (некоторые дизайны календарей требуют 6 рядов),
+    // то добавляем ещё одну неделю из дней следующего месяца.
+    // Если ты не хочешь всегда 6 рядов — убери этот блок.
+    if (calendar.length === 5) {
+      const extraWeek = [];
+      for (let i = 0; i < 7; i++) {
+        const norm = normalize(month + 1, year);
+        extraWeek.push({
+          day: nextMonthDay++,
+          month: norm.month,
+          year: norm.year,
+        });
+      }
+      calendar.push(extraWeek);
+    }
+
+    return { calendar };
+  }
+
+  const loadWidgetData = async () => {
+    const now = new Date();
+
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+
+    const todayHtml = document.querySelector('.today');
+
+    const todayDay = new Date().getDate();
+
+    todayHtml.innerHTML = `
+        ${months[month - 1]} ${year}
+    `;
+
+    const { calendar } = generateCalendar(month, year);
+
+    const resultWork = {};
+
+    for (let i = 0; i < calendar.length; ++i) {
+      const row = calendar[i];
+
+      for (let j = 0; j < row.length; ++j) {
+        const date = row[j];
+
+        const workToDo =
+          await window.electron.ipcRenderer.getScheduleTodos(date);
+
+        if (workToDo) {
+          resultWork[`${date.day}-${date.month}-${date.year}`] = workToDo;
+        }
+      }
+    }
+
+    const contentHtml = document.querySelector('.content');
+
+    contentHtml.innerHTML = calendar
+      .map((row) => {
+        return `<div class="row">${row
+          .map((d) => {
+            const haveSomething =
+              resultWork[`${d.day}-${d.month}-${d.year}`] !== undefined &&
+              resultWork[`${d.day}-${d.month}-${d.year}`].length > 0;
+
+            return `<div class="day  ${haveSomething ? 'work' : ''} ${d.day === todayDay ? 'today' : ''}" onclick="openCurrentDay('${d.day}-${d.month}-${d.year}')">${d.day}</div>`;
+          })
+          .join('')}</div>`;
+      })
+      .join('');
+  };
+
+  loadWidgetData();
+</script>
+
+<script>
+  const openCurrentDay = (date) => {
+    const [day, month, year] = date.split('-');
+
+    window.electron.ipcRenderer.openCalendarDay(day, month, year);
+  };
+</script>
+
+<script>
+  window.electron.ipcRenderer.on('update-calendar-todo-data', (event) => {
+    loadWidgetData();
+  });
+</script>
+
+<script>
+  function calculateTimeUntilMidnight() {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0);
+    return midnight - now;
+  }
+
+  function startDailyInterval(callback) {
+    setInterval(
+      () => {
+        if (callback) callback();
+      },
+      24 * 60 * 60 * 1000,
+    );
+  }
+
+  const checkTodos = (callback) => {
+    const initialTime = calculateTimeUntilMidnight();
+
+    setTimeout(() => {
+      if (callback) callback();
+
+      startDailyInterval(callback);
+    }, initialTime);
+  };
+
+  checkTodos(loadWidgetData);
+</script>

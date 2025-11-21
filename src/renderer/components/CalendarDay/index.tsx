@@ -78,7 +78,7 @@ export const CalendarDay = ({ date }: CalendarDayProps) => {
         <div className="calendar_day_day_dates">
           {dates.map((d) => {
             return (
-              <div className="calendar_day_day_dates_option">
+              <div className="calendar_day_day_dates_option" key={d.id}>
                 <p>{d.name[0]}</p>
               </div>
             );

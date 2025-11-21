@@ -112,8 +112,6 @@ export const Calendar = () => {
 
   const days = generateCalendar(currentMonth, currentYear);
 
-  console.log('days.calendar', days.calendar);
-
   return (
     <div className="calendar_main">
       <div className="calendar_action_menu">
@@ -193,15 +191,15 @@ export const Calendar = () => {
         <div className="calendar_days">
           {days.calendar.map((i, index) => {
             return (
-              <div className="calendar_days_row">
+              <div className="calendar_days_row" key={index}>
                 {i.map((d) => {
                   return (
-                    <div className="calendar_day_container">
+                    <div
+                      className="calendar_day_container"
+                      key={`${d.day}-${d.month}-${d.year}`}
+                    >
                       <div className="calendar_day">
-                        <CalendarDay
-                          date={d}
-                          key={`${d.day}-${d.month}-${d.year}`}
-                        />
+                        <CalendarDay date={d} />
                       </div>
                     </div>
                   );

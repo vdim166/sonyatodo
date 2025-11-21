@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ipcSignals, saveTodoType } from '../classes/ipcSignals';
 import { AppContext, AppContextType, TabType } from './AppContext';
-import { log } from 'console';
 import { DISPATCH_EVENTS } from '../consts/dispatchEvents';
 import { editModalState } from '../components/shared/types/editModalState';
 

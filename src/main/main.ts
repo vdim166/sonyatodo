@@ -37,6 +37,20 @@ export const savedImagesPath = path.join(
 );
 
 let tray: Tray | null = null;
+let mainWindow: BrowserWindow | null = null;
+let widgetWindow: BrowserWindow | null = null;
+let longTermAffairsWidgetWindow: BrowserWindow | null = null;
+let calendarWidgetWindow: BrowserWindow | null = null;
+
+let dragStartPosition: {
+  mouseX: number;
+  mouseY: number;
+  winX: number;
+  winY: number;
+} | null = null;
+
+const isDebug =
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 class AppUpdater {
   constructor() {
@@ -69,8 +83,6 @@ function disableAutoLaunch() {
     path: app.getPath('exe'),
   });
 }
-
-let mainWindow: BrowserWindow | null = null;
 
 ipcMain.handle(IPC_SIGNALS.SAVE_DATA_BASE, (_event, data, projectName) => {
   return database.saveDataToFile(data, projectName);
@@ -309,17 +321,28 @@ ipcMain.handle(
 );
 
 ipcMain.handle(SCHEDULE_SIGNALS.ADD_SCHEDULE_DATE, (_event, date, todo) => {
-  return scheduleDatabase.addScheduleTodo(date, todo);
+  const data = scheduleDatabase.addScheduleTodo(date, todo);
+
+  calendarWidgetWindow?.webContents.send('update-calendar-todo-data');
+
+  return data;
 });
 
 ipcMain.handle(SCHEDULE_SIGNALS.DELETE_SCHEDULE_DATE, (_event, date, id) => {
-  return scheduleDatabase.deleteScheduleTodo(date, id);
+  const data = scheduleDatabase.deleteScheduleTodo(date, id);
+  calendarWidgetWindow?.webContents.send('update-calendar-todo-data');
+
+  return data;
 });
 
 ipcMain.handle(
   SCHEDULE_SIGNALS.CHANGE_SCHEDULE_DATE,
   (_event, date, id, options) => {
-    return scheduleDatabase.changeScheduleTodo(date, id, options);
+    const data = scheduleDatabase.changeScheduleTodo(date, id, options);
+
+    calendarWidgetWindow?.webContents.send('update-calendar-todo-data');
+
+    return data;
   },
 );
 
@@ -327,13 +350,47 @@ ipcMain.handle(SCHEDULE_SIGNALS.GET_SCHEDULE_DATES, (_event, date) => {
   return scheduleDatabase.getScheduleTodos(date);
 });
 
+ipcMain.handle(SCHEDULE_SIGNALS.UPDATE_CALENDAR_TODOS_WIDGET, (_event) => {
+  return calendarWidgetWindow?.webContents.send('update-calendar-todo-data');
+});
+
+ipcMain.handle(
+  SCHEDULE_SIGNALS.OPEN_CALENDAR_DAY,
+  async (_event, day, month, year) => {
+    try {
+      if (mainWindow) {
+        if (!mainWindow.isVisible()) {
+          mainWindow.show();
+        }
+
+        mainWindow?.webContents.send(IPC_SIGNALS.OPEN_CALENDAR_DAY, {
+          day,
+          month,
+          year,
+        });
+      } else {
+        await createWindow();
+
+        mainWindow!.webContents.on('did-finish-load', () => {
+          console.log('Renderer is ready!');
+
+          mainWindow?.webContents.send(IPC_SIGNALS.OPEN_CALENDAR_DAY_BEFORE, {
+            day,
+            month,
+            year,
+          });
+        });
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  },
+);
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
-
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug').default();
@@ -483,17 +540,6 @@ app
   })
   .catch(console.log);
 
-let widgetWindow: BrowserWindow | null = null;
-
-let longTermAffairsWidgetWindow: BrowserWindow | null = null;
-
-let dragStartPosition: {
-  mouseX: number;
-  mouseY: number;
-  winX: number;
-  winY: number;
-} | null = null;
-
 function createWidgetWindow() {
   const userDataPath = app.getPath('userData');
   const filePath = path.join(userDataPath, 'sonyaTodo', 'widget-settings.json');
@@ -557,10 +603,11 @@ function createWidgetWindow() {
     dragStartPosition = null;
   });
 
-  longTermAffairsWidget(widgetSettings);
+  createLongTermAffairsWidget(widgetSettings);
+  createCalendarWidget(widgetSettings);
 }
 
-function longTermAffairsWidget(widgetSettings: any) {
+function createLongTermAffairsWidget(widgetSettings: any) {
   if (!widgetSettings.autoStart) return;
 
   if (longTermAffairsWidgetWindow) {
@@ -614,6 +661,58 @@ function longTermAffairsWidget(widgetSettings: any) {
   });
 }
 
+function createCalendarWidget(widgetSettings: any) {
+  if (!widgetSettings.autoStart) return;
+
+  if (calendarWidgetWindow) {
+    calendarWidgetWindow.focus();
+    return;
+  }
+
+  calendarWidgetWindow = new BrowserWindow({
+    width: 280,
+    height: 250,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: false,
+    resizable: false,
+    skipTaskbar: true,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: true,
+    fullscreenable: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      // enableRemoteModule: false,
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+  calendarWidgetWindow.loadFile(getAssetPath('html', 'calendarWidget.html'));
+
+  calendarWidgetWindow.once('ready-to-show', () => {
+    if (calendarWidgetWindow) {
+      if (widgetSettings.position) {
+        calendarWidgetWindow.setPosition(
+          widgetSettings.position.x + 300,
+          widgetSettings.position.y,
+        );
+      }
+
+      calendarWidgetWindow.show();
+    }
+  });
+
+  calendarWidgetWindow.on('closed', () => {
+    calendarWidgetWindow = null;
+  });
+}
+
 // Функция позиционирования у края экрана
 
 // Обработчик начала перетаскивания
@@ -649,6 +748,10 @@ ipcMain.on('window-drag', (event, mousePosition) => {
 
     if (longTermAffairsWidgetWindow) {
       longTermAffairsWidgetWindow.setPosition(newX - 300, newY);
+    }
+
+    if (calendarWidgetWindow) {
+      calendarWidgetWindow.setPosition(newX + 300, newY);
     }
   }
 });

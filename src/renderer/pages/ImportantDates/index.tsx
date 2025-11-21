@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { BurgerMenu } from '../../components/BurgerMenu';
 import { Navbar } from '../../components/Navbar';
-import { ProjectsHolder } from '../../components/ProjectsHolder';
 import { Button } from '../../components/shared/components/Button';
 import './style.css';
 import { ImportantDate } from '../../components/ImportantDate';

@@ -6,7 +6,6 @@ export const DailySchedule = () => {
   return (
     <div className="daily_schedule_main">
       <Navbar />
-
       <Calendar />
     </div>
   );

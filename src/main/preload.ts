@@ -288,6 +288,15 @@ const electronHandler = {
       return ipcRenderer.invoke(SCHEDULE_SIGNALS.GET_SCHEDULE_DATES, date);
     },
 
+    openCalendarDay(day: number, month: number, year: number) {
+      return ipcRenderer.invoke(
+        SCHEDULE_SIGNALS.OPEN_CALENDAR_DAY,
+        day,
+        month,
+        year,
+      );
+    },
+
     setAutoStartWidget(state: boolean) {
       ipcRenderer.send(IPC_SIGNALS.SET_WIDGET_AUTO_START, state);
     },

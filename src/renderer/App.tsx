@@ -12,6 +12,9 @@ import { ImportantDatesContextProvider } from './contexts/ImportantDatesContextP
 import { DailySchedule } from './pages/DailySchedule';
 import { LongTermAffairs } from './pages/LongTermAffairs';
 import { LongTermAffairsContextProvider } from './contexts/LongTermAffairsContextProvider';
+import { MainLayout } from './Layouts/MainLayout';
+import { useEffect } from 'react';
+import { IPC_SIGNALS } from '../main/consts';
 
 export default function App() {
   return (
@@ -24,13 +27,45 @@ export default function App() {
               <ModalsManager />
               <Router>
                 <Routes>
-                  <Route path="/" element={<Main />} />
-                  <Route path="/alarm" element={<Alarm />} />
-                  <Route path="/schedule" element={<DailySchedule />} />
-                  <Route path="/importantDates" element={<ImportantDates />} />
+                  <Route
+                    path="/"
+                    element={
+                      <MainLayout>
+                        <Main />
+                      </MainLayout>
+                    }
+                  />
+                  <Route
+                    path="/alarm"
+                    element={
+                      <MainLayout>
+                        <Alarm />
+                      </MainLayout>
+                    }
+                  />
+                  <Route
+                    path="/schedule"
+                    element={
+                      <MainLayout>
+                        <DailySchedule />
+                      </MainLayout>
+                    }
+                  />
+                  <Route
+                    path="/importantDates"
+                    element={
+                      <MainLayout>
+                        <ImportantDates />
+                      </MainLayout>
+                    }
+                  />
                   <Route
                     path="/longTermAffairs"
-                    element={<LongTermAffairs />}
+                    element={
+                      <MainLayout>
+                        <LongTermAffairs />
+                      </MainLayout>
+                    }
                   />
                 </Routes>
               </Router>
