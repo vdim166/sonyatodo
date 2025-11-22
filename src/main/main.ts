@@ -548,15 +548,36 @@ app
     ]);
 
     tray.setToolTip('Sonya Todo');
-    tray.setContextMenu(contextMenu);
 
-    // клик по иконке (например, чтобы сворачивать/разворачивать окно)
     tray.on('click', () => {
-      if (mainWindow) {
+      // левый клик
+
+      if (!mainWindow) {
+        createWindow();
+      } else {
         if (mainWindow.isVisible()) {
           mainWindow.hide();
         } else {
           mainWindow.show();
+        }
+      }
+    });
+
+    tray.on('right-click', () => {
+      // правый клик → вручную показываем контекстное меню
+
+      if (tray) tray.popUpContextMenu(contextMenu);
+    });
+    // tray.setContextMenu(contextMenu);
+
+    // клик по иконке (например, чтобы сворачивать/разворачивать окно)
+    tray.on('click', () => {
+      if (mainWindow) {
+        if (mainWindow.isVisible() && !mainWindow.isMinimized()) {
+          mainWindow.hide();
+        } else {
+          mainWindow.show();
+          mainWindow.focus();
         }
       }
     });
