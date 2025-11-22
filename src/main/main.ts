@@ -373,6 +373,18 @@ ipcMain.handle(SCHEDULE_SIGNALS.UPDATE_CALENDAR_TODOS_WIDGET, (_event) => {
   return calendarWidgetWindow?.webContents.send('update-calendar-todo-data');
 });
 
+let eventAfterLoad: { event: string; options: any }[] = [];
+
+ipcMain.handle('main-window-dom-ready', () => {
+  for (let i = 0; i < eventAfterLoad.length; ++i) {
+    const event = eventAfterLoad[i];
+
+    mainWindow?.webContents.send(event.event, event.options);
+  }
+
+  eventAfterLoad = [];
+});
+
 ipcMain.handle(
   SCHEDULE_SIGNALS.OPEN_CALENDAR_DAY,
   async (_event, day, month, year) => {
@@ -390,14 +402,13 @@ ipcMain.handle(
       } else {
         await createWindow();
 
-        mainWindow!.webContents.on('did-finish-load', () => {
-          console.log('Renderer is ready!');
-
-          mainWindow?.webContents.send(IPC_SIGNALS.OPEN_CALENDAR_DAY_BEFORE, {
+        eventAfterLoad.push({
+          event: IPC_SIGNALS.OPEN_CALENDAR_DAY,
+          options: {
             day,
             month,
             year,
-          });
+          },
         });
       }
     } catch (error) {

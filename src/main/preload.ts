@@ -30,6 +30,9 @@ export type WidgetSettingsType = {
 
 const electronHandler = {
   ipcRenderer: {
+    reactDomLoaded() {
+      return ipcRenderer.invoke('main-window-dom-ready');
+    },
     sendMessage(channel: Channels, ...args: unknown[]) {
       ipcRenderer.send(channel, ...args);
     },

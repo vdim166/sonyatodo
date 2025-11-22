@@ -1,7 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { IPC_SIGNALS } from '../main/consts';
-import { eventQueue } from './utils/eventQueue';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -13,10 +12,3 @@ root.render(<App />);
 //   console.log(arg);
 // });
 // window.electron?.ipcRenderer.sendMessage('ipc-example', ['ping']);
-
-window.electron.ipcRenderer.on(
-  IPC_SIGNALS.OPEN_CALENDAR_DAY_BEFORE,
-  (options) => {
-    eventQueue.addEvent('open-calendar-day', options);
-  },
-);

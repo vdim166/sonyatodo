@@ -13,8 +13,6 @@ import { DailySchedule } from './pages/DailySchedule';
 import { LongTermAffairs } from './pages/LongTermAffairs';
 import { LongTermAffairsContextProvider } from './contexts/LongTermAffairsContextProvider';
 import { MainLayout } from './Layouts/MainLayout';
-import { useEffect } from 'react';
-import { IPC_SIGNALS } from '../main/consts';
 
 export default function App() {
   return (
