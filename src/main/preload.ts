@@ -149,6 +149,22 @@ const electronHandler = {
       );
     },
 
+    addTodoVideo(options: addTodoImageType, projectName: string) {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.SAVE_TODO_VIDEO,
+        options,
+        projectName,
+      );
+    },
+
+    addTodoFile(options: addTodoImageType, projectName: string) {
+      return ipcRenderer.invoke(
+        IPC_SIGNALS.SAVE_TODO_FILE,
+        options,
+        projectName,
+      );
+    },
+
     addLinkToTodo(
       id: string,
       topic: string,
@@ -185,6 +201,14 @@ const electronHandler = {
 
     loadTodoImage(name: string) {
       return ipcRenderer.invoke(IPC_SIGNALS.LOAD_TODO_IMAGE, name);
+    },
+
+    loadTodoVideo(name: string) {
+      return ipcRenderer.invoke(IPC_SIGNALS.LOAD_TODO_VIDEO, name);
+    },
+
+    loadTodoFile(name: string) {
+      return ipcRenderer.invoke(IPC_SIGNALS.LOAD_TODO_FILE, name);
     },
 
     addImportantDate(date: ImportantDateType) {

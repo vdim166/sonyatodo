@@ -5,6 +5,9 @@ import { ActionMenu } from './ActionMenu';
 import { DeadlinesWidget } from '../DeadlinesWidget';
 import { SmartLoadingImg } from '../SmartLoadingImg';
 import { saveTodoType } from '../../classes/ipcSignals';
+import { SmartLoadingVideo } from '../SmartLoadingVideo';
+import { findTag } from './utils/findTag';
+import { SmartLoadingFile } from '../SmartLoadingFile';
 
 export type TodoProps = {
   isTemp?: boolean;
@@ -41,41 +44,6 @@ export const Todo = ({ isTemp = false, todo, openEditModal }: TodoProps) => {
     if (!isOpen) return name.substring(0, 30);
     return name;
   }, [isOpen, todo]);
-
-  const findTag = (value: string) => {
-    const linkStart = value.indexOf('<a>');
-    const imgStart = value.indexOf('<img>');
-
-    // Find which tag comes first
-    let tagType: 'link' | 'img' | null = null;
-    let start = -1;
-    let end = -1;
-    let content = '';
-
-    if (linkStart !== -1 && (imgStart === -1 || linkStart < imgStart)) {
-      start = linkStart;
-      end = value.indexOf('</a>', start);
-      tagType = 'link';
-      if (end !== -1) {
-        content = value.substring(start + 3, end);
-      }
-    } else if (imgStart !== -1) {
-      start = imgStart;
-      end = value.indexOf('</img>', start);
-      tagType = 'img';
-      if (end !== -1) {
-        content = value.substring(start + 5, end);
-      }
-    }
-
-    if (tagType && start !== -1 && end !== -1) {
-      const textBefore = value.substring(0, start);
-      const newValue = value.substring(end + (tagType === 'link' ? 4 : 6)); // skip closing tag
-      return { tagType, content, textBefore, value: newValue };
-    }
-
-    return null;
-  };
 
   const parseDesc = () => {
     const components: React.ReactNode[] = [];
@@ -120,6 +88,24 @@ export const Todo = ({ isTemp = false, todo, openEditModal }: TodoProps) => {
             alreadyHave={
               cacheImg[`${todo.id}-${result.content}.jpg`] || undefined
             }
+          />,
+        );
+        components.push(<br key={Math.random()} />);
+      } else if (result.tagType === 'video') {
+        components.push(<br key={Math.random()} />);
+        components.push(
+          <SmartLoadingVideo
+            link={`${todo.id}-${result.content}.mp4`}
+            isClickable={isOpen}
+          />,
+        );
+        components.push(<br key={Math.random()} />);
+      } else if (result.tagType === 'file') {
+        components.push(<br key={Math.random()} />);
+        components.push(
+          <SmartLoadingFile
+            link={`${todo.id}-${result.content}`}
+            isClickable={isOpen}
           />,
         );
         components.push(<br key={Math.random()} />);

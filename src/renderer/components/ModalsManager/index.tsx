@@ -15,7 +15,9 @@ import { confirmModalType } from '../Modals/types/confirmModalType';
 import { imgViewerType } from '../Modals/types/imgViewerType';
 import { scheduleDateChangerType } from '../Modals/types/scheduleDateChangerType';
 import { scheduleViewerModalType } from '../Modals/types/scheduleViewerModalType';
+import { videoViewerType } from '../Modals/types/videoViewerType';
 import { UniversalWrapper } from '../Modals/UniversalWrapper';
+import { VideoViewerModal } from '../Modals/VideoViewerModal';
 import { WidgetSettingsModal } from '../Modals/WidgetSettingsModal';
 
 export const ModalsManager = () => {
@@ -91,6 +93,12 @@ export const ModalsManager = () => {
         <ScheduleDateChangerModal
           {...(modalState.props as scheduleDateChangerType)}
         />
+      </UniversalWrapper>
+    );
+  } else if (modalState.type === MODALS.VIDEO_VIEWER) {
+    return (
+      <UniversalWrapper>
+        <VideoViewerModal {...(modalState.props as videoViewerType)} />
       </UniversalWrapper>
     );
   }

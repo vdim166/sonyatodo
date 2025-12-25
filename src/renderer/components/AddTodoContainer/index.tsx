@@ -8,7 +8,7 @@ import { useAppContext } from '../../hooks/useAppContext';
 import { CancelButton } from '../shared/components/CancelButton';
 import { useNotificationManager } from '../../hooks/useNotificationManager';
 import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
-import { imagesToAddType } from '../EditTodoModal';
+import { FILE_TYPES, filesToAddType } from '../EditTodoModal';
 import { Cross } from '../../icons/Cross';
 import { TextareaWithTools } from '../shared/components/TextareaWithTools';
 
@@ -26,7 +26,10 @@ export const AddTodoContainer = ({
 
   const { currentProjectName, currentTab } = useAppContext();
 
-  const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
+  const [imagesToAdd, setImagesToAdd] = useState<filesToAddType[]>([]);
+  const [videosToAdd, setVideosToAdd] = useState<filesToAddType[]>([]);
+  const [filesToAdd, setFilesToAdd] = useState<filesToAddType[]>([]);
+
   const { addNotification } = useNotificationManager();
 
   const handleCreate = async () => {
@@ -55,6 +58,32 @@ export const AddTodoContainer = ({
           };
 
           window.electron.ipcRenderer.addTodoImage(data, currentProjectName);
+        }
+
+        for (let i = 0; i < videosToAdd.length; ++i) {
+          const videoToAdd = videosToAdd[i];
+
+          const data = {
+            id: todo.id,
+            name: videoToAdd.name,
+            data: videoToAdd.buffer,
+            topic: currentTab || 'TODO',
+          };
+
+          window.electron.ipcRenderer.addTodoVideo(data, currentProjectName);
+        }
+
+        for (let i = 0; i < filesToAdd.length; ++i) {
+          const fileToAdd = filesToAdd[i];
+
+          const data = {
+            id: todo.id,
+            name: fileToAdd.name,
+            data: fileToAdd.buffer,
+            topic: currentTab || 'TODO',
+          };
+
+          window.electron.ipcRenderer.addTodoFile(data, currentProjectName);
         }
 
         window.dispatchEvent(new CustomEvent(DISPATCH_EVENTS.FETCH_TODOS));
@@ -118,12 +147,26 @@ export const AddTodoContainer = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             setValue={setDescription}
-            addFile={(fileObj) => {
-              setImagesToAdd((prev) => {
-                const newState = [...prev, fileObj];
+            addFile={(fileObj, type) => {
+              if (type === FILE_TYPES.IMAGE) {
+                setImagesToAdd((prev) => {
+                  const newState = [...prev, fileObj];
 
-                return newState;
-              });
+                  return newState;
+                });
+              } else if (type === FILE_TYPES.VIDEO) {
+                setVideosToAdd((prev) => {
+                  const newState = [...prev, fileObj];
+
+                  return newState;
+                });
+              } else if (type === FILE_TYPES.FILE) {
+                setFilesToAdd((prev) => {
+                  const newState = [...prev, fileObj];
+
+                  return newState;
+                });
+              }
             }}
           />
         </div>

@@ -4,6 +4,7 @@ import { imgViewerType } from '../components/Modals/types/imgViewerType';
 import { changeTodoDeadlineType } from '../components/Modals/types/changeTodoDeadlineType';
 import { scheduleViewerModalType } from '../components/Modals/types/scheduleViewerModalType';
 import { scheduleDateChangerType } from '../components/Modals/types/scheduleDateChangerType';
+import { videoViewerType } from '../components/Modals/types/videoViewerType';
 
 export const MODALS = {
   CONFIRM: 'CONFIRM',
@@ -17,6 +18,7 @@ export const MODALS = {
   STATISTICS: 'STATISTICS',
   SCHEDULE_VIEWER: 'SCHEDULE_VIEWER',
   SCHEDULE_DATE_CHANGER: 'SCHEDULE_DATE_CHANGER',
+  VIDEO_VIEWER: 'VIDEO_VIEWER',
 } as const;
 
 type OpenModalPropsType =
@@ -24,7 +26,8 @@ type OpenModalPropsType =
   | imgViewerType
   | changeTodoDeadlineType
   | scheduleViewerModalType
-  | scheduleDateChangerType;
+  | scheduleDateChangerType
+  | videoViewerType;
 
 export type OpenModalType = {
   type: keyof typeof MODALS;

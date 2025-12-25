@@ -1,0 +1,15 @@
+.todo_video {
+  width: 100px;
+  height: 100px;
+  background-color: gray;
+}
+
+.todo_video_container {
+  position: relative;
+}
+
+.todo_video_video_svg {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}

@@ -42,7 +42,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
   useEffect(() => {
     const loadTodos = async () => {
       try {
-        setTodos(null);
+        // setTodos(null);
         setTabs(null);
         if (!currentProjectName) return;
 
@@ -54,7 +54,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
           );
 
           if (findTopic) {
-            setTodos(findTopic.todos);
+            setTodos(structuredClone(findTopic.todos));
           }
 
           setTabs(data.tabs);

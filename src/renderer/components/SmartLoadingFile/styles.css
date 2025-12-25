@@ -1,0 +1,8 @@
+.todo_file svg {
+  width: 45px;
+  height: 45px;
+}
+
+.todo_file.clickable:hover path {
+  fill: gray;
+}

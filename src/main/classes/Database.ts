@@ -7,8 +7,10 @@ import { TabType } from '../../renderer/contexts/AppContext';
 import { DatabaseType } from '../types/DatabaseType';
 import { setDeadlineType } from '../types/setDeadlineType';
 import { candidateLinkType } from '../../renderer/components/AddLinksToTodo';
-import { savedImagesPath } from '../main';
+import { savedFilesPath, savedImagesPath, savedVideosPath } from '../main';
 import { findImgs } from '../utils/findImgs';
+import { findVideos } from '../utils/findVideos';
+import { findFiles } from '../utils/findFiles';
 
 // TODO: maybe use async functions later
 
@@ -81,18 +83,83 @@ class Database {
           data[projectName].allTopics[findTopicIndex].todos[findTodoIndex];
 
         if (t.desc) {
-          const matches = findImgs(t.desc);
+          const imgMatches = findImgs(t.desc);
 
-          for (let i = 0; i < matches.length; ++i) {
+          for (let i = 0; i < imgMatches.length; ++i) {
             try {
               const filePath = path.join(
                 savedImagesPath,
-                `${t.id}-${matches[i]}.jpg`,
+                `${t.id}-${imgMatches[i]}.jpg`,
               );
 
               fs.unlinkSync(filePath);
             } catch (error) {
               console.log('error', error);
+            }
+          }
+
+          const videoMatches = findVideos(t.desc);
+
+          for (let i = 0; i < videoMatches.length; ++i) {
+            try {
+              const filePath = path.join(
+                savedVideosPath,
+                `${t.id}-${videoMatches[i]}.mp4`,
+              );
+
+              fs.unlinkSync(filePath);
+            } catch (error) {
+              console.log('error', error);
+            }
+          }
+
+          const filesMatches = findFiles(t.desc);
+
+          for (let i = 0; i < filesMatches.length; ++i) {
+            try {
+              const filePath = path.join(
+                savedFilesPath,
+                `${t.id}-${filesMatches[i]}`,
+              );
+
+              fs.unlinkSync(filePath);
+            } catch (error) {
+              console.log('error', error);
+            }
+          }
+        }
+
+        if (t.linkedTo) {
+          for (let i = 0; i < t.linkedTo.length; ++i) {
+            // @ts-ignore
+            const linktedTo = t.linkedTo[i];
+
+            const findLocalTopic = data[
+              linktedTo.projectName
+            ].allTopics.findIndex(
+              (item) => item.name === linktedTo.todo.currentTopic,
+            );
+
+            if (findLocalTopic !== -1) {
+              const findLocalTodo = data[linktedTo.projectName].allTopics[
+                findLocalTopic
+              ].todos.findIndex((item) => item.id === linktedTo.todo.id);
+
+              if (findLocalTodo !== -1) {
+                if (
+                  data[linktedTo.projectName].allTopics[findLocalTopic].todos[
+                    findLocalTodo
+                  ].links
+                ) {
+                  data[linktedTo.projectName].allTopics[findLocalTopic].todos[
+                    findLocalTodo
+                  ].links = data[linktedTo.projectName].allTopics[
+                    findLocalTopic
+                  ].todos[findLocalTodo].links?.filter(
+                    (item) => item.todo.id !== id,
+                  );
+                }
+              }
             }
           }
         }
@@ -341,6 +408,7 @@ class Database {
           todoToChange.name;
       }
 
+      // images
       if (
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
           .desc !== todoToChange.desc
@@ -369,14 +437,74 @@ class Database {
             }
           }
         }
+      }
 
-        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc =
-          todoToChange.desc;
+      // videos
+      if (
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+          .desc !== todoToChange.desc
+      ) {
+        const matches = findVideos(
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc,
+        );
+
+        const newMatches = findVideos(todoToChange.desc);
+        for (let i = 0; i < matches.length; ++i) {
+          const status = newMatches.includes(matches[i]);
+
+          if (!status) {
+            try {
+              const filePath = path.join(
+                savedVideosPath,
+                `${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].id}-${matches[i]}.mp4`,
+              );
+
+              fs.unlinkSync(filePath);
+            } catch (error) {
+              console.log('error', error);
+            }
+          }
+        }
+      }
+
+      if (
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+          .desc !== todoToChange.desc
+      ) {
+        const matches = findFiles(
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc,
+        );
+
+        const newMatches = findFiles(todoToChange.desc);
+        for (let i = 0; i < matches.length; ++i) {
+          const status = newMatches.includes(matches[i]);
+
+          if (!status) {
+            try {
+              const filePath = path.join(
+                savedFilesPath,
+                `${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].id}-${matches[i]}`,
+              );
+
+              fs.unlinkSync(filePath);
+            } catch (error) {
+              console.log('error', error);
+            }
+          }
+        }
       }
 
       if (todoToChange.images) {
         data[projectName].allTopics[findTodoIndex].todos[findTodoIndex].images =
           todoToChange.images;
+      }
+
+      if (
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+          .desc !== todoToChange.desc
+      ) {
+        data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc =
+          todoToChange.desc;
       }
 
       if (todoToChange.hidden !== undefined) {

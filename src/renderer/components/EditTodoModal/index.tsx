@@ -14,16 +14,29 @@ import { DeadlinesWidget } from '../DeadlinesWidget';
 import { BackArrow } from '../../icons/BackArrow';
 import { LinkToWidget } from '../LinkToWidget';
 
-export type imagesToAddType = {
+export const FILE_TYPES = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  FILE: 'FILE',
+} as const;
+
+export type filesToAddType = {
   name: string;
   buffer: Uint8Array<ArrayBuffer>;
 };
 
 export const EditTodoModal = () => {
-  const { showEditModal, setShowEditModal, setTodos, currentProjectName } =
-    useAppContext();
+  const {
+    showEditModal,
+    setShowEditModal,
+    setTodos,
+    currentProjectName,
+    todos,
+  } = useAppContext();
 
-  const [imagesToAdd, setImagesToAdd] = useState<imagesToAddType[]>([]);
+  const [imagesToAdd, setImagesToAdd] = useState<filesToAddType[]>([]);
+  const [videosToAdd, setVideosToAdd] = useState<filesToAddType[]>([]);
+  const [filesToAdd, setFilesToAdd] = useState<filesToAddType[]>([]);
 
   const [state, setState] = useState<{
     current: saveTodoType;
@@ -47,6 +60,32 @@ export const EditTodoModal = () => {
         };
 
         window.electron.ipcRenderer.addTodoImage(data, currentProjectName);
+      }
+
+      for (let i = 0; i < videosToAdd.length; ++i) {
+        const videoToAdd = videosToAdd[i];
+
+        const data = {
+          id: state.current.id,
+          name: videoToAdd.name,
+          data: videoToAdd.buffer,
+          topic: state.current.currentTopic,
+        };
+
+        window.electron.ipcRenderer.addTodoVideo(data, currentProjectName);
+      }
+
+      for (let i = 0; i < filesToAdd.length; ++i) {
+        const fileToAdd = filesToAdd[i];
+
+        const data = {
+          id: state.current.id,
+          name: fileToAdd.name,
+          data: fileToAdd.buffer,
+          topic: state.current.currentTopic,
+        };
+
+        window.electron.ipcRenderer.addTodoFile(data, currentProjectName);
       }
 
       const response = await ipcSignals.changeTodo(
@@ -102,10 +141,9 @@ export const EditTodoModal = () => {
     } else {
       setState(null);
     }
-  }, [showEditModal]);
+  }, [showEditModal, todos]);
 
   if (state === null) return;
-
   if (state.current === null) return;
 
   const backHandle = () => {
@@ -120,6 +158,31 @@ export const EditTodoModal = () => {
   const isChangeDisabled =
     state.current.name === state.forRecovery.name &&
     state.current.desc === state.forRecovery.desc;
+
+  const addFileHandle = (
+    fileObj: { name: string; buffer: Uint8Array<ArrayBuffer> },
+    type: keyof typeof FILE_TYPES,
+  ) => {
+    if (type === FILE_TYPES.IMAGE) {
+      setImagesToAdd((prev) => {
+        const newState = [...prev, fileObj];
+
+        return newState;
+      });
+    } else if (type === FILE_TYPES.VIDEO) {
+      setVideosToAdd((prev) => {
+        const newState = [...prev, fileObj];
+
+        return newState;
+      });
+    } else if (type === FILE_TYPES.FILE) {
+      setFilesToAdd((prev) => {
+        const newState = [...prev, fileObj];
+
+        return newState;
+      });
+    }
+  };
 
   return (
     <div className="edit_todo_modal">
@@ -195,13 +258,7 @@ export const EditTodoModal = () => {
                 return newState;
               });
             }}
-            addFile={(fileObj) => {
-              setImagesToAdd((prev) => {
-                const newState = [...prev, fileObj];
-
-                return newState;
-              });
-            }}
+            addFile={addFileHandle}
           />
         </div>
 

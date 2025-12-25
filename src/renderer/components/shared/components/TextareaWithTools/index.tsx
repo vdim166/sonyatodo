@@ -4,13 +4,19 @@ import { generateRandomId } from '../../../../../main/utils/generateRandomId';
 import { Link } from '../../../../icons/Link';
 import { Textarea } from '../Textarea';
 import { Image } from '../../../../icons/Image';
+import { Video } from '../../../../icons/Video';
+import { FILE_TYPES } from '../../../EditTodoModal';
+import { FileIcon } from '../../../../icons/FileIcon';
 
 type TextareaWithTools = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   setValue: (value: string) => void;
 
-  addFile: (fileObj: { name: string; buffer: Uint8Array<ArrayBuffer> }) => void;
+  addFile: (
+    fileObj: { name: string; buffer: Uint8Array<ArrayBuffer> },
+    type: keyof typeof FILE_TYPES,
+  ) => void;
 };
 
 export const TextareaWithTools = ({
@@ -20,7 +26,8 @@ export const TextareaWithTools = ({
   addFile,
 }: TextareaWithTools) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function hasSelection() {
@@ -77,16 +84,49 @@ export const TextareaWithTools = ({
     }
   };
 
-  const handleAddFile = async (file: File) => {
+  const handleImageFile = async (file: File) => {
     const id = generateRandomId(7);
 
     const arrayBuffer = await file.arrayBuffer();
 
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    addFile({ name: id, buffer: uint8Array });
+    addFile({ name: id, buffer: uint8Array }, FILE_TYPES.IMAGE);
 
     setValue(`${value}${value !== '' ? '\n' : ''}${`<img>${id}</img>`}`);
+  };
+
+  const handleVideoFile = async (file: File) => {
+    const id = generateRandomId(7);
+
+    const arrayBuffer = await file.arrayBuffer();
+
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    addFile({ name: id, buffer: uint8Array }, FILE_TYPES.VIDEO);
+
+    setValue(`${value}${value !== '' ? '\n' : ''}${`<video>${id}</video>`}`);
+  };
+
+  const handleFile = async (file: File) => {
+    const id = generateRandomId(7);
+
+    let ext = 'txt';
+
+    const splitted = file.name.split('.');
+    if (splitted.length > 1) {
+      ext = splitted[splitted.length - 1];
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    addFile({ name: `${id}.${ext}`, buffer: uint8Array }, FILE_TYPES.FILE);
+
+    setValue(
+      `${value}${value !== '' ? '\n' : ''}${`<file>${`${id}.${ext}`}</file>`}`,
+    );
   };
 
   return (
@@ -98,13 +138,13 @@ export const TextareaWithTools = ({
         <div
           className="textarea_tool"
           onClick={() => {
-            fileInputRef.current?.click();
+            imageInputRef.current?.click();
           }}
         >
           <Image />
 
           <input
-            ref={fileInputRef}
+            ref={imageInputRef}
             style={{ display: 'none' }}
             type="file"
             accept="image/*"
@@ -115,7 +155,65 @@ export const TextareaWithTools = ({
 
                 if (!file) return;
 
-                await handleAddFile(file);
+                await handleImageFile(file);
+
+                if (imageInputRef.current) {
+                  imageInputRef.current.value = ''; // сбрасывает выбранный файл
+                }
+              }
+            }}
+          />
+        </div>
+        <div
+          className="textarea_tool"
+          onClick={() => {
+            videoInputRef.current?.click();
+          }}
+        >
+          <Video />
+
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            style={{ display: 'none' }}
+            aria-label="Video file input"
+            onChange={async (event) => {
+              const files = event.target.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+
+                if (!file) return;
+
+                await handleVideoFile(file);
+
+                if (videoInputRef.current) {
+                  videoInputRef.current.value = ''; // сбрасывает выбранный файл
+                }
+              }
+            }}
+          />
+        </div>
+        <div
+          className="textarea_tool"
+          onClick={() => {
+            fileInputRef.current?.click();
+          }}
+        >
+          <FileIcon />
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={async (event) => {
+              const files = event.target.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+
+                if (!file) return;
+
+                await handleFile(file);
 
                 if (fileInputRef.current) {
                   fileInputRef.current.value = ''; // сбрасывает выбранный файл

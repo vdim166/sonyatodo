@@ -214,7 +214,7 @@
               resultWork[`${d.day}-${d.month}-${d.year}`] !== undefined &&
               resultWork[`${d.day}-${d.month}-${d.year}`].length > 0;
 
-            return `<div class="day  ${haveSomething ? 'work' : ''} ${d.day === todayDay ? 'today' : ''}" onclick="openCurrentDay('${d.day}-${d.month}-${d.year}')">${d.day}</div>`;
+            return `<div class="day  ${haveSomething ? 'work' : ''} ${d.day === todayDay && d.month === month ? 'today' : ''}" onclick="openCurrentDay('${d.day}-${d.month}-${d.year}')">${d.day}</div>`;
           })
           .join('')}</div>`;
       })

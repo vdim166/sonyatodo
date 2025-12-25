@@ -41,7 +41,7 @@ export const TodoLink = ({
     };
 
     loadTodo();
-  }, []);
+  }, [link]);
 
   if (current === null) {
     return <div>Loading...</div>;

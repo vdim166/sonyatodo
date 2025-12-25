@@ -36,6 +36,24 @@ export const savedImagesPath = path.join(
   'saved_images',
 );
 
+export const savedVideosPath = path.join(
+  userDataPath,
+  'sonyaTodo',
+  'saved_videos',
+);
+
+export const savedFilesPath = path.join(
+  userDataPath,
+  'sonyaTodo',
+  'saved_files',
+);
+
+export const savedFilesToOpenPath = path.join(
+  userDataPath,
+  'sonyaTodo',
+  'saved_files_open',
+);
+
 let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 let widgetWindow: BrowserWindow | null = null;
@@ -170,9 +188,12 @@ ipcMain.handle(
     return database.addLinkToTodo(id, topic, project, link);
   },
 );
-ipcMain.handle(IPC_SIGNALS.GET_TODO_BY_ID, (_event, id, topic, project) => {
-  return database.getTodoById(id, topic, project);
-});
+ipcMain.handle(
+  IPC_SIGNALS.GET_TODO_BY_ID,
+  async (_event, id, topic, project) => {
+    return await database.getTodoById(id, topic, project);
+  },
+);
 
 ipcMain.handle(
   IPC_SIGNALS.SAVE_TODO_IMAGE,
@@ -195,6 +216,51 @@ ipcMain.handle(
     });
   },
 );
+
+ipcMain.handle(
+  IPC_SIGNALS.SAVE_TODO_VIDEO,
+  (_event, { name, data, id }: addTodoImageType) => {
+    if (!fs.existsSync(path.join(userDataPath, 'sonyaTodo'))) {
+      fs.mkdirSync(path.join(userDataPath, 'sonyaTodo'), {
+        recursive: true,
+      });
+    }
+
+    const savePath = path.join(savedVideosPath, `${id}-${name}.mp4`);
+
+    // убедимся, что папка существует``
+    fs.mkdirSync(path.dirname(savePath), { recursive: true });
+
+    const buffer = Buffer.from(data); // Здесь Buffer доступен
+    fs.writeFile(savePath, buffer, (err) => {
+      if (err) console.error(err);
+      else console.log('Saved:', savePath);
+    });
+  },
+);
+
+ipcMain.handle(
+  IPC_SIGNALS.SAVE_TODO_FILE,
+  (_event, { name, data, id }: addTodoImageType) => {
+    if (!fs.existsSync(path.join(userDataPath, 'sonyaTodo'))) {
+      fs.mkdirSync(path.join(userDataPath, 'sonyaTodo'), {
+        recursive: true,
+      });
+    }
+
+    const savePath = path.join(savedFilesPath, `${id}-${name}`);
+
+    // убедимся, что папка существует``
+    fs.mkdirSync(path.dirname(savePath), { recursive: true });
+
+    const buffer = Buffer.from(data); // Здесь Buffer доступен
+    fs.writeFile(savePath, buffer, (err) => {
+      if (err) console.error(err);
+      else console.log('Saved:', savePath);
+    });
+  },
+);
+
 ipcMain.handle(
   IPC_SIGNALS.DELETE_LINK_FROM_TODO,
   (_event, id, topic, project, linkId) => {
@@ -214,6 +280,51 @@ ipcMain.handle(IPC_SIGNALS.LOAD_TODO_IMAGE, async (_event, filename) => {
   try {
     const data = fs.readFileSync(filePath); // Buffer
     return data.toString('base64'); // отправляем как base64
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+});
+
+ipcMain.handle(IPC_SIGNALS.LOAD_TODO_VIDEO, async (_event, filename) => {
+  if (!fs.existsSync(path.join(userDataPath, 'sonyaTodo'))) {
+    fs.mkdirSync(path.join(userDataPath, 'sonyaTodo'), {
+      recursive: true,
+    });
+  }
+
+  const filePath = path.join(savedVideosPath, filename);
+
+  try {
+    const data = fs.readFileSync(filePath); // Buffer
+    return data.toString('base64'); // отправляем как base64
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+});
+
+ipcMain.handle(IPC_SIGNALS.LOAD_TODO_FILE, async (_event, filename) => {
+  if (!fs.existsSync(path.join(userDataPath, 'sonyaTodo'))) {
+    fs.mkdirSync(path.join(userDataPath, 'sonyaTodo'), {
+      recursive: true,
+    });
+  }
+
+  if (!fs.existsSync(savedFilesToOpenPath)) {
+    fs.mkdirSync(savedFilesToOpenPath, { recursive: true });
+  }
+
+  const filePath = path.join(savedFilesPath, filename);
+
+  try {
+    const second = path.join(savedFilesToOpenPath, filename);
+    fs.copyFileSync(filePath, second);
+
+    await shell.showItemInFolder(second);
+
+    // const data = fs.readFileSync(filePath); // Buffer
+    // return data.toString('base64'); // отправляем как base64
   } catch (err) {
     console.error(err);
     return null;
@@ -698,7 +809,7 @@ function createLongTermAffairsWidget(widgetSettings: any) {
     if (longTermAffairsWidgetWindow) {
       if (widgetSettings.position) {
         longTermAffairsWidgetWindow.setPosition(
-          widgetSettings.position.x - 300,
+          widgetSettings.position.x + 301,
           widgetSettings.position.y,
         );
       }
@@ -750,7 +861,7 @@ function createCalendarWidget(widgetSettings: any) {
     if (calendarWidgetWindow) {
       if (widgetSettings.position) {
         calendarWidgetWindow.setPosition(
-          widgetSettings.position.x + 300,
+          widgetSettings.position.x - 281,
           widgetSettings.position.y,
         );
       }
@@ -798,11 +909,11 @@ ipcMain.on('window-drag', (event, mousePosition) => {
     win.setPosition(newX, newY);
 
     if (longTermAffairsWidgetWindow) {
-      longTermAffairsWidgetWindow.setPosition(newX - 300, newY);
+      longTermAffairsWidgetWindow.setPosition(newX + 301, newY);
     }
 
     if (calendarWidgetWindow) {
-      calendarWidgetWindow.setPosition(newX + 300, newY);
+      calendarWidgetWindow.setPosition(newX - 281, newY);
     }
   }
 });
