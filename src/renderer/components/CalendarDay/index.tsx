@@ -12,9 +12,15 @@ type CalendarDayProps = {
     month: number;
     year: number;
   };
+
+  impDates: {
+    name: string;
+    date: string;
+    id: string;
+  }[];
 };
 
-export const CalendarDay = ({ date }: CalendarDayProps) => {
+export const CalendarDay = ({ date, impDates }: CalendarDayProps) => {
   const { openModal } = useModalsContext();
 
   const [dates, setDates] = useState<ScheduleTodoDTO[] | null>(null);
@@ -76,10 +82,10 @@ export const CalendarDay = ({ date }: CalendarDayProps) => {
       <p className="calendar_day_day_p">{date.day}</p>
       {dates && (
         <div className="calendar_day_day_dates">
-          {dates.map((d) => {
+          {[...dates, ...impDates].map((d) => {
             return (
               <div className="calendar_day_day_dates_option" key={d.id}>
-                <p>{d.name[0]}</p>
+                <p>{d.name[0].toLowerCase()}</p>
               </div>
             );
           })}

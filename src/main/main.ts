@@ -427,6 +427,14 @@ ipcMain.handle(
   },
 );
 
+ipcMain.handle(LONG_TERM_AFFAIRS_SIGNALS.FETCH_HIDE_BUTTON_DATA, (_event) => {
+  return longTermAffairsDatabase.fetchHideButtonData();
+});
+
+ipcMain.handle(LONG_TERM_AFFAIRS_SIGNALS.TOGGLE_HIDE_BUTTON_DATA, (_event) => {
+  return longTermAffairsDatabase.toggleHideButtonData();
+});
+
 ipcMain.handle(
   LONG_TERM_AFFAIRS_SIGNALS.MOVE_LONG_TERM_AFFAIR,
   (_event, id: string, moveFrom, moveTo) => {

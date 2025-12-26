@@ -7,6 +7,7 @@ import { Textarea } from '../../shared/components/Textarea';
 import './styles.css';
 import { importantDatesApi } from '../../../classes/importantDatesApi';
 import { DISPATCH_EVENTS } from '../../../consts/dispatchEvents';
+import { scheduleDatesApi } from '../../../classes/scheduleDatesApi';
 
 export const AddImportantDateModal = () => {
   const { closeModal } = useModalsContext();
@@ -27,6 +28,8 @@ export const AddImportantDateModal = () => {
       );
 
       importantDatesApi.updateWidgetTodos();
+
+      scheduleDatesApi.updateWidget();
     } catch (error) {
       console.log('error', error);
     }

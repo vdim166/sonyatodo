@@ -7,6 +7,7 @@ import { DISPATCH_EVENTS } from '../../consts/dispatchEvents';
 import { Pencil } from '../../icons/Pencil';
 import { Check } from '../../icons/Check';
 import { Textarea } from '../shared/components/Textarea';
+import { scheduleDatesApi } from '../../classes/scheduleDatesApi';
 
 function getMonthName(date: string) {
   const months = [
@@ -45,6 +46,7 @@ export const ImportantDate = ({ date }: ImportantDateProps) => {
       );
 
       importantDatesApi.updateWidgetTodos();
+      scheduleDatesApi.updateWidget();
     } catch (error) {
       console.log('error', error);
     }
@@ -74,6 +76,7 @@ export const ImportantDate = ({ date }: ImportantDateProps) => {
       setIditing(false);
 
       importantDatesApi.updateWidgetTodos();
+      scheduleDatesApi.updateWidget();
     } catch (error) {
       console.log('error', error);
     }

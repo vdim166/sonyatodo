@@ -27,6 +27,12 @@ class LongTermAffairsDatabase {
     'long_term_affairs_data.json',
   );
 
+  private configPath = path.join(
+    this.userDataPath,
+    'sonyaTodo',
+    'long_term_config.json',
+  );
+
   loadDataFromFile(): LongTermAffairsDatabaseType {
     try {
       if (!fs.existsSync(path.join(this.userDataPath, 'sonyaTodo'))) {
@@ -132,6 +138,45 @@ class LongTermAffairsDatabase {
       data.todos[moveFrom] = data.todos[moveFrom].filter((t) => t.id !== id);
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
+  fetchHideButtonData() {
+    try {
+      if (!fs.existsSync(this.configPath)) {
+        fs.writeFileSync(
+          this.configPath,
+          JSON.stringify({ hideButton: false }),
+          'utf-8',
+        );
+      }
+
+      const data = fs.readFileSync(this.configPath, 'utf-8');
+      return JSON.parse(data).hideButton;
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
+  toggleHideButtonData() {
+    try {
+      if (!fs.existsSync(this.configPath)) {
+        fs.writeFileSync(
+          this.configPath,
+          JSON.stringify({ hideButton: false }),
+          'utf-8',
+        );
+      }
+
+      const data = fs.readFileSync(this.configPath, 'utf-8');
+
+      const parsed = JSON.parse(data);
+
+      parsed.hideButton = !parsed.hideButton;
+
+      fs.writeFileSync(this.configPath, JSON.stringify(parsed), 'utf-8');
     } catch (error) {
       console.log('error', error);
     }

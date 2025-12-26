@@ -134,6 +134,10 @@ const electronHandler = {
       );
     },
 
+    updateCalendarWidget() {
+      ipcRenderer.invoke(SCHEDULE_SIGNALS.UPDATE_CALENDAR_TODOS_WIDGET);
+    },
+
     setDeadLine(options: setDeadlineType, projectName: string) {
       return ipcRenderer.invoke(
         IPC_SIGNALS.SET_TODO_DEADLINE,
@@ -270,6 +274,18 @@ const electronHandler = {
     getAllLongTermAffairs() {
       return ipcRenderer.invoke(
         LONG_TERM_AFFAIRS_SIGNALS.GET_ALL_LONG_TERM_AFFAIRS,
+      );
+    },
+
+    fetchHideButtonData() {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.FETCH_HIDE_BUTTON_DATA,
+      );
+    },
+
+    toggleHideButtonData() {
+      return ipcRenderer.invoke(
+        LONG_TERM_AFFAIRS_SIGNALS.TOGGLE_HIDE_BUTTON_DATA,
       );
     },
 

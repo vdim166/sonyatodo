@@ -28,6 +28,10 @@ class ScheduleDatesApi {
     const data = await window.electron.ipcRenderer.getScheduleTodos(date);
     return data;
   };
+
+  updateWidget = () => {
+    window.electron.ipcRenderer.updateCalendarWidget();
+  };
 }
 
 export const scheduleDatesApi = new ScheduleDatesApi();

@@ -52,3 +52,10 @@
   background: rgb(88, 88, 228); /* Hover effect */
   cursor: grab;
 }
+
+.imp-dates-in-modal {
+  background-color: purple;
+  color: white;
+  padding: 2px;
+  border-radius: 2px;
+}

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft } from '../../icons/ArrowLeft';
 import './styles.css';
 import { CalendarDay } from '../CalendarDay';
+import { importantDatesApi } from '../../classes/importantDatesApi';
 
 const months = [
   'January',
@@ -110,7 +111,34 @@ export const Calendar = () => {
     return year;
   });
 
+  const [impDates, setImpDates] = useState<
+    | {
+        name: string;
+        date: string;
+        id: string;
+      }[]
+    | null
+  >(null);
+
   const days = generateCalendar(currentMonth, currentYear);
+
+  useEffect(() => {
+    const loadImpDates = async () => {
+      try {
+        const response = await importantDatesApi.getImportantDates();
+
+        if (response) {
+          setImpDates(response.dates);
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    loadImpDates();
+  }, []);
+
+  if (!impDates) return;
 
   return (
     <div className="calendar_main">
@@ -193,13 +221,22 @@ export const Calendar = () => {
             return (
               <div className="calendar_days_row" key={index}>
                 {i.map((d) => {
+                  const haveImpDates = impDates.filter((item) => {
+                    const splitted = item.date.split('-');
+
+                    return (
+                      Number(splitted[1]) === d.day &&
+                      Number(splitted[0]) === d.month
+                    );
+                  });
+
                   return (
                     <div
                       className="calendar_day_container"
                       key={`${d.day}-${d.month}-${d.year}`}
                     >
                       <div className="calendar_day">
-                        <CalendarDay date={d} />
+                        <CalendarDay date={d} impDates={haveImpDates} />
                       </div>
                     </div>
                   );
