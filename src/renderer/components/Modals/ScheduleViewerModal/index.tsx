@@ -11,6 +11,7 @@ import { Button } from '../../shared/components/Button';
 import { DISPATCH_EVENTS } from '../../../consts/dispatchEvents';
 import { ScheduleViewerDate } from '../../ScheduleViewerDate';
 import { importantDatesApi } from '../../../classes/importantDatesApi';
+import { holidays } from '../../Calendar';
 
 export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
   const { closeModal } = useModalsContext();
@@ -24,8 +25,6 @@ export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
 
-  console.log('dates', dates);
-
   useEffect(() => {
     const loadDate = async () => {
       try {
@@ -35,6 +34,8 @@ export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
 
         if (data) {
           setDates(data);
+        } else {
+          setDates([]);
         }
 
         if (impDates) {
@@ -72,8 +73,6 @@ export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
     loadDate();
   }, []);
 
-  console.log('impDates', impDates);
-
   const update = async () => {
     window.dispatchEvent(
       new CustomEvent(DISPATCH_EVENTS.FETCH_CALENDAR_DAY, { detail: date }),
@@ -100,6 +99,10 @@ export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
       console.log('error', error);
     }
   };
+
+  const haveHolidays = holidays.filter(
+    (item) => item.date.day === date.day && item.date.month === date.month,
+  );
 
   return (
     <div>
@@ -142,7 +145,9 @@ export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
 
             {dates && impDates ? (
               <div className="ScheduleViewerModal_dates">
-                {dates.length > 0 || impDates.length > 0 ? (
+                {dates.length > 0 ||
+                impDates.length > 0 ||
+                haveHolidays.length > 0 ? (
                   <>
                     {dates.map((d) => {
                       return (
@@ -166,7 +171,23 @@ export const ScheduleViewerModal = ({ date }: scheduleViewerModalType) => {
                     })}
                     {impDates.map((d) => {
                       return (
-                        <div className="imp-dates-in-modal">{d.date.name}</div>
+                        <div
+                          key={`${d.day}-${d.month}`}
+                          className="imp-dates-in-modal"
+                        >
+                          {d.date.name}
+                        </div>
+                      );
+                    })}
+
+                    {haveHolidays.map((d) => {
+                      return (
+                        <div
+                          key={`${d.date.day}-${d.date.month}`}
+                          className="holidays-dates-in-modal"
+                        >
+                          {d.name}
+                        </div>
                       );
                     })}
                   </>

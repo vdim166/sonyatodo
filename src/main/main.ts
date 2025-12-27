@@ -9,7 +9,15 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  Tray,
+  Menu,
+  dialog,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -27,6 +35,7 @@ import { addTodoImageType } from './types/addTodoImageType';
 import { importantDatesDatabase } from './classes/ImportantDatesDatabase';
 import { longTermAffairsDatabase } from './classes/LongTermAffairsDatabase';
 import { scheduleDatabase } from './classes/ScheduleDatabase';
+import { generateRandomId } from './utils/generateRandomId';
 
 const userDataPath = app.getPath('userData');
 
@@ -54,11 +63,18 @@ export const savedFilesToOpenPath = path.join(
   'saved_files_open',
 );
 
+export const savedImagesForImageWidgetPath = path.join(
+  userDataPath,
+  'sonyaTodo',
+  'images_for_image_widget',
+);
+
 let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 let widgetWindow: BrowserWindow | null = null;
 let longTermAffairsWidgetWindow: BrowserWindow | null = null;
 let calendarWidgetWindow: BrowserWindow | null = null;
+let imageWidgetWindow: BrowserWindow | null = null;
 
 let dragStartPosition: {
   mouseX: number;
@@ -349,6 +365,7 @@ ipcMain.handle(IPC_SIGNALS.GET_WIDGET_SETTINGS, (_event) => {
     const newSettings = {
       position: null,
       autoStart: false,
+      imageWidget: false,
     };
 
     return newSettings;
@@ -390,7 +407,40 @@ ipcMain.on(IPC_SIGNALS.SET_WIDGET_AUTO_START, (_event, autoStart) => {
     } else {
       fs.writeFileSync(
         filePath,
-        JSON.stringify({ position: null, autoStart }),
+        JSON.stringify({
+          position: null,
+          autoStart,
+          imageWidget: false,
+        } as WidgetSettingsType),
+        'utf-8',
+      );
+    }
+  } catch (error) {
+    console.error('Error saving widget settings:', error);
+  }
+});
+
+ipcMain.on(IPC_SIGNALS.SET_IMAGE_WIDGET, (_event, widgetStatus) => {
+  const userDataPath = app.getPath('userData');
+  const filePath = path.join(userDataPath, 'sonyaTodo', 'widget-settings.json');
+  try {
+    const status = fs.existsSync(filePath);
+
+    if (status) {
+      const oldSettings = fs.readFileSync(filePath, 'utf-8');
+
+      const parsed: WidgetSettingsType = JSON.parse(oldSettings);
+
+      parsed.imageWidget = widgetStatus;
+      fs.writeFileSync(filePath, JSON.stringify(parsed), 'utf-8');
+    } else {
+      fs.writeFileSync(
+        filePath,
+        JSON.stringify({
+          position: null,
+          autoStart: false,
+          imageWidget: widgetStatus,
+        } as WidgetSettingsType),
         'utf-8',
       );
     }
@@ -535,6 +585,72 @@ ipcMain.handle(
     }
   },
 );
+
+ipcMain.handle('get-images-for-image-widget', async () => {
+  if (!fs.existsSync(savedImagesForImageWidgetPath)) {
+    fs.mkdirSync(savedImagesForImageWidgetPath, { recursive: true });
+  }
+
+  const files = fs.readdirSync(savedImagesForImageWidgetPath);
+
+  const result = [];
+
+  for (let i = 0; i < files.length; ++i) {
+    const filePath = path.join(savedImagesForImageWidgetPath, files[i]);
+
+    const data = fs.readFileSync(filePath);
+    result.push(data.toString('base64'));
+  }
+
+  return result;
+});
+ipcMain.handle('delet-image-for-image-widget', (_event, index) => {
+  if (!fs.existsSync(savedImagesForImageWidgetPath)) {
+    fs.mkdirSync(savedImagesForImageWidgetPath, { recursive: true });
+  }
+  const files = fs.readdirSync(savedImagesForImageWidgetPath);
+
+  const fileName = files[index];
+
+  fs.unlinkSync(path.join(savedImagesForImageWidgetPath, fileName));
+
+  if (imageWidgetWindow)
+    imageWidgetWindow.webContents.send('update-widget-images');
+});
+
+ipcMain.handle('select-image-for-image-widget', async () => {
+  if (!imageWidgetWindow) return;
+
+  if (!fs.existsSync(savedImagesForImageWidgetPath)) {
+    fs.mkdirSync(savedImagesForImageWidgetPath, { recursive: true });
+  }
+
+  const result = await dialog.showOpenDialog(imageWidgetWindow, {
+    properties: ['openFile'],
+    filters: [
+      {
+        name: 'Images',
+        extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      },
+      { name: 'All Files', extensions: ['*'] },
+    ],
+    title: 'Выберите изображение',
+    buttonLabel: 'Выбрать изображение',
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    const imagePath = result.filePaths[0];
+
+    const id = generateRandomId(8);
+
+    fs.copyFileSync(
+      imagePath,
+      path.join(savedImagesForImageWidgetPath, `${id}.jpg`),
+    );
+
+    imageWidgetWindow.webContents.send('update-widget-images');
+  }
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -775,6 +891,8 @@ function createWidgetWindow() {
 
   createLongTermAffairsWidget(widgetSettings);
   createCalendarWidget(widgetSettings);
+
+  createImageWidget(widgetSettings);
 }
 
 function createLongTermAffairsWidget(widgetSettings: any) {
@@ -883,6 +1001,58 @@ function createCalendarWidget(widgetSettings: any) {
   });
 }
 
+function createImageWidget(widgetSettings: any) {
+  if (!widgetSettings.imageWidget) return;
+
+  if (imageWidgetWindow) {
+    imageWidgetWindow.focus();
+    return;
+  }
+
+  imageWidgetWindow = new BrowserWindow({
+    width: 280,
+    height: 250,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: false,
+    resizable: false,
+    skipTaskbar: true,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
+    closable: true,
+    fullscreenable: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      // enableRemoteModule: false,
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../.erb/dll/preload.js'),
+    },
+  });
+
+  imageWidgetWindow.loadFile(getAssetPath('html', 'imageWidget.html'));
+
+  imageWidgetWindow.once('ready-to-show', () => {
+    if (imageWidgetWindow) {
+      if (widgetSettings.position) {
+        imageWidgetWindow.setPosition(
+          widgetSettings.position.x + 150,
+          widgetSettings.position.y + 193,
+        );
+      }
+
+      imageWidgetWindow.show();
+    }
+  });
+
+  imageWidgetWindow.on('closed', () => {
+    imageWidgetWindow = null;
+  });
+}
+
 // Функция позиционирования у края экрана
 
 // Обработчик начала перетаскивания
@@ -922,6 +1092,10 @@ ipcMain.on('window-drag', (event, mousePosition) => {
 
     if (calendarWidgetWindow) {
       calendarWidgetWindow.setPosition(newX - 281, newY);
+    }
+
+    if (imageWidgetWindow) {
+      imageWidgetWindow.setPosition(newX + 150, newY + 193);
     }
   }
 });

@@ -127,6 +127,10 @@ class IpcSignals {
     await window.electron.ipcRenderer.setAutoStartWidget(state);
   };
 
+  setImageWidget = async (state: boolean) => {
+    await window.electron.ipcRenderer.setImageWidget(state);
+  };
+
   setDeadLine = async (options: setDeadlineType, projectName = 'main') => {
     const data = await window.electron.ipcRenderer.setDeadLine(
       options,

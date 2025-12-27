@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Panorama Widget</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: rgba(0, 0, 0, 0);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+        user-select: none;
+        cursor: default;
+        height: 190px;
+      }
+
+      .widget-container {
+        color: white;
+        position: relative;
+        overflow: hidden;
+        max-height: 160px;
+        width: 100%;
+        border-radius: 12px;
+      }
+
+      .content {
+        padding: 15px;
+        background: rgba(40, 40, 40, 0.9);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        height: calc(100% - 32px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      /* Контейнер для панорамы */
+      .panorama-container {
+        width: 100%;
+        height: 160px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+        padding: 5px 0;
+        position: relative;
+      }
+
+      /* Скрываем стандартный скроллбар */
+      .panorama-container::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .panorama-container::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 5px;
+      }
+
+      .panorama-container::-webkit-scrollbar-thumb {
+        background: rgb(69, 69, 99);
+        border-radius: 5px;
+      }
+
+      .panorama-container::-webkit-scrollbar-thumb:hover {
+        background: rgb(88, 88, 228);
+        cursor: grab;
+      }
+
+      /* Контейнер для изображений в ряд */
+      .images-row {
+        display: inline-flex;
+        gap: 15px;
+        height: 100%;
+        padding: 0 10px;
+      }
+
+      /* Каждое изображение */
+      .image-item {
+        flex-shrink: 0;
+        width: 225px;
+        height: 150px;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .image-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+      }
+
+      .image-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        border-radius: 8px;
+      }
+
+      /* Кнопка загрузки изображений */
+      .upload-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        background: rgba(60, 60, 80, 0.8);
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+      }
+
+      .upload-button:hover {
+        background: rgba(80, 80, 120, 0.9);
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+        border-color: rgba(88, 88, 228, 0.5);
+      }
+
+      .upload-button svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .upload-button path {
+        stroke: white;
+      }
+
+      /* Индикатор, если нет изображений */
+      .no-images {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 160px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        gap: 10px;
+      }
+
+      .no-images p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* Кнопки навигации (опционально) */
+      .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(40, 40, 40, 0.7);
+        border: none;
+        color: white;
+        width: 30px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 20;
+        backdrop-filter: blur(4px);
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-btn:hover {
+        opacity: 1;
+        background: rgba(60, 60, 80, 0.9);
+      }
+
+      .nav-btn.left {
+        left: 20px;
+      }
+
+      .nav-btn.right {
+        right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div class="widget-container">
+        <!-- Кнопка загрузки поверх панорамы -->
+        <div class="upload-button" onclick="selectImage()">
+          <svg
+            width="32px"
+            height="32px"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M17 17H17.01M17.4 14H18C18.9319 14 19.3978 14 19.7654 14.1522C20.2554 14.3552 20.6448 14.7446 20.8478 15.2346C21 15.6022 21 16.0681 21 17C21 17.9319 21 18.3978 20.8478 18.7654C20.6448 19.2554 20.2554 19.6448 19.7654 19.8478C19.3978 20 18.9319 20 18 20H6C5.06812 20 4.60218 20 4.23463 19.8478C3.74458 19.6448 3.35523 19.2554 3.15224 18.7654C3 18.3978 3 17.9319 3 17C3 16.0681 3 15.6022 3.15224 15.2346C3.35523 14.7446 3.74458 14.3552 4.23463 14.1522C4.60218 14 5.06812 14 6 14H6.6M12 15V4M12 15L9 12M12 15L15 12"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </div>
+
+        <!-- Контейнер для панорамы -->
+        <div class="panorama-container" id="panoramaContainer">
+          <div class="images-row" id="imagesRow">
+            <!-- Изображения будут вставлены сюда -->
+          </div>
+        </div>
+
+        <!-- Кнопки навигации (опционально) -->
+        <button class="nav-btn left" onclick="scrollPanorama(-250)">‹</button>
+        <button class="nav-btn right" onclick="scrollPanorama(250)">›</button>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  // Функция для выбора изображения
+  const selectImage = async () => {
+    const response =
+      await window.electron.ipcRenderer.selectImageForImageWidget();
+  };
+
+  // Функция для загрузки изображений
+  const loadImages = async () => {
+    const images = await window.electron.ipcRenderer.getImagesForImageWidget();
+
+    allImagesLength = images.length;
+    currentSlide = 0;
+
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+    }
+
+    const imagesRow = document.querySelector('#imagesRow');
+    const panoramaContainer = document.querySelector('#panorama-container');
+
+    if (!images || images.length === 0) {
+      imagesRow.innerHTML = `
+        <div class="no-images">
+          <p>Нет изображений</p>
+          <p>Нажмите на кнопку загрузки</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Создаем HTML для каждого изображения
+    imagesRow.innerHTML = images
+      .map(
+        (item, index) => `
+      <div class="image-item" onclick="deleteImage(${index})">
+        <img src="data:image/png;base64,${item}" alt="Image" />
+      </div>
+    `,
+      )
+      .join('');
+
+    interval = setInterval(() => {
+      if (direction === 'right') {
+        scrollPanorama(239);
+        currentSlide += 1;
+      } else {
+        scrollPanorama(-239);
+
+        currentSlide -= 1;
+      }
+
+      if (currentSlide === allImagesLength - 1) {
+        direction = 'left';
+      }
+
+      if (currentSlide === 0) {
+        direction = 'right';
+      }
+    }, 15000);
+  };
+
+  // Функция для прокрутки панорамы
+  const scrollPanorama = (scrollAmount) => {
+    const container = document.querySelector('#panoramaContainer');
+    container.scrollLeft += scrollAmount;
+  };
+
+  // Загружаем изображения при старте
+  loadImages();
+
+  // Обработчик обновления изображений
+  window.electron.ipcRenderer.on('update-widget-images', (event) => {
+    loadImages();
+  });
+
+  // Добавляем возможность прокрутки колесиком мыши
+  //   document
+  //     .querySelector('#panoramaContainer')
+  //     .addEventListener('wheel', (e) => {
+  //       e.preventDefault();
+  //       const container = document.querySelector('#panoramaContainer');
+  //       container.scrollLeft += e.deltaY;
+  //     });
+</script>
+
+<script>
+  const deleteImage = async (index) => {
+    await window.electron.ipcRenderer.deteleImageForImageWidget(index);
+  };
+</script>
+
+<script>
+  let allImagesLength = 0;
+  let currentSlide = 0;
+
+  let interval = null;
+
+  let direction = 'right';
+</script>

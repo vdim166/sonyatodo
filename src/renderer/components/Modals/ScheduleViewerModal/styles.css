@@ -59,3 +59,10 @@
   padding: 2px;
   border-radius: 2px;
 }
+
+.holidays-dates-in-modal {
+  background-color: rgb(214, 59, 214);
+  color: white;
+  padding: 2px;
+  border-radius: 2px;
+}

@@ -19,6 +19,33 @@ const months = [
   'December',
 ];
 
+export const holidays = [
+  {
+    date: {
+      day: 1,
+      month: 1,
+    },
+    name: 'Новый год',
+    id: 'Новый год',
+  },
+  {
+    date: {
+      day: 8,
+      month: 3,
+    },
+    name: 'Международный женский день',
+    id: 'Международный женский день',
+  },
+  {
+    date: {
+      day: 24,
+      month: 11,
+    },
+    name: 'День матери',
+    id: 'День матери',
+  },
+];
+
 type DayCell = { day: number; month: number; year: number };
 
 /**
@@ -230,13 +257,23 @@ export const Calendar = () => {
                     );
                   });
 
+                  const isHoliday = holidays.filter((item) => {
+                    return (
+                      item.date.day === d.day && item.date.month === d.month
+                    );
+                  });
+
                   return (
                     <div
                       className="calendar_day_container"
                       key={`${d.day}-${d.month}-${d.year}`}
                     >
                       <div className="calendar_day">
-                        <CalendarDay date={d} impDates={haveImpDates} />
+                        <CalendarDay
+                          date={d}
+                          impDates={haveImpDates}
+                          holidays={isHoliday}
+                        />
                       </div>
                     </div>
                   );

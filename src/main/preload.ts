@@ -26,6 +26,7 @@ export type WidgetSettingsType = {
     y: number;
   } | null;
   autoStart: boolean;
+  imageWidget: boolean;
 };
 
 const electronHandler = {
@@ -289,6 +290,18 @@ const electronHandler = {
       );
     },
 
+    selectImageForImageWidget() {
+      return ipcRenderer.invoke('select-image-for-image-widget');
+    },
+
+    getImagesForImageWidget() {
+      return ipcRenderer.invoke('get-images-for-image-widget');
+    },
+
+    deteleImageForImageWidget(index: number) {
+      return ipcRenderer.invoke('delet-image-for-image-widget', index);
+    },
+
     moveLongTermAffair(
       id: string,
       moveFrom: 'TODO' | 'DONE',
@@ -344,6 +357,9 @@ const electronHandler = {
       ipcRenderer.send(IPC_SIGNALS.SET_WIDGET_AUTO_START, state);
     },
 
+    setImageWidget(state: boolean) {
+      ipcRenderer.send(IPC_SIGNALS.SET_IMAGE_WIDGET, state);
+    },
     startDrag: (mouseX: number, mouseY: number) => {
       ipcRenderer.send('drag-start', { x: mouseX, y: mouseY });
     },

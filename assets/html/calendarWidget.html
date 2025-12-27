@@ -69,6 +69,10 @@
         background-color: rgb(190, 47, 190);
       }
 
+      .day.holiday {
+        background-color: rgb(214, 63, 109);
+      }
+
       .day:hover {
         cursor: pointer;
         background-color: rgb(102, 102, 221);
@@ -101,6 +105,32 @@
     'October',
     'November',
     'December',
+  ];
+</script>
+
+<script>
+  const holidays = [
+    {
+      date: {
+        day: 1,
+        month: 1,
+      },
+      name: 'Новый год',
+    },
+    {
+      date: {
+        day: 8,
+        month: 3,
+      },
+      name: 'Международный женский день',
+    },
+    {
+      date: {
+        day: 24,
+        month: 11,
+      }, // Последнее воскресенье ноября (дата меняется)
+      name: 'День матери',
+    },
   ];
 </script>
 
@@ -178,8 +208,6 @@
   }
 
   const loadWidgetData = async () => {
-    console.log('loading...');
-
     const now = new Date();
 
     const month = now.getMonth() + 1;
@@ -243,7 +271,13 @@
               (item) => item.day === d.day && item.month === d.month,
             );
 
-            return `<div class="day ${haveImportantDate ? 'imp-date' : ''} ${haveSomething ? 'work' : ''} ${d.day === todayDay && d.month === month ? 'today' : ''}" onclick="openCurrentDay('${d.day}-${d.month}-${d.year}')">${d.day}</div>`;
+            const isHoliday = holidays.some(
+              (item) =>
+                item.date.day === Number(d.day) &&
+                item.date.month === Number(d.month),
+            );
+
+            return `<div class="day ${isHoliday ? 'holiday' : ''} ${haveImportantDate ? 'imp-date' : ''} ${haveSomething ? 'work' : ''} ${d.day === todayDay && d.month === month ? 'today' : ''}" onclick="openCurrentDay('${d.day}-${d.month}-${d.year}')">${d.day}</div>`;
           })
           .join('')}</div>`;
       })

@@ -8,6 +8,7 @@ export const WidgetSettingsModal = () => {
   const { closeModal } = useModalsContext();
 
   const [autoStartWidget, setAutoStartWidget] = useState(false);
+  const [imageWidget, setImageWidget] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,6 +19,7 @@ export const WidgetSettingsModal = () => {
         const settings = await ipcSignals.getWidgetSettings();
 
         setAutoStartWidget(settings.autoStart);
+        setImageWidget(settings.imageWidget);
       } catch (error) {
         console.log(error);
       } finally {
@@ -35,6 +37,14 @@ export const WidgetSettingsModal = () => {
   const handleAutoStartWidget = async (state: boolean) => {
     try {
       await ipcSignals.setAutoStartWidget(state);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleImageWidget = async (state: boolean) => {
+    try {
+      await ipcSignals.setImageWidget(state);
     } catch (error) {
       console.log(error);
     }
@@ -59,6 +69,20 @@ export const WidgetSettingsModal = () => {
               }}
             />
             <p>Включить виджет на автозапуске</p>
+          </div>
+        </div>
+
+        <div className="widget_settings_row">
+          <div className="widget_settings_option">
+            <input
+              type="checkbox"
+              checked={imageWidget}
+              onChange={(e) => {
+                setImageWidget(e.target.checked);
+                handleImageWidget(e.target.checked);
+              }}
+            />
+            <p>Включить виджет картинок</p>
           </div>
         </div>
       </div>
