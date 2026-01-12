@@ -2,6 +2,11 @@ import { setDeadlineType } from '../../main/types/setDeadlineType';
 import { candidateLinkType } from '../components/AddLinksToTodo';
 import { TabType } from '../contexts/AppContext';
 
+export type todoHistory = {
+  text: string;
+  date: string;
+};
+
 export type saveTodoType = {
   name: string;
   desc: string;
@@ -19,6 +24,9 @@ export type saveTodoType = {
   linkedTo?: candidateLinkType[];
 
   hidden?: boolean;
+
+  createdAt?: string;
+  history?: todoHistory[];
 };
 
 class IpcSignals {

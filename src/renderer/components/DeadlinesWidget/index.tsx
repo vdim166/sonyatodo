@@ -42,7 +42,6 @@ export const DeadlinesWidget = ({
 
   const isError = calcError();
   const handleSubmit = async () => {
-    if (to === '') return;
     if (!isChanged) return;
     if (isError) return;
 
@@ -92,6 +91,8 @@ export const DeadlinesWidget = ({
 
   const isChanged = calcIsChanged();
 
+  console.log('isChanged', isChanged);
+
   return (
     <div className="deadlines_main">
       {!isPicking && (
@@ -139,7 +140,7 @@ export const DeadlinesWidget = ({
           </div>
 
           <div
-            className={`deadline_input_container_success ${to === '' || !isChanged ? 'disabled' : ''} ${isError ? 'error' : ''}`}
+            className={`deadline_input_container_success ${to === '' && !isChanged ? 'disabled' : ''} ${isError ? 'error' : ''}`}
             onClick={handleSubmit}
           >
             <Check />

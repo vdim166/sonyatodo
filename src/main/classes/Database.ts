@@ -43,6 +43,15 @@ class Database {
       const id = generateRandomId();
       data.id = id;
 
+      data.createdAt = Date.now().toString();
+
+      data.history = [
+        {
+          text: `Was created in ${data.currentTopic}`,
+          date: Date.now().toString(),
+        },
+      ];
+
       const findTopicIndex = prevData[projectName].allTopics.findIndex(
         (topic) => topic.name === data.currentTopic,
       );
@@ -51,6 +60,7 @@ class Database {
         prevData[projectName].allTopics[findTopicIndex].todos.unshift(data);
         fs.writeFileSync(this.filePath, JSON.stringify(prevData), 'utf-8');
       }
+
       const newData = this.loadDataFromFile();
       return { database: newData, data };
     } catch (err) {
@@ -208,6 +218,24 @@ class Database {
       data[projectName].allTopics[findTopicIndex].todos[
         todoIndex
       ].currentTopic = tab;
+
+      if (
+        data[projectName].allTopics[findTopicIndex].todos[todoIndex].history
+      ) {
+        data[projectName].allTopics[findTopicIndex].todos[
+          todoIndex
+        ].history.push({
+          date: Date.now().toString(),
+          text: 'Was moved to ' + tab + ' from ' + currentTab,
+        });
+      } else {
+        data[projectName].allTopics[findTopicIndex].todos[todoIndex].history = [
+          {
+            date: Date.now().toString(),
+            text: 'Was moved to ' + tab + ' from ' + currentTab,
+          },
+        ];
+      }
 
       data[projectName].allTopics[secondTopicIndex].todos.unshift(
         data[projectName].allTopics[findTopicIndex].todos[todoIndex],
@@ -404,6 +432,27 @@ class Database {
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
           .name !== todoToChange.name
       ) {
+        if (
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+            .history
+        ) {
+          data[projectName].allTopics[findTopicIndex].todos[
+            findTodoIndex
+          ].history.push({
+            text: `Name was changed to ${todoToChange.name} from ${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].name}`,
+            date: Date.now().toString(),
+          });
+        } else {
+          data[projectName].allTopics[findTopicIndex].todos[
+            findTodoIndex
+          ].history = [
+            {
+              text: `Name was changed to ${todoToChange.name} from ${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].name}`,
+              date: Date.now().toString(),
+            },
+          ];
+        }
+
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].name =
           todoToChange.name;
       }
@@ -503,11 +552,59 @@ class Database {
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
           .desc !== todoToChange.desc
       ) {
+        if (
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+            .history
+        ) {
+          data[projectName].allTopics[findTopicIndex].todos[
+            findTodoIndex
+          ].history.push({
+            text: `Desc was changed to ${todoToChange.desc} from ${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc}`,
+            date: Date.now().toString(),
+          });
+        } else {
+          data[projectName].allTopics[findTopicIndex].todos[
+            findTodoIndex
+          ].history = [
+            {
+              text: `Desc was changed to ${todoToChange.desc} from ${data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc}`,
+              date: Date.now().toString(),
+            },
+          ];
+        }
+
         data[projectName].allTopics[findTopicIndex].todos[findTodoIndex].desc =
           todoToChange.desc;
       }
 
       if (todoToChange.hidden !== undefined) {
+        if (
+          data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+            .history
+        ) {
+          data[projectName].allTopics[findTopicIndex].todos[
+            findTodoIndex
+          ].history.push({
+            date: Date.now().toString(),
+            text: `Hidden was changed to ${todoToChange.hidden} from ${
+              data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+                .hidden
+            }`,
+          });
+        } else {
+          data[projectName].allTopics[findTopicIndex].todos[
+            findTodoIndex
+          ].history = [
+            {
+              date: Date.now().toString(),
+              text: `Hidden was changed to ${todoToChange.hidden} from ${
+                data[projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+                  .hidden
+              }`,
+            },
+          ];
+        }
+
         data[projectName].allTopics[findTopicIndex].todos[
           findTodoIndex
         ].hidden = todoToChange.hidden;
@@ -592,10 +689,27 @@ class Database {
 
       if (todoIndex === -1) return {};
 
-      data[projectName].allTopics[topicName].todos[todoIndex].deadline = {
+      const deadLine = {
         to: options.to,
         from: options.from,
       };
+
+      if (data[projectName].allTopics[topicName].todos[todoIndex].history) {
+        data[projectName].allTopics[topicName].todos[todoIndex].history.push({
+          date: Date.now().toString(),
+          text: `Deadline was changed to ${JSON.stringify(deadLine)} from ${JSON.stringify(data[projectName].allTopics[topicName].todos[todoIndex].deadline)}`,
+        });
+      } else {
+        data[projectName].allTopics[topicName].todos[todoIndex].history = [
+          {
+            date: Date.now().toString(),
+            text: `Deadline was changed to ${JSON.stringify(deadLine)} from ${JSON.stringify(data[projectName].allTopics[topicName].todos[todoIndex].deadline)}`,
+          },
+        ];
+      }
+
+      data[projectName].allTopics[topicName].todos[todoIndex].deadline =
+        deadLine;
 
       fs.writeFileSync(this.filePath, JSON.stringify(data), 'utf-8');
       return this.loadDataFromFile();
@@ -674,6 +788,27 @@ class Database {
       data[link.projectName].allTopics[findTopicIndex].todos[
         findTodoIndex
       ].links = [obj];
+    }
+
+    if (
+      data[link.projectName].allTopics[findTopicIndex].todos[findTodoIndex]
+        .history
+    ) {
+      data[link.projectName].allTopics[findTopicIndex].todos[
+        findTodoIndex
+      ].history?.push({
+        date: Date.now().toString(),
+        text: `Link was added to ${JSON.stringify(obj)}`,
+      });
+    } else {
+      data[link.projectName].allTopics[findTopicIndex].todos[
+        findTodoIndex
+      ].history = [
+        {
+          date: Date.now().toString(),
+          text: `Link was added to ${JSON.stringify(obj)}`,
+        },
+      ];
     }
 
     /// link section
@@ -792,6 +927,24 @@ class Database {
             t.todo.id !==
             data[project].allTopics[findTopicIndex].todos[findTodoIndex].id,
         );
+      }
+
+      if (
+        data[project].allTopics[findTopicIndex].todos[findTodoIndex].history
+      ) {
+        data[project].allTopics[findTopicIndex].todos[
+          findTodoIndex
+        ].history.push({
+          date: Date.now().toString(),
+          text: `Link was deleted ${JSON.stringify(data[project].allTopics[findTopicIndex].todos[findTodoIndex].links[findLinkIndex])}`,
+        });
+      } else {
+        data[project].allTopics[findTopicIndex].todos[findTodoIndex].history = [
+          {
+            date: Date.now().toString(),
+            text: `Link was deleted ${JSON.stringify(data[project].allTopics[findTopicIndex].todos[findTodoIndex].links[findLinkIndex])}`,
+          },
+        ];
       }
 
       data[project].allTopics[findTopicIndex].todos[findTodoIndex].links.splice(
